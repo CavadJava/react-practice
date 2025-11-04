@@ -1,11 +1,6 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-
-function Car(props) {
-    return (
-        <h2>The car is from {props.year}!</h2>
-    );
-}
+import Car from "./Car.jsx";
 
 createRoot(document.getElementById('root')).render(
     <Car year={1969} />
