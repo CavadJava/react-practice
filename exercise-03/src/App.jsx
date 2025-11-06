@@ -19,6 +19,10 @@ function App() {
         console.log("Parameter:", param);
     }
 
+    function addToCard() {
+        alert(`Added`);
+    }
+
     return (
         <>
             <Product
@@ -34,7 +38,7 @@ function App() {
                 productData.map((product) => {
                     return (
                         console.log("product:", product),
-                            <ProductCard key={product.id} {...product}></ProductCard>
+                            <ProductCard key={product.id} {...product} addToCard={addToCard}></ProductCard>
                     );
                 })
             }
