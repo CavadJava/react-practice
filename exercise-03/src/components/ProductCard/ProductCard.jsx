@@ -2,6 +2,7 @@ import React from 'react';
 import styles from "./ProductCard.module.css";
 import TeslaImage from "../../assets/Tesla.png";
 import EarphoneIcon from "../../assets/earphone.svg?react";
+import {FaRegBell} from "react-icons/fa";
 
 function ProductCard({name, description, price}) {
     return (
@@ -11,6 +12,7 @@ function ProductCard({name, description, price}) {
             <p>{description}</p>
             <span>${price}</span>
             <EarphoneIcon width={40} height={40}/>
+            <FaRegBell />
         </div>
     );
 }
