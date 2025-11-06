@@ -1,5 +1,7 @@
+import React from 'react';
 import styles from "./ProductCard.module.css";
 import TeslaImage from "../../assets/Tesla.png";
+import EarphoneIcon from "../../assets/earphone.svg?react";
 
 function ProductCard({name, description, price}) {
     return (
@@ -8,6 +10,7 @@ function ProductCard({name, description, price}) {
             <h2>{name}</h2>
             <p>{description}</p>
             <span>${price}</span>
+            <EarphoneIcon width={40} height={40}/>
         </div>
     );
 }
