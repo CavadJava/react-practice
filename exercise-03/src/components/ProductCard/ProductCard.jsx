@@ -1,12 +1,13 @@
-import styles from "./ProductCard.module.css"
+import styles from "./ProductCard.module.css";
 import TeslaImage from "../../assets/Tesla.png";
 
-function ProductCard({product}) {
+function ProductCard({name, description, price}) {
     return (
         <div className={styles.product_card}>
-            <img src={TeslaImage} className={styles.product_image} />
-            <h2>{product.name}</h2>
-            <span>{product.price}</span>
+            <img  src={TeslaImage} alt="Product" className={styles.product_image} />
+            <h2>{name}</h2>
+            <p>{description}</p>
+            <span>${price}</span>
         </div>
     );
 }

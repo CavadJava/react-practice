@@ -2,11 +2,19 @@
   {
     "id": 1,
     "name": "tv",
+    "description": "54 inch tv",
     "price": 1000
   },
   {
     "id": 2,
     "name": "laptop",
+    "desription": "16 inch laptop",
     "price": 2000
+  },
+  {
+    "id": 3,
+    "name": "Car",
+    "desription": "Tesla Model S",
+    "price": 100000
   }
 ]
