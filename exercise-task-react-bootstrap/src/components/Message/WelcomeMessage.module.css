@@ -1,0 +1,15 @@
+.show {
+    display: block;
+}
+.hide{
+    display: none;
+}
+.center{
+    text-align: center;
+}
+.left{
+    text-align: left;
+}
+.right{
+    text-align: right;
+}
