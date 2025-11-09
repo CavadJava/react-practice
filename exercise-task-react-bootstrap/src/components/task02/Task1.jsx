@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Task() {
+function Task1() {
     return (
         <div className="container">
             <Photo/>
@@ -42,4 +42,4 @@ function Skill({name, emoji, color}){
     );
 }
 
-export default Task;
+export default Task1;
