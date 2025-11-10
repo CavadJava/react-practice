@@ -1,11 +1,11 @@
-import React from 'react';
+import React, {useState} from 'react';
 
 function Task(){
     console.log("Task started");
+    const [firstClick, setFirstClick] = useState(false);
 
-    let firstClick = false;
     function handleClickMe(){
-        firstClick = true;
+        setFirstClick(true);
         alert("Hello World");
         return true;
     }
