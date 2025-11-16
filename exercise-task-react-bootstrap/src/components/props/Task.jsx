@@ -6,9 +6,12 @@ import VideoPlayerTask from "./VideoPlayerTask";
 import TimeoutTask from "./TimoutTask";
 import HideItemOnClick from "./HideItemOnClick";
 import HideItemsOnClick from "./HideItemsOnClick";
+import HideItems from "./hideitems/HideItems";
+import ChangeTextOnTime from "./changetextbaseontime/ChangeTextOnTime";
+import ToggleColor from "./changecolor/ToggleColor";
 
 function Task(){
-    return HideItemsOnClick();
+    return ToggleColor();
 }
 
 export default Task
