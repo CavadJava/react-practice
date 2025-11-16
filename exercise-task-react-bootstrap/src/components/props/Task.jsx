@@ -9,9 +9,10 @@ import HideItemsOnClick from "./HideItemsOnClick";
 import HideItems from "./hideitems/HideItems";
 import ChangeTextOnTime from "./changetextbaseontime/ChangeTextOnTime";
 import ToggleColor from "./changecolor/ToggleColor";
+import ChangeVisiblity from "./changevisible/ChangeVisiblity";
 
 function Task(){
-    return ToggleColor();
+    return ChangeVisiblity();
 }
 
 export default Task
