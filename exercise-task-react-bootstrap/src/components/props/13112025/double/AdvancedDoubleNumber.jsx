@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-function DoubleNumber() {
+function AdvancedDoubleNumber() {
 
     const [number, setNumber] = useState(1);
     const inputRef = useRef();
@@ -95,4 +95,4 @@ function DoubleNumber() {
     );
 }
 
-export default DoubleNumber;
+export default AdvancedDoubleNumber;
