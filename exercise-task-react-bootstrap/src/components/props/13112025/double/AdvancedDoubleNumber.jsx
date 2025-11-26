@@ -10,7 +10,6 @@ function AdvancedDoubleNumber() {
     const [isFullDoubleNumberList, setIsFullDoubleNumberList] = useState(false);
 
     const divStyle = {
-        padding: "20px",
         textAlign: "center",
         borderRadius: "16px",
         padding: "24px auto",

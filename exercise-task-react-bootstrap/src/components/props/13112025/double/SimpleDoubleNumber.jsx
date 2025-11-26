@@ -7,7 +7,6 @@ function SimpleDoubleNumber() {
     const inputRef = useRef();
 
     const divStyle = {
-        padding: "20px",
         textAlign: "center",
         borderRadius: "16px",
         padding: "24px auto",
