@@ -8,10 +8,11 @@ import ToggleTexts from "./13112025/toggletext/ToggleTexts";
 import ToggleColor from "./13112025/changecolor/ToggleColor";
 import TodoList from "./TodoList";
 import Randomgenerator from "./17112025/randomgenerator/Randomgenerator";
+import UserForm from "./17112025/form/UserForm.jsx";
 
 
 function Task(){
-    return Randomgenerator();
+    return UserForm();
 }
 
 export default Task
