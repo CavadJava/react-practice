@@ -1,7 +1,5 @@
 import React, {useRef, useState} from "react";
 
-
-
 function UserForm() {
 
     const [count, setCount] = useState(0);
@@ -26,11 +24,9 @@ function UserForm() {
     }
 
     function addUserToTableBody(){
-        // Get values from refs
         const username = usernameRef.current?.value;
         const fullname = fullnameRef.current?.value;
 
-        // Basic validation: Don't add if fields are empty
         if (!username || !fullname) {
             alert("Please enter both username and fullname.");
             return;
@@ -86,7 +82,6 @@ function UserForm() {
 
                     {
                         tableBody.map((item) => (
-                            // 'item.count' now holds the correct unique key
                             <tr key={item.itemId}>
                                 <td>{item.username}</td>
                                 <td>{item.fullname}</td>
