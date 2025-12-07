@@ -52,8 +52,12 @@ function StateManagement(){
 }
 function CardItem({id, fullname, nickname, age}){
 
-    const happy = () => {
-        alert("Hello");
+    const hi = () => {
+        alert("hi");
+    }
+
+    const hello = () => {
+        alert("hello");
     }
 
     return(
@@ -63,15 +67,15 @@ function CardItem({id, fullname, nickname, age}){
                 <p>NickName: {nickname}</p>
                 <p>Age: {age}</p>
                 <div className="carditem-groupbutton">
-                    <button>Edit</button>
-                    <MeButton _name="Remove" _colorType="yellow" happy={happy} />
+                    <MeButton _name="Edit" _colorType="yellow" hasCallbck="false" callbck={hello} />
+                    <MeButton _name="Remove All" _colorType="yellow" hasCallbck="true" callbck={hi} />
                 </div>
             </div>
         </>
     )
 }
 
-export const MeButton = ({_name, _colorType, defaultColor="btn",happy})=>{
+export const MeButton = ({_name, _colorType, defaultColor="btn", hasCallbck="false", callbck})=>{
 
 
     const colorClassName = styles[_colorType] || '';
@@ -79,7 +83,12 @@ export const MeButton = ({_name, _colorType, defaultColor="btn",happy})=>{
     
 
     return (
-        <button className={`${defaultColorValue} ${colorClassName}`} onClick={()=>{happy()}}>{_name}</button>
+        <button className={`${defaultColorValue} ${colorClassName}`} onClick={()=>{
+            if(hasCallbck=="true") {
+                return callbck()
+            }
+
+        }}>{_name}</button>
     )
 }
 MeButton.prototype = {
