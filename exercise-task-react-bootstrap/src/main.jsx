@@ -2,7 +2,8 @@ import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
 import './index.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Task1 from "./components/props/Task.jsx";
+// import Task1 from "./components/hook-tasks/Task.jsx";
+import Task1 from "./components/axious/Task.jsx";
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
