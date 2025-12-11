@@ -2,14 +2,17 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import LoginForm from './components/LoginForm'
+import LoginForm from './components/formik_forms/LoginForm'
+import YumLoginForm from './components/YumLoginForm'
+import SimpleForm from './components/SimpleForm'
+import PersonalResume from './components/resume/PersonalResume'
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <>
-      <LoginForm />
+      <PersonalResume />
     </>
   )
 }

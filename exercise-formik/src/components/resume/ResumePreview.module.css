@@ -1,0 +1,187 @@
+.content {
+    display: flex;
+    height: 100vh;
+    box-shadow: 0 4px 8px 0;
+    border-radius: 8px;
+}
+
+.form {
+    flex: 1;
+    padding: 30px;
+    background-color: #f5f5f5;
+    overflow-y: auto;
+}
+
+
+/* --- Əsas Konteyner və Ümumi Stil --- */
+.preview {
+    /* CV kağızının standart ölçüsünə oxşar görünüş */
+    flex: 1;
+    background-color: #ffffff; /* Ağ fon */
+    border: 1px solid #ddd; /* Yüngül haşiyə */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Kölgə effekti */
+    font-family: 'Helvetica Neue', Arial, sans-serif; /* Oxunaqlı şrift */
+    color: #333; /* Tünd boz mətn rəngi */
+    line-height: 1.6;
+}
+
+/* --- Başlıq (Header) Bölməsi --- */
+.header {
+    text-align: center;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #007bff; /* Mavi rəngli qalın xətt */
+    margin-bottom: 25px;
+}
+
+.fullName {
+    font-size: 2.2em;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.contactInfo {
+    margin-top: 5px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.contactInfo p {
+    display: inline;
+    margin: 0 10px;
+}
+
+.contactInfo p:not(:last-child)::after {
+    content: '|';
+    margin-left: 10px;
+    color: #ccc;
+}
+
+/* --- Ümumi Bölmələr (Sections) --- */
+.section {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    text-align: center;
+    border-bottom: 1px solid #eee; /* Bölmələr arasında nazik xətt */
+}
+
+.sectionTitle {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #007bff; /* Mavi başlıq rəngi */
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+/* --- Xülasə (Summary) Stili --- */
+.summaryText {
+    font-style: italic;
+    color: #444;
+    text-align: justify;
+    text-align: center;
+}
+
+/* --- Təcrübə (Experience) Stili --- */
+.jobEntry {
+    margin-bottom: 15px;
+}
+
+.jobHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 5px;
+}
+
+.jobTitle {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.jobDates {
+    font-size: 0.9em;
+    color: #555;
+    white-space: nowrap; /* Tarixin bir sətirdə qalması üçün */
+    font-style: italic;
+}
+
+.jobDescription {
+    margin-top: 5px;
+    font-size: 0.95em;
+    padding-left: 15px;
+    border-left: 2px solid #007bff; /* Mavi vurğu */
+}
+
+/* --- Təhsil (Education) Stili --- */
+.educationEntry {
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.eduHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 3px;
+}
+
+.eduDegree {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.eduDates {
+    font-size: 0.9em;
+    text-align: center;
+    color: #555;
+    white-space: nowrap;
+    font-style: italic;
+}
+
+.eduInstitution {
+    font-size: 0.95em;
+    text-align: center;
+    color: #666;
+    margin-top: 2px;
+}
+
+/* --- Bacarıqlar (Skills) Stili --- */
+.skillsList {
+    list-style: none; /* Standart işarələri silir */
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap; /* Sətirə sığışmayanda aşağı düşür */
+    gap: 10px; /* Elementlər arasında boşluq */
+}
+
+.skillItem {
+    background-color: #e9ecef; /* Açıq boz fon */
+    color: #333;
+    padding: 5px 12px;
+    border-radius: 20px; /* Dairəvi kənarlar (Badge/Tag effekti) */
+    font-size: 0.9em;
+    font-weight: 500;
+    border: 1px solid #ced4da;
+}
+
+/* --- Boş Məzmun Mesajı --- */
+.emptyMessage {
+    text-align: center;
+    color: #dc3545; /* Qırmızı vurğu */
+    font-size: 1.1em;
+    padding: 30px;
+    border: 1px dashed #dc3545;
+    margin-top: 20px;
+}

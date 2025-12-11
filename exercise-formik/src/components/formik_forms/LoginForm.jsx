@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 const LoginForm = () => {
     const [data, setData] = React.useState([]);
+
     const formik = useFormik({
         initialValues: {
             email: '',
@@ -13,6 +15,9 @@ const LoginForm = () => {
             setData([...data, values]);
             window.localStorage.setItem('userData', JSON.stringify([...data, values]));
             alert(JSON.stringify(values, null, 2));
+        },
+        onChange: values => {
+            console.log("OnChange")
         }
     });
     useEffect(() =>{
@@ -27,6 +32,7 @@ const LoginForm = () => {
         window.localStorage.removeItem('userData');
         setData([]);
     }
+    // const disableBtn = fullname.trim() === "" || password.trim() === "";
     
     return (
         <div className='container'>
