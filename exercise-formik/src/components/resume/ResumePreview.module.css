@@ -16,7 +16,6 @@
 /* --- Əsas Konteyner və Ümumi Stil --- */
 .preview {
     /* CV kağızının standart ölçüsünə oxşar görünüş */
-    flex: 1;
     background-color: #ffffff; /* Ağ fon */
     border: 1px solid #ddd; /* Yüngül haşiyə */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Kölgə effekti */
