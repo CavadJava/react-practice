@@ -5,7 +5,8 @@ import './App.css'
 import LoginForm from './components/formik_forms/LoginForm'
 import YumLoginForm from './components/YumLoginForm'
 import SimpleForm from './components/SimpleForm'
-import PersonalResume from './components/resume/PersonalResume'
+// import PersonalResume from './components/resume/PersonalResume'
+import PersonalResume from './components/resume-formik/PersonalResume'
 
 function App() {
   const [count, setCount] = useState(0)

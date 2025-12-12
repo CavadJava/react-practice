@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './PersonalResume.module.css';
-import { ResumeFormManual } from './ResumeFormManual';
-import ResumePreview from './ResumePreview';
+import { ResumeForm } from './ResumeFormik';
+import ResumeFormik from './ResumeFormik';
 
 function PersonalResume(){
     const [data, setData] = React.useState();
@@ -13,8 +13,8 @@ function PersonalResume(){
     return (
         <>
             <div className={styles.content}>
-                <ResumeFormManual onSubmit={onSubmit}/>
-                <ResumePreview {...data}/>
+                <ResumeForm onSubmit={onSubmit}/>
+                <ResumeFormik {...data}/>
             </div>
         </>
     )
