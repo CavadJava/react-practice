@@ -1,7 +1,7 @@
 import React from 'react';
 import { useMemo } from 'react';
 
-function SimpleWitMemo(num=0) {
+function SimpleWitMemo({num=0}) {
     const [count1, setCount1] = React.useState(0);
     const [count2, setCount2] = React.useState(0);
 

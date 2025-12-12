@@ -2,9 +2,10 @@ import React from 'react';
 import { useCallback } from 'react';
 import { useMemo } from 'react';
 
-function SimpleWithUseId() {
+function SimpleWithUseId({num=0}) {
     const [count, setCount] = React.useState(0);
 
+    // npm i uuid, create-unique-id-hook
     const componentId= React.useId();
    
     return (

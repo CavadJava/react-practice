@@ -1,6 +1,6 @@
 import React from 'react';
 
-function SimpleWithoutMemo() {
+function SimpleWithoutMemo({num=0}) {
     const [count1, setCount1] = React.useState(0);
     const [count2, setCount2] = React.useState(0);
 

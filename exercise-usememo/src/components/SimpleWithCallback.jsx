@@ -2,7 +2,7 @@ import React from 'react';
 import { useCallback } from 'react';
 import { useMemo } from 'react';
 
-function SimpleWithCallback(num=0) {
+function SimpleWithCallback({num=0}) {
     const [count1, setCount1] = React.useState(0);
     const [count2, setCount2] = React.useState(0);
 
