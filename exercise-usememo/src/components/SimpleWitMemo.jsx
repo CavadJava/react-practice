@@ -1,11 +1,12 @@
 import React from 'react';
 import { useMemo } from 'react';
 
-function SimpleWitMemo() {
+function SimpleWitMemo(num=0) {
     const [count1, setCount1] = React.useState(0);
     const [count2, setCount2] = React.useState(0);
 
-    //hem props hem de deyerden asilidir
+    // Hesablamalar coxdursa; 
+    // Iki ve daha cox state props-dan asilidirsa onda istifade etmek olar;
     const a = useMemo(() => {
         let result = 3.14 + count1;
         return result;
