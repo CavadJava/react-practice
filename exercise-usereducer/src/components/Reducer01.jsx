@@ -35,12 +35,30 @@ function Reducer01() {
     const handleIncrement = () => {
         dispatch({ type: 'increment' });
     }
+    const handleDecrement = () => {
+        dispatch({ type: 'decrement' });
+    }
+    const handleToggleIsNew = (value) => {
+        dispatch({ type: 'toggleIsNew', payload: value });
+    }
+    const handleUpdateTitle = () => {
+        const newTitle = prompt("Enter new title:", state.title);
+        if (newTitle !== null) {
+            dispatch({ type: 'updateTitle', payload: newTitle });
+        }
+    }
+    const handleReset = () => {
+        dispatch({ type: 'reset' });
+    }   
   return (
     <>
     <div className="container">
         <div>Reducer01</div>
-        <Button onBtnClick={()=>handleIncrement()}>Increment</Button>
-        
+        <Button onBtnClick={()=>handleIncrement()}>Increment:{state.count}</Button>
+        <Button onBtnClick={()=>handleDecrement()}>Decrement:{state.count}</Button>
+        <Button onBtnClick={()=>handleToggleIsNew(!state.isNew)}>Toggle isNew:{state.isNew ? "Yes": "No"}</Button>
+        <Button onBtnClick={()=>handleUpdateTitle()}>Update Title</Button>
+        <Button onBtnClick={()=>handleReset()}>Reset</Button>
     </div>
     </>
   )
