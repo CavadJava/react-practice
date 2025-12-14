@@ -1,0 +1,56 @@
+
+
+.btn {
+    padding: 10px 20px;
+    background-color: blue;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s all;
+    margin: 4px;
+}
+
+.btn:hover {
+    opacity: 0.5;
+}
+
+.btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.small {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+.medium {
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+.large {
+    padding: 15px 30px;
+    font-size: 18px;
+}
+
+.warning{
+    background-color: orange;
+    color: white;
+}
+
+.success{
+    background-color: green;
+    color: white;
+}
+
+.danger{
+    background-color: red;
+    color: white;
+}
+
+.primary{
+    background-color: blue;
+    color: white;
+}
