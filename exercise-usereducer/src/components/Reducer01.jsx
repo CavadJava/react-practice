@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import { Button } from "./Button";
 
 const initialState = { count: 0,isNew: true,title: "My Title" };
@@ -31,6 +31,11 @@ function Reducer01() {
 
     // step 2
     const [state,dispatch] = useReducer(reducer, initialState);
+    // const [count,setCount] = useState(0);
+    // const [isNew,setIsNew] = useState(true);
+    // const [title,setTitle] = useState("My Title");
+
+    console.log("state:", state);
    
     const handleIncrement = () => {
         dispatch({ type: 'increment' });

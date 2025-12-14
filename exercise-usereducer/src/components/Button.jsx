@@ -1,10 +1,18 @@
+import { use } from "react";
 import styles from "./Button.module.css";
 import PropTypes from 'prop-types';
 
 export const Button = ({size = "medium", variant = "primary", disabled = false, showArrow = false, children, onBtnClick}) => {
 // export const Button = ({size, variant, disabled, showArrow, children}) => {
 
-    const sizeClassName = styles[size] || '';
+    // const componentId = useId();
+
+    // console.log("Button componentId:", componentId);
+
+    // const [size, variant, disabled, showArrow] = propTypes;
+
+    // const sizeClassName = styles[size] || '';
+
     const variantClassName = styles[variant] || '';
     const arrowNext = showArrow ? ' -> ' : '';
 
