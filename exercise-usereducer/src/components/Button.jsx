@@ -2,7 +2,7 @@ import { use } from "react";
 import styles from "./Button.module.css";
 import PropTypes from 'prop-types';
 
-export const Button = ({size = "medium", variant = "primary", disabled = false, showArrow = false, children, onBtnClick}) => {
+const Button = () => ({size = "medium", variant = "primary", disabled = false, showArrow = false, children, onBtnClick}) => {
 // export const Button = ({size, variant, disabled, showArrow, children}) => {
 
     // const componentId = useId();
@@ -30,6 +30,8 @@ Button.propTypes = {
     children: PropTypes.node.isRequired,
     onBtnClick: PropTypes.func
 }
+
+export default Button;
 
 // Button.defaultProps = {
 //     size: 'medium',
