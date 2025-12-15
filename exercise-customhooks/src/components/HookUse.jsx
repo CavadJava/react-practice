@@ -10,11 +10,11 @@ const HookUse = () => {
   
     return (
       <div>
-        <h3>No Hook Component</h3>
-        <p>Open State: {open}</p>
-        <button onClick={setToggle}>Toggle</button>
+        <h3>Hook Component</h3>
+        <p>Open State: {open ? "TRUE" : "FALSE"}</p>
         <button onClick={setOpenTrue}>Open</button>
         <button onClick={setOpenFalse}>Close</button>
+        {open && <p>The state is true!</p>}
       </div>
     )
 
