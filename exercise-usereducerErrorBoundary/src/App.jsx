@@ -2,13 +2,13 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import HookUse2 from './components/HookUse2'
+import Reducer01 from './components/Reducer01'
 
 function App() {
   return (
     <>
       <div>
-        <HookUse2 />
+        <Reducer01 />
       </div>
     </>
   )
