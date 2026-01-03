@@ -14,7 +14,7 @@ const HookUse2 = () => {
 
     return (
       <div>
-        <h3>Hook Component</h3>
+        <h3>Hook Component with useFetchData</h3>
         {/* <p>Open State: {open ? "TRUE" : "FALSE"}</p> */}
         {/* <button onClick={setOpenTrue}>Open</button> */}
         {/* <button onClick={setOpenFalse}>Close</button> */}
