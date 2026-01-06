@@ -28,9 +28,24 @@ function App() {
   useEffect(() => {
     const storedData = localStorage.getItem('userData');
     if(storedData) {
-      setData(JSON.parse(storedData));
+      if (storedData) {
+        try {
+          setData(JSON.parse(storedData));
+        } catch (error) {
+          console.error('Error parsing stored data:', error);
+        }
+      }
     }
   }, []);
+  const handleRemoveAll = () => {
+    setData([]);
+    localStorage.removeItem('userData');
+  }
+  const handleDelete = (index) => {
+    const newData = data.filter((_,i) => i !== index);
+    setData(newData);
+    localStorage.setItem('userData',JSON.stringify(newData));
+  }
 
   return (
     <>
@@ -41,10 +56,10 @@ function App() {
         <input type="text" placeholder='FullName' name="fullname" value={values.fullname} onChange={handleChange}/>
         <input type="number" placeholder='Age' name="age" value={values.age} onChange={handleChange}/>
         <button type='submit' onClick={handleSubmit}>Add User</button> 
-        <button type='reset' onClick={handleReset}>Remove All</button>
+        <button type='reset' onClick={handleRemoveAll}>Remove All</button>
         {
-          data.map((user,index) => (
-            <div key={index} className='user-card'>
+          data.map((user, index) => (
+            <div key={index} className='user-card' onClick={() => handleDelete(index)} style={{ border: '1px solid #ccc', padding: '10px', margin: '10px 0', borderRadius: '5px', cursor: 'pointer' }}>
               <p><strong>UserName:</strong> {user.username}</p>
               <p><strong>FullName:</strong> {user.fullname}</p>
               <p><strong>Age:</strong> {user.age}</p>
