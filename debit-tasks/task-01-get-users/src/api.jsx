@@ -1,7 +1,10 @@
 
 
 export default async function getUsers() {
-  const res = await fetch('https://dummyjson.com/users');
-  const data = await res.json();
-  return data.users;
+  console.log('Fetching users data...');
+  const response = await fetch('https://dummyjson.com/userss');
+  if (!response.ok) {
+    throw new Error('Failed to fetch users data.');
+  }
+  return await response.json();
 }
