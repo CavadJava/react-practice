@@ -3,6 +3,7 @@ import Card from "./components/Card/Card.jsx";
 import {WelcomeMessage} from "./components/Message/WelcomeMessage.jsx";
 import Product from "./components/Product/Product.jsx";
 import SecondWelcomeMessage from "./components/Message/SecondWelcomeMessage.jsx";
+import Task from "./components/axious/Task.jsx";
 
 function App() {
 
@@ -49,8 +50,8 @@ function App() {
 
   return (
     <>
-        <Navbar/>
-        <div className="container">
+        {/* <Navbar/> */}
+        {/* <div className="container">
             <div className="row justify-content-center ms-lg-5">
                 <WelcomeMessage name="Card List Start" showType="hide">
                 {cardList.map((card) => {
@@ -68,9 +69,10 @@ function App() {
                     );
                 })}
                 <SecondWelcomeMessage></SecondWelcomeMessage>
-            </div>
+            </div> */}
 
-        </div>
+        {/* </div> */}
+        <Task/>
     </>
   )
 }
