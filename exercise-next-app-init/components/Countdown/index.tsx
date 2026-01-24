@@ -4,25 +4,27 @@ import { useEffect, useState } from "react";
 
 export default function Countdown({
   from,
-  to,
-  onEnd,
-}: {
-  from: number;
-  to: number;
-  onEnd?: () => void;
+  to}:{
+  from?: number;
+  to?: number;
 }) {
-  const [count, setCount] = useState(from);
+  const [count, setCount] = useState(from ?? 10);
 
   useEffect(() => {
-    if (count <= to) {
-      onEnd?.();
+    if (count <= 0){
+      alert("Countdown ended!");
       return;
-    }
-    const timer = setTimeout(() => {
-      setCount((c) => c - 1);
+    } 
+    const timer = setInterval(() => {
+      setCount((prev) => prev - 1);
     }, 1000);
-    return () => clearTimeout(timer);
-  }, [count, to, onEnd]);
 
-  return <div>{count}</div>;
+    return () => clearInterval(timer); 
+  }, [count, to]);
+
+  return (
+    <div className="text-4xl font-mono">
+      {count}
+    </div>
+  );
 }
