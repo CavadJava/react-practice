@@ -1,6 +1,10 @@
-import { useRouter } from "next/router";
+"use client";
+import { useRouter } from "next/navigation";
 
-export function ReadMore({children,to}: {children: React.ReactNode, to: string}) {
+
+
+export function ReadMoreBtn(
+  { children,to }: {children: React.ReactNode, to: string}) {
     const {push} = useRouter();
   return (
     <button onClick={() => push(to)}
