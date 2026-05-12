@@ -1,11 +1,27 @@
-import AdminHome from "./components/admin/home/index"
-function App() {
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from 'react-router-dom'
 
+import LoginPage from './components/LoginForm/LoginForm'
+import AdminPage from './components/admin/home/index'
+
+function App() {
   return (
-    <>
-      <div>Hello</div>
-      <AdminHome/>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={<LoginPage />}
+        /> Login Page
+
+        <Route
+          path="/admin"
+          element={<AdminPage />}
+        />Admin page
+      </Routes>
+    </BrowserRouter>
   )
 }
 
