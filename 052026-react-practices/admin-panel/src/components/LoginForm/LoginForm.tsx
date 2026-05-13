@@ -12,7 +12,7 @@ const LoginForm = () => {
 
     // redirect to admin page
     console.log("redirected")
-    navigate('/admin')
+    navigate('/dashboard')
   }
 
   return (

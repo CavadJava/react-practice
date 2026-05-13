@@ -6,6 +6,8 @@ import {
 
 import LoginPage from './components/LoginForm/LoginForm'
 import AdminPage from './components/admin/home/index'
+import Dashboard from './components/admin/dashboard/dashboard'
+import DashboardCard01 from './components/admin/bexamples/card01/card01'
 
 function App() {
   return (
@@ -20,6 +22,16 @@ function App() {
           path="/admin"
           element={<AdminPage />}
         />Admin page
+
+        <Route
+          path="/dashboard"
+          element={<Dashboard />}
+        />Dashboard page
+
+        <Route
+          path="/dashboard/cards/card01"
+          element={<DashboardCard01/>}
+        />Dashboard - Card - 01 page
       </Routes>
     </BrowserRouter>
   )
