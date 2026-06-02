@@ -1,0 +1,12 @@
+.product-list {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid #eee;
+  background-color: #fcfcfc;
+}
+
+.products-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Adjust as needed */
+}
