@@ -1,15 +1,13 @@
 .app-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Ensure app takes full viewport height */
+  min-height: 100vh;
 }
 
 .main-content {
-  display: flex;
-  flex: 1; /* Allow main content to grow and take available space */
+  display: block;
 }
 
 .content-area {
-  flex: 1; /* Allow content area to grow */
   padding: 1rem;
 }
