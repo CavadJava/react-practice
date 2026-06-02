@@ -1,5 +1,5 @@
 import Header from './components/layout/Header';
-import Navbar from './components/layout/Navbar';
+import Sidebar from './components/layout/Sidebar';
 import Hero from './components/sections/Hero';
 import BrandLogos from './components/sections/BrandLogos';
 import ProductList from './components/sections/ProductList';
@@ -28,8 +28,8 @@ function App() {
   return (
     <div className="app-container">
       <Header />
-      <Navbar />
       <div className="main-content">
+        <Sidebar />
         <div className="content-area">
           <Hero />
           <BrandLogos />

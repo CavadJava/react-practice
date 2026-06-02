@@ -5,9 +5,11 @@
 }
 
 .main-content {
-  display: block;
+  display: flex;
+  flex: 1;
 }
 
 .content-area {
+  flex: 1;
   padding: 1rem;
 }
