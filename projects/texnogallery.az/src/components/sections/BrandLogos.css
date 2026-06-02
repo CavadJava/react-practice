@@ -1,8 +1,31 @@
-.brand-logos {
-  padding: 1rem;
-  text-align: center;
+.brand-logos-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  padding: 1.5rem;
   background-color: #fff;
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
   margin-bottom: 1rem;
+}
+
+.brand-logo {
+  max-height: 30px; /* Adjust size as needed */
+  width: auto;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.brand-logo:hover {
+  opacity: 1;
+}
+
+.more-brands-button {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-weight: bold;
 }
