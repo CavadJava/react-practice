@@ -5,29 +5,82 @@ function Sidebar() {
     {
       icon: '💻',
       name: 'Noutbuklar',
-      subCategories: ['Oyun noutbukları', 'Ofis noutbukları', 'Ultraportativ noutbuklar'],
+      subCategories: [
+        'Oyun noutbukları',
+        'Ofis noutbukları',
+        'Ultraportativ noutbuklar',
+        'Transformer noutbuklar',
+        'Apple MacBook',
+        'Aksesuarlar',
+      ],
     },
     {
       icon: '🖥️',
       name: 'Masaüstü Kompüter',
-      subCategories: ['Oyun kompüterləri', 'Monobloklar', 'Nettopplar'],
+      subCategories: [
+        'Oyun kompüterləri',
+        'Monobloklar',
+        'Nettopplar',
+        'Barebone sistemlər',
+        'Serverlər',
+      ],
     },
-    { icon: '🔌', name: 'Kompüter Hissələri', subCategories: ['CPU', 'GPU', 'RAM'] },
-    { icon: '📱', name: 'Smartfonlar', subCategories: ['Apple', 'Samsung', 'Xiaomi'] },
+    {
+      icon: '🔌',
+      name: 'Kompüter Hissələri',
+      subCategories: [
+        'CPU',
+        'GPU',
+        'RAM',
+        'Ana platalar',
+        'SSD və HDD',
+        'Qida blokları',
+        'Keyslər',
+        'Soyutma sistemləri',
+      ],
+    },
+    {
+      icon: '📱',
+      name: 'Smartfonlar',
+      subCategories: ['Apple', 'Samsung', 'Xiaomi', 'OnePlus', 'Google Pixel', 'Aksesuarlar'],
+    },
     {
       icon: '🎧',
       name: 'Kompüter Aksesuarları',
-      subCategories: ['Klaviaturalar', 'Siçanlar', 'Qulaqlıqlar'],
+      subCategories: [
+        'Klaviaturalar',
+        'Siçanlar',
+        'Qulaqlıqlar',
+        'Web kameralar',
+        'Mikrofonlar',
+        'Səs kartları',
+      ],
     },
-    { icon: '📺', name: 'TV və Monitor', subCategories: ['Televizorlar', 'Monitorlar'] },
-    { icon: '🖨️', name: 'Ofis avadanlığı', subCategories: ['Printerlər', 'Skanerlər'] },
-    { icon: '🌐', name: 'Şəbəkə Avadanlıqları', subCategories: ['Routerlər', 'Switchlər'] },
+    {
+      icon: '📺',
+      name: 'TV və Monitor',
+      subCategories: ['Televizorlar', 'Monitorlar', 'Proyektorlar', 'TV aksesuarları'],
+    },
+    {
+      icon: '🖨️',
+      name: 'Ofis avadanlığı',
+      subCategories: ['Printerlər', 'Skanerlər', 'MFP-lər', 'Kartriclər', 'Kağız'],
+    },
+    {
+      icon: '🌐',
+      name: 'Şəbəkə Avadanlıqları',
+      subCategories: ['Routerlər', 'Switchlər', 'Wi-Fi adapterlər', 'Patch panellər'],
+    },
     {
       icon: '📹',
       name: 'Video Müşahidə Cihazları',
-      subCategories: ['IP kameralar', 'Videoqeydiyyatçılar'],
+      subCategories: ['IP kameralar', 'Videoqeydiyyatçılar', 'Domofonlar', 'Aksesuarlar'],
     },
-    { icon: '🎒', name: 'Notbuk Aksesuarları', subCategories: ['Çantalar', 'Adapterlər'] },
+    {
+      icon: '🎒',
+      name: 'Notbuk Aksesuarları',
+      subCategories: ['Çantalar', 'Adapterlər', 'Docking stansiyalar', 'Soyuducular'],
+    },
   ];
 
   return (
