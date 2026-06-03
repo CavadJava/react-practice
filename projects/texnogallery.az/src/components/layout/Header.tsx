@@ -13,9 +13,9 @@ function Header() {
       <div className="header-right">
         <button className="contact-button">Əlaqə</button>
         <div className="user-actions">
-          <span className="icon">🔖</span>
-          <span className="icon">🛒</span>
-          <span className="icon">👤</span>
+          <span className="icon-wrapper">🔖</span>
+          <span className="icon-wrapper">🛒</span>
+          <span className="icon-wrapper">👤</span>
         </div>
       </div>
     </header>

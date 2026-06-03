@@ -9,8 +9,6 @@ interface ProductCardProps {
 }
 
 function ProductCard({ name, price, imageUrl, oldPrice, badge }: ProductCardProps) {
-  const isDiscount = badge === 'discount' && oldPrice;
-
   return (
     <div className="product-card">
       {badge && (

@@ -1,4 +1,7 @@
 .app-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -7,9 +10,22 @@
 .main-content {
   display: flex;
   flex: 1;
+  gap: 32px;
+  padding-top: 24px;
+  padding-bottom: 60px;
 }
 
 .content-area {
   flex: 1;
-  padding: 1rem;
+  min-width: 0; /* Prevents flex items from overflowing */
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .main-content {
+    flex-direction: column;
+  }
 }
