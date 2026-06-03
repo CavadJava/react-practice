@@ -8,6 +8,7 @@ import Wishlist from './pages/Wishlist';
 import Cart from './pages/Cart';
 import Profile from './pages/Profile';
 import Category from './pages/Category';
+import ProductDetails from './pages/ProductDetails';
 import './App.css';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/category/:id" element={<Category />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
           {/* Add more routes here as we create other pages */}
         </Routes>
         
