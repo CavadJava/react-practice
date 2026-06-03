@@ -1,12 +1,16 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
 
 function Header() {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/search');
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
   };
 
   return (
@@ -16,7 +20,12 @@ function Header() {
           TEXNO GALLERY
         </Link>
         <form className="search-bar" onSubmit={handleSearch}>
-          <input type="text" placeholder="axtardığınız məhsulun seriya, model və ya adını yazın..." />
+          <input 
+            type="text" 
+            placeholder="axtardığınız məhsulun seriya, model və ya adını yazın..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
           <button type="submit" className="search-button">🔍</button>
         </form>
       </div>
