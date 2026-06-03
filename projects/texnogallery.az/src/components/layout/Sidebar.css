@@ -9,6 +9,7 @@
   align-self: flex-start;
   position: sticky;
   top: 90px; /* offset for sticky header */
+  z-index: 100; /* Ensure sidebar and its popups stay above content area */
 }
 
 .category-list {
