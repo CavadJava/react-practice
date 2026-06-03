@@ -7,6 +7,7 @@ import Contact from './pages/Contact';
 import Wishlist from './pages/Wishlist';
 import Cart from './pages/Cart';
 import Profile from './pages/Profile';
+import Category from './pages/Category';
 import './App.css';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/category/:id" element={<Category />} />
           {/* Add more routes here as we create other pages */}
         </Routes>
         

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import './Sidebar.css';
 
 function Sidebar() {
@@ -88,15 +89,15 @@ function Sidebar() {
       <ul className="category-list">
         {categories.map((category, index) => (
           <li key={index} className="category-item">
-            <div className="category-link">
+            <Link to={`/category/${encodeURIComponent(category.name)}`} className="category-link" style={{ textDecoration: 'none' }}>
               <span className="category-icon">{category.icon}</span>
               <span className="category-name">{category.name}</span>
-            </div>
+            </Link>
             <div className="subcategory-popup">
               {category.subCategories.map((subCategory, subIndex) => (
-                <a href="#" key={subIndex} className="subcategory-item">
+                <Link to={`/category/${encodeURIComponent(category.name)}?sub=${encodeURIComponent(subCategory)}`} key={subIndex} className="subcategory-item">
                   {subCategory}
-                </a>
+                </Link>
               ))}
             </div>
           </li>
