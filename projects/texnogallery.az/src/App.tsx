@@ -9,29 +9,32 @@ import Cart from './pages/Cart';
 import Profile from './pages/Profile';
 import Category from './pages/Category';
 import ProductDetails from './pages/ProductDetails';
+import { ShopProvider } from './context/ShopContext';
 import './App.css';
 
 function App() {
   return (
-    <Router>
-      <div className="app-container">
-        <Header />
-        
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/wishlist" element={<Wishlist />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/category/:id" element={<Category />} />
-          <Route path="/product/:id" element={<ProductDetails />} />
-          {/* Add more routes here as we create other pages */}
-        </Routes>
-        
-        <ChatWidget />
-      </div>
-    </Router>
+    <ShopProvider>
+      <Router>
+        <div className="app-container">
+          <Header />
+          
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/category/:id" element={<Category />} />
+            <Route path="/product/:id" element={<ProductDetails />} />
+            {/* Add more routes here as we create other pages */}
+          </Routes>
+          
+          <ChatWidget />
+        </div>
+      </Router>
+    </ShopProvider>
   );
 }
 

@@ -1,44 +1,11 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
-
-// Nümunəvi səbət datası
-const initialCartItems = [
-  {
-    id: 1,
-    name: "iPhone 15 Pro Max, 256 GB, Black Titanium",
-    price: 3299,
-    quantity: 1,
-    imageUrl: "https://via.placeholder.com/150/111111/FFFFFF?text=iPhone+15"
-  },
-  {
-    id: 2,
-    name: "AirPods Pro (2nd generation)",
-    price: 599,
-    quantity: 2,
-    imageUrl: "https://via.placeholder.com/150/FFFFFF/000000?text=AirPods"
-  }
-];
+import { useShop } from '../context/ShopContext';
 
 function Cart() {
-  const [cartItems, setCartItems] = useState(initialCartItems);
+  const { cartItems, updateQuantity, removeFromCart, cartTotal } = useShop();
 
-  const updateQuantity = (id: number, delta: number) => {
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-          : item
-      )
-    );
-  };
-
-  const removeItem = (id: number) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-  };
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = subtotal > 0 ? 10 : 0; // Şərti çatdırılma qiyməti
-  const total = subtotal + shipping;
+  const shipping = cartTotal > 0 ? 10 : 0; // Şərti çatdırılma qiyməti
+  const total = cartTotal + shipping;
 
   return (
     <div className="main-content" style={{ padding: '40px', width: '100%', display: 'flex', flexDirection: 'column', gap: '30px', textAlign: 'left' }}>
@@ -66,7 +33,7 @@ function Cart() {
                     {item.name}
                   </Link>
                   <div style={{ color: 'var(--primary-color)', fontWeight: 'bold', fontSize: '1.2rem' }}>
-                    {item.price} ₼
+                    {item.price}
                   </div>
                 </div>
 
@@ -78,7 +45,7 @@ function Cart() {
                     </div>
                     <button onClick={() => updateQuantity(item.id, 1)} style={{ padding: '8px 12px', border: 'none', backgroundColor: '#f9f9f9', cursor: 'pointer', fontSize: '1rem' }}>+</button>
                   </div>
-                  <button onClick={() => removeItem(item.id)} style={{ padding: '10px', border: 'none', backgroundColor: '#fee2e2', color: '#ef4444', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Sil">
+                  <button onClick={() => removeFromCart(item.id)} style={{ padding: '10px', border: 'none', backgroundColor: '#fee2e2', color: '#ef4444', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Sil">
                     🗑️
                   </button>
                 </div>
@@ -93,7 +60,7 @@ function Cart() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', color: '#555' }}>
                 <span>Məhsullar ({cartItems.reduce((acc, i) => acc + i.quantity, 0)}):</span>
-                <span>{subtotal} ₼</span>
+                <span>{cartTotal} ₼</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', color: '#555' }}>
                 <span>Çatdırılma:</span>
