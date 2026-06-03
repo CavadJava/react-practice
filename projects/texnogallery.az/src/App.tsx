@@ -11,6 +11,7 @@ import Category from './pages/Category';
 import ProductDetails from './pages/ProductDetails';
 import { ShopProvider } from './context/ShopContext';
 import './App.css';
+import CategoryPage from './pages/CategoryPage';
 
 function App() {
   return (
@@ -28,6 +29,12 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/category/:id" element={<Category />} />
             <Route path="/product/:id" element={<ProductDetails />} />
+
+            {/* Əsas Kateqoriyalar üçün Dinamik URL (Məs: /kataloq/noutbuklar) */}
+            <Route path="/kataloq/:categorySlug" element={<CategoryPage />} />
+            
+            {/* Alt Kateqoriyalar üçün Dinamik URL (Məs: /kataloq/noutbuklar/oyun-noutbuklari) */}
+            <Route path="/kataloq/:categorySlug/:subCategorySlug" element={<CategoryPage />} />
             {/* Add more routes here as we create other pages */}
           </Routes>
           
