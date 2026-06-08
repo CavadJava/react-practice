@@ -46,7 +46,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ id, uniqueId, name, status, p
           <a 
             href={swaggerUrl} 
             className="btn btn-primary w-100" 
-            target="_blank" 
+            target="_blank"
             rel="noopener noreferrer"
           >
             Swagger Docs
