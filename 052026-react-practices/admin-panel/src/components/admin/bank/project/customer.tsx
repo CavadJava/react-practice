@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router';
 
 // 1. Java-dakı CustomerResponse sinfinə uyğun TypeScript interfeysi qururuq
 interface Customer {
@@ -64,6 +65,8 @@ const CustomersData: React.FC = () => {
 
   return (
     <div className="container-fluid mt-4 px-4">
+    <Link to="/dashboard/bank/monitoring" className="btn btn-secondary mb-4">← Panelə Qayıt</Link>
+
       <div className="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
         <h2 className="h4 text-secondary fw-bold">Müştəri Portalı / Siyahı</h2>
         <span className="badge bg-dark fs-6 px-3 py-2">Sistemdə: {customers.length} nəfər</span>
@@ -115,7 +118,7 @@ const CustomersData: React.FC = () => {
                 </td>
                 
                 {/* Ünvan */}
-                <td className="text-truncate" style={{ maxWdth: '200px' }} title={customer.address}>
+                <td className="text-truncate" style={{ maxWidth: '200px' }} title={customer.address}>
                   {customer.address || '---'}
                 </td>
               </tr>
