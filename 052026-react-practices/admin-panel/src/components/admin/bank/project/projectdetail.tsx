@@ -1,10 +1,14 @@
 import { Link, useParams } from "react-router";
 import { projectsData } from "./projectsData";
+import { useState } from "react";
 
 const ProjectDetail = () => {
     const { uniqueId } = useParams();
 
     const project = projectsData.find((p) => p.uniqueId === uniqueId);
+    
+    // 2. Cədvəlin açıq və ya qapalı olmasını idarə edən state (Default olaraq açıq - true)
+    const [showTables, setShowTables] = useState<boolean>(true)
 
     if (!project) {
         return (
@@ -13,9 +17,8 @@ const ProjectDetail = () => {
             <Link to="/dashboard/bank/monitoring" className="btn btn-primary">Geri Qayıt</Link>
         </div>
         );
-    }else{
-      console.log('Seçilmiş Layihə:', project); // Konsola layihə məlumatlarını yazdırırıq
     }
+
     const isUp = project.status.toUpperCase() === 'UP';
 
     return (
@@ -33,8 +36,18 @@ const ProjectDetail = () => {
         <div className="card-body">
           <p className="lead text-muted">{project.description}</p>
           <hr />
-          
-          <div className="row">
+
+
+          {/* 3. HIDE / SHOW DÜYMƏSİ */}
+          <div className="d-flex justify-content-center mb-4">
+            <button className="{`btn ${showTables ? 'btn-outline-secondary' : 'btn-secondary'} btn-sm px-4`}" onClick={() => setShowTables(!showTables)}>
+              {showTables ? '👁️ Resurslari Gizlet' : '👁️ Resurslari Göstər'}
+            </button>
+          </div>
+
+          {/* 4. ŞƏRTLİ RENDER (showTables true-dursa cədvəllər görünəcək) */}
+          {showTables && (
+            <div className="row">
             {/* Texniki Göstəricilər */}
             <div className="col-md-6">
               <h5>Sistem Məlumatları</h5>
@@ -77,8 +90,10 @@ const ProjectDetail = () => {
               </table>
             </div>
           </div>
+          )}
         </div>
         
+        {/* Card Footer */}
         <div className="card-footer bg-light">
           <a href={project.swaggerUrl} target="_blank" rel="noopener noreferrer" className="btn btn-success">
             Swagger Sənədlərini Aç (API)
