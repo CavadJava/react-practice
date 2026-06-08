@@ -57,6 +57,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ id, uniqueId, name, status, p
          <Link to={`/dashboard/bank/project/${uniqueId}/customers`} className="btn btn-outline-secondary w-100 mt-2">
             Musterilere Bax
          </Link>
+         <Link to={`/dashboard/bank/project/deposit`} className="btn btn-outline-success w-100 mt-2">
+            Depozit Əməliyyatları
+         </Link>
           
         </div>
       </div>
