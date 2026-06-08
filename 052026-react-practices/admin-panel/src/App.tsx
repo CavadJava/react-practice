@@ -2,6 +2,7 @@ import {
   BrowserRouter,
   Routes,
   Route,
+  Navigate,
 } from 'react-router-dom'
 
 import LoginPage from './components/LoginForm/LoginForm'
@@ -14,6 +15,7 @@ import CompanyView from './components/admin/company/company-view/company-view'
 import ProjectView from './components/admin/project/projectview/projectview'
 import Project from './components/admin/project/project/project'
 import Monitoring from './components/admin/bank/monitoring/monitoring'
+import ProjectDetail from './components/admin/bank/project/projectdetail'
 function App() {
   return (
     <BrowserRouter>
@@ -66,7 +68,15 @@ function App() {
         <Route
           path="/dashboard/bank/monitoring"
           element={<Monitoring/>}
-        />Dashboard - Card - 01 page
+        />Dashboard - Bank Monitoring
+
+        <Route
+          path="/dashboard/bank/project/:uniqueId"
+          element={<ProjectDetail/>}
+        />Dashboard - BankProject Detail page
+        
+        {/* Səhv link yazılanda avtomatik /dashboard-a yönləndirsin */}
+        <Route path="*" element={<Navigate to="/dashboard/bank/monitoring" replace />} />
       </Routes>
     </BrowserRouter>
   )

@@ -1,3 +1,6 @@
+import ProjectCard from "../project/projectcard";
+import { projectsData } from "../project/projectsData";
+
 const Monitoring = () => {
   return (
     <div className="container-fluid">
@@ -19,60 +22,17 @@ const Monitoring = () => {
                 <h1 className="h2">Xoş gəlmisiniz!</h1>
             </div>
             <div className="row">
-                <div className="col-md-4">
-                    <div className="card">
-                        <div className="card-body">
-                        {/* Project Name */}
-                        <h5 className="card-title">Online Deposit Service</h5>
-                        
-                        <div className="card-text my-3">
-                            {/* Status */}
-                            <div className="mb-2">
-                                <strong>Status:</strong> <span className="badge bg-success">UP</span> {/* Change to bg-danger for DOWN */}
-                            </div>
-                            {/* PID */}
-                            <div className="mb-2">
-                                <strong>PID:</strong> <span>14208</span>
-                            </div>
-                            {/* Path */}
-                            <div className="mb-2">
-                                <strong>Path:</strong> <code>/var/www/online-deposit</code>
-                            </div>
-                        </div>
-                        {/* Swagger Link */}
-                        <a href="http://localhost:8383/online-deposit/swagger-ui/index.html" className="btn btn-primary w-100" target="_blank" rel="noopener noreferrer">
-                            Swagger Docs
-                        </a>
-                    </div>
-                    </div>
-                </div>
-                <div className="col-md-4">
-                    <div className="card">
-                        <div className="card-body">
-                        {/* Project Name */}
-                        <h5 className="card-title">Openbanking Service</h5>
-                        
-                        <div className="card-text my-3">
-                            {/* Status */}
-                            <div className="mb-2">
-                                <strong>Status:</strong> <span className="badge bg-success">UP</span> {/* Change to bg-danger for DOWN */}
-                            </div>
-                            {/* PID */}
-                            <div className="mb-2">
-                                <strong>PID:</strong> <span>14208</span>
-                            </div>
-                            {/* Path */}
-                            <div className="mb-2">
-                                <strong>Path:</strong> <code>/var/www/online-deposit</code>
-                            </div>
-                        </div>
-                        {/* Swagger Link */}
-                        <a href="http://localhost:8383/online-deposit/swagger-ui/index.html" className="btn btn-primary w-100" target="_blank" rel="noopener noreferrer">
-                            Swagger Docs
-                        </a>
-                    </div>
-                    </div>
-                </div>
+                {projectsData.map((project) => (<ProjectCard
+                        key={project.uniqueId} // DÜZƏLİŞ: React-in elementi izləməsi üçün əsl unikal ID-ni bura verdik
+                        id={project.id}
+                        uniqueId={project.uniqueId}
+                        name={project.name}
+                        status={project.status}
+                        pid={project.pid}
+                        path={project.path}
+                        swaggerUrl={project.swaggerUrl}
+                    />
+                ))}
             </div>
         </main>
       </div>
