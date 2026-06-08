@@ -1,0 +1,7 @@
+.sidebar {
+  background-color: #f0f0f0;
+  padding: 1rem;
+  width: 200px;
+  float: left;
+  min-height: 500px; /* Placeholder for visual */
+}
