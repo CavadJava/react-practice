@@ -16,6 +16,7 @@ import ProjectView from './components/admin/project/projectview/projectview'
 import Project from './components/admin/project/project/project'
 import Monitoring from './components/admin/bank/monitoring/monitoring'
 import ProjectDetail from './components/admin/bank/project/projectdetail'
+import CustomersData from './components/admin/bank/project/customer'
 function App() {
   return (
     <BrowserRouter>
@@ -74,6 +75,10 @@ function App() {
           path="/dashboard/bank/project/:uniqueId"
           element={<ProjectDetail/>}
         />Dashboard - BankProject Detail page
+        <Route
+          path="/dashboard/bank/project/:uniqueId/customers"
+          element={<CustomersData/>}
+          />Dashboard - BankProject CustomerData page
         
         {/* Səhv link yazılanda avtomatik /dashboard-a yönləndirsin */}
         <Route path="*" element={<Navigate to="/dashboard/bank/monitoring" replace />} />
