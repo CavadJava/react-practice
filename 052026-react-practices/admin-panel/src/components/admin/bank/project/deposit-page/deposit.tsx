@@ -138,7 +138,7 @@ const DepositPage: React.FC = () => {
   // Inputdan çıxıb kənara kliklədikdə işləyən FUNKSİYA (onBlur)
   const handleInputBlur = () => {
     // Yazılan bütün dəyərləri rəsmi olaraq API state-inə köçürürük
-    setApiFilters({ ...inputValues });
+    setAppFilters({ ...inputValues });
   };
 
   // --- 5. FİLTRLƏMƏ FUNKSİYALARI (Lokal) ---
@@ -270,31 +270,36 @@ const DepositPage: React.FC = () => {
       </div>
 
       {/* ========================================================
-          3. CƏDVƏL: APPLICATION TABLE (Server-side Multi-filter)
+          3. CƏDVƏL: APPLICATION TABLE (Kənara klikləyəndə aktivləşir)
          ======================================================== */}
       <div className="card shadow-sm">
         <div className="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-          <h5 className="mb-0">Müraciətlər / Applications (Dinamik Backend Filter)</h5>
-          {!appsLoading && !appsError && <span className="badge bg-secondary">Sətir sayı: {applications.length}</span>}
+          <h5 className="mb-0">Müraciətlər / Applications (Kənara kliklədikdə axtarır)</h5>
+          {!appsLoading && !appsError && <span className="badge bg-secondary">Tapıldı: {applications.length}</span>}
         </div>
         <div className="card-body">
           
-          {/* Sənin istədiyin kimi hər sütun üçün anında işləyən filter paneli */}
+          {/* FİLTER INPUTLARI - onChange və onBlur birlikdə istifadə olunur */}
           <div className="row g-2 mb-3 bg-light p-3 rounded border">
             <div className="col">
-              <input type="text" name="customerId" className="form-control form-control-sm" placeholder="Müştəri ID" value={appFilters.customerId} onChange={handleAppFilterChange} />
+              <input type="text" name="customerId" className="form-control form-control-sm" placeholder="Müştəri ID" 
+                value={inputValues.customerId} onChange={handleInputChange} onBlur={handleInputBlur} />
             </div>
             <div className="col">
-              <input type="text" name="applicationId" className="form-control form-control-sm" placeholder="Müraciət ID" value={appFilters.applicationId} onChange={handleAppFilterChange} />
+              <input type="text" name="applicationId" className="form-control form-control-sm" placeholder="Müraciət ID" 
+                value={inputValues.applicationId} onChange={handleInputChange} onBlur={handleInputBlur} />
             </div>
             <div className="col">
-              <input type="text" name="applicationNumber" className="form-control form-control-sm" placeholder="Müraciət No" value={appFilters.applicationNumber} onChange={handleAppFilterChange} />
+              <input type="text" name="applicationNumber" className="form-control form-control-sm" placeholder="Müraciət No" 
+                value={inputValues.applicationNumber} onChange={handleInputChange} onBlur={handleInputBlur} />
             </div>
             <div className="col">
-              <input type="text" name="status" className="form-control form-control-sm" placeholder="Status" value={appFilters.status} onChange={handleAppFilterChange} />
+              <input type="text" name="status" className="form-control form-control-sm" placeholder="Status" 
+                value={inputValues.status} onChange={handleInputChange} onBlur={handleInputBlur} />
             </div>
             <div className="col">
-              <input type="text" name="type" className="form-control form-control-sm" placeholder="Növü (Type)" value={appFilters.type} onChange={handleAppFilterChange} />
+              <input type="text" name="type" className="form-control form-control-sm" placeholder="Növü (Type)" 
+                value={inputValues.type} onChange={handleInputChange} onBlur={handleInputBlur} />
             </div>
           </div>
 
@@ -306,13 +311,7 @@ const DepositPage: React.FC = () => {
             <div className="table-responsive">
               <table className="table table-striped table-hover border mb-0 align-middle">
                 <thead className="table-dark">
-                  <tr>
-                    <th>Müştəri ID</th>
-                    <th>Müraciət ID</th>
-                    <th>Müraciət Nömrəsi</th>
-                    <th>Növü (Type)</th>
-                    <th>Status</th>
-                  </tr>
+                  <tr><th>Müştəri ID</th><th>Müraciət ID</th><th>Müraciət Nömrəsi</th><th>Növü (Type)</th><th>Status</th></tr>
                 </thead>
                 <tbody>
                   {applications.map((app) => (
