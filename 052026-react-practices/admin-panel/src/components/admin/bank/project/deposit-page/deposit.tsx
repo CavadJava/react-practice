@@ -27,83 +27,146 @@ interface Integration {
   endpoint: string;
 }
 
+// Yeni göndərdiyin Java ApplicationResponse modelinə uyğun interfeys
 interface Application {
-  appId: string;
-  appName: string;
-  version: string;
-  status: 'UP' | 'DOWN';
+  customerId: number;
+  applicationId: number;
+  applicationNumber: string;
+  status: string;
+  type: string;
 }
 
-const BackofficeDashboard: React.FC = () => {
-  // --- 2. MOCK DATALAR (2-ci və 3-cü cədvəllər üçün) ---
+interface ApplicationsResponse {
+  result: Application[];
+  code: number;
+  message: string;
+}
+
+const DepositPage: React.FC = () => {
+  // --- 2. MOCK DATALAR (Sənin kodundakı kimi 2-ci cədvəl üçün qorundu) ---
   const mockIntegrations: Integration[] = [
     { id: 1, customerId: '275277', systemName: 'ASAN Login', status: 'ACTIVE', endpoint: '/api/v1/asan' },
     { id: 2, customerId: '30869', systemName: 'MilliÖn API', status: 'FAILED', endpoint: '/api/v1/million' }
   ];
 
-  const mockApplications: Application[] = [
-    { appId: 'APP-01', appName: 'Online Deposit Core', version: 'v2.4.1', status: 'UP' },
-    { appId: 'APP-02', appName: 'Notification Service', version: 'v1.0.2', status: 'DOWN' }
-  ];
-
-  // --- 3. STATE-LƏR (Müştəri API-ı üçün və Axtarışlar üçün) ---
+  // --- 3. STATE-LƏR ---
+  // 1-ci Cədvəl üçün state-lər
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
+  const [custLoading, setCustLoading] = useState<boolean>(true);
+  const [custError, setCustError] = useState<string | null>(null);
   const [customerSearch, setCustomerSearch] = useState<string>('');
-  const [integrationSearch, setIntegrationSearch] = useState<string>('');
-  const [appSearch, setAppSearch] = useState<string>('');
 
-  // --- 4. SƏNİN TƏQDİM ETDİYİN API SORĞUSU (useEffect) ---
+  // 2-ci Cədvəl üçün state
+  const [integrationSearch, setIntegrationSearch] = useState<string>('');
+
+  // 3-cü Cədvəl (Applications) üçün API və çoxlu filter state-ləri
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [appsLoading, setAppsLoading] = useState<boolean>(true);
+  const [appsError, setAppsError] = useState<string | null>(null);
+
+  // 1. Yazılan hərfləri anlıq tutmaq üçün (Smooth typing)
+  const [inputValues, setInputValues] = useState({
+    customerId: '',
+    applicationId: '',
+    applicationNumber: '',
+    status: '',
+    type: ''
+  });
+  
+  const [appFilters, setAppFilters] = useState({
+    customerId: '',
+    applicationId: '',
+    applicationNumber: '',
+    status: '',
+    type: ''
+  });
+
+  // --- 4. API SORĞULARI (EFFECTS) ---
+
+  // Müştəriləri çəkən sorğu (Client-side filter üçün 1 dəfə yüklənir)
   useEffect(() => {
     fetch('http://localhost:8080/backoffice/customers')
-      .then((response) => {
-        if (!response.ok) throw new Error('Şəbəkə xətası baş verdi.');
-        return response.json();
-      })
+      .then(res => { if (!res.ok) throw new Error('Müştəri xidmətində şəbəkə xətası.'); return res.json(); })
       .then((data: CustomersResponse) => {
-        if (data.code === 0) {
-          setCustomers(data.result);
-        } else {
-          setError(data.message || 'Məlumatları yükləmək mümkün olmadı.');
-        }
-        setLoading(false);
+        if (data.code === 0) setCustomers(data.result);
+        else setCustError(data.message);
+        setCustLoading(false);
       })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
+      .catch(err => { setCustError(err.message); setCustLoading(false); });
   }, []);
 
-  // --- 5. FİLTRLƏMƏ MƏNTİQİ ---
-  // API-dan gələn real customers massivini filter edirik
+  // Müraciətləri çəkən dinamik sorğu (Server-side filter + Debounce ilə)
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      setAppsLoading(true);
+
+      const queryParams = new URLSearchParams();
+      if (appFilters.customerId.trim()) queryParams.append('customerId', appFilters.customerId.trim());
+      if (appFilters.applicationId.trim()) queryParams.append('applicationId', appFilters.applicationId.trim());
+      if (appFilters.applicationNumber.trim()) queryParams.append('applicationNumber', appFilters.applicationNumber.trim());
+      if (appFilters.status.trim()) queryParams.append('status', appFilters.status.trim());
+      if (appFilters.type.trim()) queryParams.append('type', appFilters.type.trim());
+
+      const url = `http://localhost:8080/backoffice/applications?${queryParams.toString()}`;
+
+      fetch(url)
+        .then(res => { if (!res.ok) throw new Error('Müraciət xidmətində şəbəkə xətası.'); return res.json(); })
+        .then((data: ApplicationsResponse) => {
+          if (data.code === 0) {
+            setApplications(data.result);
+          } else {
+            setAppsError(data.message);
+          }
+          setAppsLoading(false);
+        })
+        .catch((err) => 
+          { 
+            setAppsError(err.message); setAppsLoading(false); 
+          }
+        );
+    }, 400); // İstifadəçi yazmağı bitirəndən 400ms sonra API-a sorğu atır
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [appFilters]);
+
+  // Yazmağa davam etdikdə işləyən funksiya (Saniyədə 100 dəfə işləsə də API-a toxunmur)
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setInputValues(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Inputdan çıxıb kənara kliklədikdə işləyən FUNKSİYA (onBlur)
+  const handleInputBlur = () => {
+    // Yazılan bütün dəyərləri rəsmi olaraq API state-inə köçürürük
+    setApiFilters({ ...inputValues });
+  };
+
+  // --- 5. FİLTRLƏMƏ FUNKSİYALARI (Lokal) ---
   const filteredCustomers = customers.filter(c =>
-    c.customerId.includes(customerSearch)
+    (c.customerId || '').includes(customerSearch)
   );
 
   const filteredIntegrations = mockIntegrations.filter(i =>
-    i.customerId.includes(integrationSearch)
+    (i.customerId || '').includes(integrationSearch)
   );
 
-  const filteredApplications = mockApplications.filter(a =>
-    a.appId.toLowerCase().includes(appSearch.toLowerCase())
-  );
+  const handleAppFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setAppFilters(prev => ({ ...prev, [name]: value }));
+  };
 
   return (
     <div className="container mt-4 mb-5">
       <h2 className="mb-4 text-secondary border-bottom pb-2 fw-bold">Backoffice Monitorinq Paneli</h2>
 
       {/* ========================================================
-          1. CƏDVƏL: CUSTOMER TABLE (Real API-a bağlıdır)
+          1. CƏDVƏL: CUSTOMER TABLE (Real API)
          ======================================================== */}
       <div className="card shadow-sm mb-5">
         <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-          <h5 className="mb-0">Müştəri Məlumatları</h5>
-          {!loading && !error && <span className="badge bg-light text-primary">Cəmi: {filteredCustomers.length}</span>}
+          <h5 className="mb-0">Müştəri Məlumatları (Müştəri ID-yə görə filter)</h5>
         </div>
         <div className="card-body">
-          {/* Axtarış Inputu */}
           <div className="row mb-3">
             <div className="col-md-4">
               <input
@@ -112,20 +175,15 @@ const BackofficeDashboard: React.FC = () => {
                 placeholder="Müştəri ID daxil edin... (örn: 275277)"
                 value={customerSearch}
                 onChange={(e) => setCustomerSearch(e.target.value)}
-                disabled={loading || !!error} // Yüklənərkən və ya xəta olanda input bağlansın
+                disabled={custLoading}
               />
             </div>
           </div>
 
-          {/* Şərtli Render: Loading, Error və ya Cədvəlin özü */}
-          {loading ? (
-            <div className="text-center py-4">
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Yüklənir...</span>
-              </div>
-            </div>
-          ) : error ? (
-            <div className="alert alert-danger mb-0"><strong>Xəta:</strong> {error}</div>
+          {custLoading ? (
+            <div className="text-center py-3"><div className="spinner-border text-primary" /></div>
+          ) : custError ? (
+            <div className="alert alert-danger">{custError}</div>
           ) : (
             <div className="table-responsive">
               <table className="table table-hover border mb-0">
@@ -136,22 +194,20 @@ const BackofficeDashboard: React.FC = () => {
                     <th>Sənəd No</th>
                     <th>Ad, Soyad</th>
                     <th>Mobil Nömrə</th>
-                    <th>Email</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredCustomers.map(c => (
                     <tr key={c.customerId}>
                       <td className="fw-bold text-primary">#{c.customerId}</td>
-                      <td><code className="text-dark font-monospace">{c.pin || '---'}</code></td>
+                      <td><code>{c.pin || '---'}</code></td>
                       <td>{c.docNumber || '---'}</td>
                       <td>{`${c.firstName} ${c.lastName}`}</td>
                       <td>{c.phoneNumber || '---'}</td>
-                      <td>{c.email || '---'}</td>
                     </tr>
                   ))}
                   {filteredCustomers.length === 0 && (
-                    <tr><td colSpan={6} className="text-center text-muted py-3">Axtarışa uyğun müştəri tapılmadı.</td></tr>
+                    <tr><td colSpan={5} className="text-center text-muted py-3">Müştəri tapılmadı.</td></tr>
                   )}
                 </tbody>
               </table>
@@ -161,11 +217,11 @@ const BackofficeDashboard: React.FC = () => {
       </div>
 
       {/* ========================================================
-          2. CƏDVƏL: INTEGRATION TABLE 
+          2. CƏDVƏL: INTEGRATION TABLE (Sənin kodundakı struktur)
          ======================================================== */}
       <div className="card shadow-sm mb-5">
         <div className="card-header bg-success text-white">
-          <h5 className="mb-0">Sistem İnteqrasiyaları</h5>
+          <h5 className="mb-0">Sistem İnteqrasiyaları (Müştəri ID-yə görə filter)</h5>
         </div>
         <div className="card-body">
           <div className="row mb-3">
@@ -197,9 +253,16 @@ const BackofficeDashboard: React.FC = () => {
                     <td className="fw-bold">#{i.customerId}</td>
                     <td>{i.systemName}</td>
                     <td><code>{i.endpoint}</code></td>
-                    <td><span className={`badge ${i.status === 'ACTIVE' ? 'bg-success' : 'bg-danger'}`}>{i.status}</span></td>
+                    <td>
+                      <span className={`badge ${i.status === 'ACTIVE' ? 'bg-success' : 'bg-danger'}`}>
+                        {i.status}
+                      </span>
+                    </td>
                   </tr>
                 ))}
+                {filteredIntegrations.length === 0 && (
+                  <tr><td colSpan={5} className="text-center text-muted py-3">İnteqrasiya məlumatı tapılmadı.</td></tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -207,46 +270,71 @@ const BackofficeDashboard: React.FC = () => {
       </div>
 
       {/* ========================================================
-          3. CƏDVƏL: APPLICATION TABLE
+          3. CƏDVƏL: APPLICATION TABLE (Server-side Multi-filter)
          ======================================================== */}
       <div className="card shadow-sm">
-        <div className="card-header bg-dark text-white">
-          <h5 className="mb-0">Tətbiqlər / Servislər</h5>
+        <div className="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+          <h5 className="mb-0">Müraciətlər / Applications (Dinamik Backend Filter)</h5>
+          {!appsLoading && !appsError && <span className="badge bg-secondary">Sətir sayı: {applications.length}</span>}
         </div>
         <div className="card-body">
-          <div className="row mb-3">
-            <div className="col-md-4">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="App ID daxil edin... (örn: APP-01)"
-                value={appSearch}
-                onChange={(e) => setAppSearch(e.target.value)}
-              />
+          
+          {/* Sənin istədiyin kimi hər sütun üçün anında işləyən filter paneli */}
+          <div className="row g-2 mb-3 bg-light p-3 rounded border">
+            <div className="col">
+              <input type="text" name="customerId" className="form-control form-control-sm" placeholder="Müştəri ID" value={appFilters.customerId} onChange={handleAppFilterChange} />
+            </div>
+            <div className="col">
+              <input type="text" name="applicationId" className="form-control form-control-sm" placeholder="Müraciət ID" value={appFilters.applicationId} onChange={handleAppFilterChange} />
+            </div>
+            <div className="col">
+              <input type="text" name="applicationNumber" className="form-control form-control-sm" placeholder="Müraciət No" value={appFilters.applicationNumber} onChange={handleAppFilterChange} />
+            </div>
+            <div className="col">
+              <input type="text" name="status" className="form-control form-control-sm" placeholder="Status" value={appFilters.status} onChange={handleAppFilterChange} />
+            </div>
+            <div className="col">
+              <input type="text" name="type" className="form-control form-control-sm" placeholder="Növü (Type)" value={appFilters.type} onChange={handleAppFilterChange} />
             </div>
           </div>
-          <div className="table-responsive">
-            <table className="table table-hover border mb-0">
-              <thead className="table-light">
-                <tr>
-                  <th>App ID</th>
-                  <th>Tətbiq Adı</th>
-                  <th>Versiya</th>
-                  <th>Server Vəziyyəti</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredApplications.map(a => (
-                  <tr key={a.appId}>
-                    <td className="fw-bold text-secondary">{a.appId}</td>
-                    <td>{a.appName}</td>
-                    <td><span className="badge bg-secondary">{a.version}</span></td>
-                    <td><span className={`badge ${a.status === 'UP' ? 'bg-success' : 'bg-danger'}`}>{a.status}</span></td>
+
+          {appsLoading ? (
+            <div className="text-center py-4"><div className="spinner-border text-dark" /></div>
+          ) : appsError ? (
+            <div className="alert alert-danger mb-0"><strong>Xəta:</strong> {appsError}</div>
+          ) : (
+            <div className="table-responsive">
+              <table className="table table-striped table-hover border mb-0 align-middle">
+                <thead className="table-dark">
+                  <tr>
+                    <th>Müştəri ID</th>
+                    <th>Müraciət ID</th>
+                    <th>Müraciət Nömrəsi</th>
+                    <th>Növü (Type)</th>
+                    <th>Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {applications.map((app) => (
+                    <tr key={app.applicationId}>
+                      <td>#{app.customerId}</td>
+                      <td className="fw-bold text-secondary">{app.applicationId}</td>
+                      <td><code>{app.applicationNumber || '---'}</code></td>
+                      <td><span className="badge bg-info text-dark text-uppercase">{app.type || '---'}</span></td>
+                      <td>
+                        <span className={`badge ${app.status?.toUpperCase() === 'SUCCESS' || app.status?.toUpperCase() === 'APPROVED' ? 'bg-success' : 'bg-warning text-dark'}`}>
+                          {app.status || 'UNKNOWN'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                  {applications.length === 0 && (
+                    <tr><td colSpan={5} className="text-center text-muted py-3">Bu parametrlərə uyğun müraciət tapılmadı.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
 
@@ -254,4 +342,4 @@ const BackofficeDashboard: React.FC = () => {
   );
 };
 
-export default BackofficeDashboard;
+export default DepositPage;
