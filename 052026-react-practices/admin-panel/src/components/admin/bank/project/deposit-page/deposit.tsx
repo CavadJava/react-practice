@@ -150,6 +150,7 @@ const DepositPage: React.FC = () => {
     (i.customerId || '').includes(integrationSearch)
   );
 
+  // Filter dəyərləri dəyişəndə state-i yeniləyən funksiya
   const handleAppFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setAppFilters(prev => ({ ...prev, [name]: value }));
