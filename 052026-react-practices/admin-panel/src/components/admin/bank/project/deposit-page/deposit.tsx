@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from 'react';
 
+// --- 1. ENUMLARIN TƏYİN EDİLMƏSİ (Yeni əlavə) ---
+enum ApplicationStatus {
+  SYSTEM_CANCEL = 'SYSTEM_CANCEL',
+  CANCEL = 'CANCEL'
+}
+
+enum ApplicationType {
+  KLASSIK = 'Klassik',
+  EXTRA = 'Extra'
+}
+
 // --- 1. TİP TƏYİNLƏRİ (INTERFACES) ---
 interface Customer {
   customerId: string;
@@ -32,8 +43,8 @@ interface Application {
   customerId: number;
   applicationId: number;
   applicationNumber: string;
-  status: string;
-  type: string;
+  status: ApplicationStatus;
+  type: ApplicationType;
 }
 
 interface ApplicationsResponse {
@@ -130,7 +141,7 @@ const DepositPage: React.FC = () => {
   }, [appFilters]);
 
   // Yazmağa davam etdikdə işləyən funksiya (Saniyədə 100 dəfə işləsə də API-a toxunmur)
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setInputValues(prev => ({ ...prev, [name]: value }));
   };
@@ -150,7 +161,7 @@ const DepositPage: React.FC = () => {
     (i.customerId || '').includes(integrationSearch)
   );
 
-  // Filter dəyərləri dəyişəndə state-i yeniləyən funksiya
+// Filter dəyərləri dəyişəndə state-i yeniləyən funksiya
   const handleAppFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setAppFilters(prev => ({ ...prev, [name]: value }));
@@ -294,14 +305,35 @@ const DepositPage: React.FC = () => {
               <input type="text" name="applicationNumber" className="form-control form-control-sm" placeholder="Müraciət No" 
                 value={inputValues.applicationNumber} onChange={handleInputChange} onBlur={handleInputBlur} />
             </div>
-            <div className="col">
+            {/* <div className="col">
               <input type="text" name="status" className="form-control form-control-sm" placeholder="Status" 
                 value={inputValues.status} onChange={handleInputChange} onBlur={handleInputBlur} />
             </div>
             <div className="col">
               <input type="text" name="type" className="form-control form-control-sm" placeholder="Növü (Type)" 
                 value={inputValues.type} onChange={handleInputChange} onBlur={handleInputBlur} />
+            </div> */}
+
+            {/* STATUS SELECT (ENUM-dan oxuyur) */}
+            <div className="col">
+              <select name="status" className="form-select form-select-sm" value={inputValues.status} onChange={handleInputChange} onBlur={handleInputBlur}>
+                <option value="">Status Seçin (Hamısı)</option>
+                {Object.values(ApplicationStatus).map(val => (
+                  <option key={val} value={val}>{val}</option>
+                ))}
+              </select>
             </div>
+            
+            {/* NÖVÜ/TYPE SELECT (ENUM-dan oxuyur) */}
+            <div className="col">
+              <select name="type" className="form-select form-select-sm" value={inputValues.type} onChange={handleInputChange} onBlur={handleInputBlur}>
+                <option value="">Növ Seçin (Hamısı)</option>
+                {Object.values(ApplicationType).map(val => (
+                  <option key={val} value={val}>{val.replace('_', ' ')}</option>
+                ))}
+              </select>
+            </div>
+
           </div>
 
           {appsLoading ? (
