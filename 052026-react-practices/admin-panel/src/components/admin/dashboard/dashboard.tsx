@@ -13,13 +13,16 @@ const Dashboard = () => {
           <h4 className="text-center mb-4">Admin Panel</h4>
           <ul className="nav flex-column">
             <li className="nav-item">
-              <a className="nav-link text-white active" href="#">Dashboard</a>
+              <a className="nav-link text-white active" href="/dashboard">Dashboard</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link text-white" href="#">İstifadəçilər</a>
+              <a className="nav-link text-white" href="/dashboard/users">İstifadəçilər</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link text-white" href="#">Parametrlər</a>
+              <a className="nav-link text-white" href="/dashboard/projects">Layihələr</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link text-white" href="/dashboard/companies">Şirkətlər</a>
             </li>
             
             {/* Dropdown Menu */}
@@ -40,6 +43,9 @@ const Dashboard = () => {
                 </ul>
               )}
             </li>
+            <li className="nav-item">
+              <a className="nav-link text-white" href="/dashboard/bank/monitoring">Mobile Layihələr</a>
+            </li>
           </ul>
         </nav>
 
@@ -54,8 +60,8 @@ const Dashboard = () => {
             <div className="col-md-4">
               <div className="card text-white bg-primary mb-3">
                 <div className="card-body">
-                  <h5 className="card-title">Satışlar</h5>
-                  <p className="card-text">5,230 AZN</p>
+                  <h5 className="card-title">Aktiv İstifadəçilər</h5>
+                  <p className="card-text">5,230 nəfər</p>
                 </div>
               </div>
             </div>
