@@ -44,3 +44,29 @@ export const projectsData: Project[] = [
     lastDeployment: '07.06.2026 11:15'
   }
 ];
+
+export interface ServicesData {
+  id: number;
+  name: string;
+  directoryPath: string;
+  apiEndpoint: {
+    method: string;
+    url: string;
+    description: string;
+  }[];
+}
+
+export const serviceData: ServicesData[] = [
+  {
+    id: 1,
+    name: "Online Deposit Service",
+    directoryPath: "/home/sanan/online-deposit-back-service",
+    apiEndpoint: [
+      {
+        method: "GET",
+        url: "/api/v1/deposits",
+        description: "Bütün depozit əməliyyatlarını əldə etmək üçün endpoint."
+      }
+    ]
+  },
+];

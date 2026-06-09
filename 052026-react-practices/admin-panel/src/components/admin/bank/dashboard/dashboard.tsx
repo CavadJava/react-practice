@@ -1,20 +1,25 @@
-import { Link } from "react-router";
 import ProjectCard from "../project/projectcard";
 import { projectsData } from "../project/projectsData";
 
-const Monitoring = () => {
+const Dashboard = () => {
   return (
     <div className="container-fluid">
       <div className="row">
-        {/* Sidebar */}
         <nav className="col-md-3 col-lg-2 d-md-block bg-dark sidebar vh-100 p-3 text-white collapse shadow">
           <h4 className="text-center mb-4 pb-2 border-bottom border-secondary fw-bold text-info">Admin Panel</h4>
           
           <ul className="nav flex-column gap-2">
             {/* 1. Ana Menyu: Dashboard */}
             <li className="nav-item">
-              <a className="nav-link text-white active d-flex align-items-center gap-2 rounded bg-primary" href="/dashboard">
+              <a className="nav-link text-white active d-flex align-items-center gap-2 rounded bg-primary" href="/bank/dashboard">
                 <span>📊</span> Dashboard
+              </a>
+            </li>
+
+            {/* 2. Ana Menyu: İstifadəçilər */}
+            <li className="nav-item">
+              <a className="nav-link text-white-50 d-flex align-items-center gap-2 rounded hover-effect" href="/dashboard/users">
+                <span>👥</span> İstifadəçilər
               </a>
             </li>
 
@@ -38,19 +43,19 @@ const Monitoring = () => {
               <div className="collapse ps-3 mt-1" id="monitoringSubmenu">
                 <ul className="nav flex-column gap-1 border-start border-secondary ps-2">
                   <li className="nav-item">
-                    <Link to={`/dashboard/bank/project/AA01`} className="nav-link text-white-50 py-1 small d-flex align-items-center gap-2">
+                    <a className="nav-link text-white-50 py-1 small d-flex align-items-center gap-2" href="/dashboard/resources">
                       🖥️ Resurslara Bax
-                    </Link>
+                    </a>
                   </li>
                   <li className="nav-item">
-                    <Link to={`/dashboard/bank/project/AA01/customers`} className="nav-link text-white-50 py-1 small d-flex align-items-center gap-2">
+                    <a className="nav-link text-white-50 py-1 small d-flex align-items-center gap-2" href="/dashboard/customers">
                       🗂️ Müştərilərə Bax
-                    </Link>
+                    </a>
                   </li>
                   <li className="nav-item">
-                    <Link to={`/dashboard/bank/project/deposit`} className="nav-link text-white-50 py-1 small d-flex align-items-center gap-2">
+                    <a className="nav-link text-white-50 py-1 small d-flex align-items-center gap-2" href="/dashboard/deposits">
                       💰 Depozit Əməliyyatları
-                    </Link>
+                    </a>
                   </li>
                 </ul>
               </div>
@@ -80,4 +85,4 @@ const Monitoring = () => {
   )
 }
 
-export default Monitoring;
+export default Dashboard;
