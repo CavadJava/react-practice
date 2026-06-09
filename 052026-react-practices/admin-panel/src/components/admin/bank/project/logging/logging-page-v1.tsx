@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import DepositLeftMenu from '../../menu/depositleftmenu';
+import DepositLeftMenu from '../../../menu/depositleftmenu';
 const LoggingPage: React.FC = () => {
   const { uniqueId } = useParams<{ uniqueId: string }>();
 

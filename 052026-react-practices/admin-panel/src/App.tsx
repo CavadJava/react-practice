@@ -18,7 +18,8 @@ import Monitoring from './components/admin/bank/monitoring/monitoring'
 import ProjectDetail from './components/admin/bank/project/projectdetail'
 import CustomersData from './components/admin/bank/project/customer/customer'
 import DepositPage from './components/admin/bank/project/deposit-page/deposit'
-import LoggingPage from './components/admin/bank/project/logging-page'
+import LoggingPage from './components/admin/bank/project/logging/logging-page-v1'
+import LoggingPageV2 from './components/admin/bank/project/logging/logging-page-v2'
 function App() {
   return (
     <BrowserRouter>
@@ -83,7 +84,7 @@ function App() {
           />Dashboard - BankProject CustomerData page
         <Route
           path="/dashboard/bank/project/:uniqueId/logging-page"
-          element={<LoggingPage/>}
+          element={<LoggingPageV2/>}
           />Dashboard - BankProject Logging for Projects
         <Route
           path="/dashboard/bank/project/deposit"
