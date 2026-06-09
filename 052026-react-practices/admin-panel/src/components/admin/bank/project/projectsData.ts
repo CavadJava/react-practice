@@ -12,6 +12,7 @@ export interface Project {
   memoryUsage: string;
   cpuUsage: string;
   lastDeployment: string;
+  host: string;
 }
 
 export const projectsData: Project[] = [
@@ -27,7 +28,9 @@ export const projectsData: Project[] = [
     version: 'v2.4.1',
     memoryUsage: '256 MB',
     cpuUsage: '1.2%',
-    lastDeployment: '08.06.2026 14:30'
+    lastDeployment: '08.06.2026 14:30',
+    host: 'bank-server-01',
+    port: 8080
   },
   {
     id: 2,
@@ -41,7 +44,9 @@ export const projectsData: Project[] = [
     version: 'v1.1.0',
     memoryUsage: '512 MB',
     cpuUsage: '4.8%',
-    lastDeployment: '07.06.2026 11:15'
+    lastDeployment: '07.06.2026 11:15',
+    host: 'bank-server-02',
+    port: 8081
   }
 ];
 
@@ -70,3 +75,65 @@ export const serviceData: ServicesData[] = [
     ]
   },
 ];
+
+export interface LeftMenu {
+  id: number;
+  name: string;
+  icon: string;
+  link: string;
+}
+
+
+
+// --- 1. ENUMLARIN TƏYİN EDİLMƏSİ (Yeni əlavə) ---
+export enum ApplicationStatus {
+  SYSTEM_CANCEL = 'SYSTEM_CANCEL',
+  CANCEL = 'CANCEL'
+}
+
+export enum ApplicationType {
+  KLASSIK = 'Klassik',
+  EXTRA = 'Extra'
+}
+
+// --- 1. TİP TƏYİNLƏRİ (INTERFACES) ---
+export interface Customer {
+  customerId: string;
+  pin: string;
+  docNumber: string;
+  phoneNumber: string;
+  firstName: string;
+  lastName: string;
+  middleName?: string;
+  address?: string;
+  email?: string;
+}
+
+export interface CustomersResponse {
+  result: Customer[];
+  code: number;
+  message: string;
+}
+
+export interface Integration {
+  id: number;
+  customerId: string;
+  systemName: string;
+  status: 'ACTIVE' | 'FAILED';
+  endpoint: string;
+}
+
+// Yeni göndərdiyin Java ApplicationResponse modelinə uyğun interfeys
+export interface Application {
+  customerId: number;
+  applicationId: number;
+  applicationNumber: string;
+  status: ApplicationStatus;
+  type: ApplicationType;
+}
+
+export interface ApplicationsResponse {
+  result: Application[];
+  code: number;
+  message: string;
+}
