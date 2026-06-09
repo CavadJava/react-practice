@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import type { ApplicationStatus, ApplicationType } from '../projectsData';
+import { projectsData, type ApplicationStatus, type ApplicationType } from '../projectsData';
 
-// --- 1. ENUMLAR (Status və Növ filtrləri üçün) ---
-
-// --- 2. TİP TƏYİNLƏRİ (INTERFACES) ---
 export interface Application {
   customerId: number;
   applicationId: number;
@@ -21,33 +18,42 @@ export interface ApplicationsResponse {
 
 export const LoggingPageV2: React.FC = () => {
   const { uniqueId } = useParams<{ uniqueId: string }>();
+  const project = projectsData.find((p) => p.uniqueId === uniqueId);
 
-  // --- 3. STATE-LƏR ---
+  // --- STATE-LƏR ---
   const [logs, setLogs] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Ekranda seçilən anlıq dəyərlər üçün (Smooth inputs)
+  // Ekranda seçilən anlıq dəyərlər (Smooth inputs)
   const [filterInputs, setFilterInputs] = useState({
     lines: '10',
-    order: 'asc'
+    order: 'asc',
+    nohup: false, // Checkbox üçün boolean
+    nohupValue: 'nohup.out' // Textfield üçün default dəyər
   });
 
   // Yalnız "Filterlə" düyməsinə kliklədikdə API-ı tətikləyəcək rəsmi state
   const [activeFilters, setActiveFilters] = useState({
     lines: '10',
-    order: 'asc'
+    order: 'asc',
+    nohup: false,
+    nohupValue: 'nohup.out'
   });
 
-  // --- 4. LOGLARI BACKEND-DƏN ÇƏKƏN API EFFECT-İ ---
+  // --- LOGLARI BACKEND-DƏN ÇƏKƏN API EFFECT-İ ---
   useEffect(() => {
     setLoading(true);
     setError(null);
 
-    // cURL parametr strukturuna uyğun olaraq Query parameter-ləri qururuq
+    // Düzəliş məntiqi: Əgər nohup seçilibsə, istifadəçinin yazdığı fayl adını, seçilməyibsə standart log adını götürürük
+    const targetFileName = activeFilters.nohup 
+      ? (activeFilters.nohupValue.trim() || 'nohup.out') 
+      : 'spring-boot-logging.log';
+
     const queryParams = new URLSearchParams({
-      directorypath: 'home/sanan/notification-admin/logs',
-      fileName: 'spring-boot-logging.log',
+      directoryName: `${project?.environments.prod.serviceName || ''}`,
+      fileName: targetFileName, // Dinamik təyin olunmuş fayl adı
       lines: activeFilters.lines,
       order: activeFilters.order
     });
@@ -58,8 +64,8 @@ export const LoggingPageV2: React.FC = () => {
       method: 'GET',
       headers: {
         'accept': '*/*',
-        'instance': 'IPS',       // cURL-dən gələn məcburi header
-        'environment': 'DEV'    // cURL-dən gələn məcburi header
+        'instance': 'IPS',       
+        'environment': 'PROD2'    
       }
     })
       .then((res) => {
@@ -74,12 +80,24 @@ export const LoggingPageV2: React.FC = () => {
         setError(err.message);
         setLoading(false);
       });
-  }, [uniqueId, activeFilters]);
+  }, [uniqueId, activeFilters, project]);
 
-  // Input və Select elementləri dəyişəndə işləyən funksiya
+  // Input, Select və Checkbox dəyişəndə işləyən vahid funksiya
   const handleFilterInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFilterInputs(prev => ({ ...prev, [name]: value }));
+    const { name, type, value } = e.target;
+    
+    // Əgər dəyişən element checkbox-dırsa "checked" dəyərini, yoxsa normal "value" dəyərini mənimsədirik
+    const targetValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+
+    setFilterInputs(prev => {
+      const updated = { ...prev, [name]: targetValue };
+      
+      // Əgər istifadəçi nohup checkbox-nı söndürürsə, textfield-i default "nohup.out" dəyərinə sıfırlasın
+      if (name === 'nohup' && !targetValue) {
+        updated.nohupValue = 'nohup.out';
+      }
+      return updated;
+    });
   };
 
   // Form submit (Filterlə düyməsi) olunanda işləyən funksiya
@@ -87,6 +105,9 @@ export const LoggingPageV2: React.FC = () => {
     e.preventDefault();
     setActiveFilters({ ...filterInputs });
   };
+
+  // Səhifə daxilində və başlıqda dinamik görünəcək fayl adı
+  const currentDisplayFile = activeFilters.nohup ? activeFilters.nohupValue : 'spring-boot-logging.log';
 
   return (
     <div className="container-fluid">
@@ -99,7 +120,7 @@ export const LoggingPageV2: React.FC = () => {
           <h4 className="text-center mb-4 pdf-2 border-bottom border-secondary fw-bold text-info">Admin Panel</h4>
           <ul className="nav flex-column gap-2">
             <li className="nav-item">
-              <a className="nav-link text-white d-flex align-items-center gap-2 rounded hover-effect" href="/dashboard">
+              <a className="nav-link text-white d-flex align-items-center gap-2 rounded hover-effect" href="/dashboard/bank/monitoring">
                 <span>📊</span> Dashboard
               </a>
             </li>
@@ -122,7 +143,6 @@ export const LoggingPageV2: React.FC = () => {
                 <span className="small">▼</span>
               </a>
 
-              {/* Alt menyular (Sub items) */}
               <div className="collapse show ps-3 mt-1" id="monitoringSubmenu">
                 <ul className="nav flex-column gap-1 border-start border-secondary ps-2">
                   <li className="nav-item">
@@ -151,7 +171,6 @@ export const LoggingPageV2: React.FC = () => {
            ======================================================== */}
         <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 bg-white">
           
-          {/* Üst Başlıq və Alətlər */}
           <div className="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
             <h1 className="h2 text-dark m-0 fw-bold">📋 Canlı Log Monitoru</h1>
             <div className="d-flex gap-2">
@@ -160,9 +179,12 @@ export const LoggingPageV2: React.FC = () => {
             </div>
           </div>
 
-          {/* FİLTER PANELİ (Form) */}
+          {/* ========================================================
+              FİLTER PANELİ (Yenilənmiş Grid Sistemi)
+             ======================================================== */}
           <form onSubmit={handleApplyFilters} className="row g-3 align-items-end mb-4 bg-light p-3 rounded border shadow-sm mx-0">
-            <div className="col-md-4">
+            {/* Sətir Sayı */}
+            <div className="col-md-3">
               <label className="form-label small fw-bold text-secondary">Sətir Sayı (Lines)</label>
               <input 
                 type="number" 
@@ -175,7 +197,9 @@ export const LoggingPageV2: React.FC = () => {
                 disabled={loading}
               />
             </div>
-            <div className="col-md-4">
+
+            {/* Sıralama */}
+            <div className="col-md-3">
               <label className="form-label small fw-bold text-secondary">Sıralama (Order)</label>
               <select 
                 name="order" 
@@ -184,10 +208,44 @@ export const LoggingPageV2: React.FC = () => {
                 onChange={handleFilterInputChange}
                 disabled={loading}
               >
-                <option value="asc">Artan Sıra (Ascending - Köhnədən Yeniyə)</option>
-                <option value="desc">Azalan Sıra (Descending - Yenidən Köhnəyə)</option>
+                <option value="asc">Artan Sıra (Köhnədən Yeniyə)</option>
+                <option value="desc">Azalan Sıra (Yenidən Köhnəyə)</option>
               </select>
             </div>
+
+            {/* DÜZƏLİŞ: NOHUP CHECKBOX FİLTRİ */}
+            <div className="col-md-2 d-flex align-items-center justify-content-center" style={{ height: '38px' }}>
+              <div className="form-check form-switch mb-0">
+                <input 
+                  type="checkbox" 
+                  name="nohup" 
+                  id="nohupCheckbox"
+                  className="form-check-input" 
+                  checked={filterInputs.nohup}
+                  onChange={handleFilterInputChange}
+                  disabled={loading}
+                />
+                <label className="form-check-label small fw-bold text-secondary" htmlFor="nohupCheckbox">
+                  nohup aktiv et
+                </label>
+              </div>
+            </div>
+
+            {/* DÜZƏLİŞ: NOHUP TEXTFIELD (Checkbox aktiv deyilsə disabled olur) */}
+            <div className="col-md-2">
+              <label className="form-label small fw-bold text-secondary">Nohup Fayl Adı</label>
+              <input 
+                type="text" 
+                name="nohupValue" 
+                className="form-control form-control-sm"
+                placeholder="Örnək: nohup.out"
+                value={filterInputs.nohupValue} 
+                onChange={handleFilterInputChange}
+                disabled={loading || !filterInputs.nohup} // Checkbox sönülüdürsə kilidlənsin
+              />
+            </div>
+
+            {/* Filterlə Düyməsi */}
             <div className="col-md-2">
               <button type="submit" className="btn btn-primary btn-sm w-100 fw-semibold py-1.5" disabled={loading}>
                 🔍 Filterlə
@@ -204,14 +262,15 @@ export const LoggingPageV2: React.FC = () => {
           ) : error ? (
             <div className="alert alert-danger shadow-sm border-start border-danger border-3">
               <h5 className="alert-heading fw-bold">Bağlantı Xətası!</h5>
-              <p className="mb-0"><strong>Təfərrüat:</strong> {error} (Lütfən backend portunu və CORS parametrlərini yoxlayın).</p>
+              <p className="mb-0"><strong>Təfərrüat:</strong> {error}</p>
             </div>
           ) : (
             
             /* PEŞƏKAR TERMINAL GÖRÜNÜŞÜ (IDE Style) */
             <div className="card shadow border-0 overflow-hidden">
               <div className="card-header bg-secondary text-white d-flex justify-content-between align-items-center py-2">
-                <span className="small font-monospace fw-semibold">📄 spring-boot-logging.log</span>
+                {/* DÜZƏLİŞ: Başlıq adı artıq dinamik olaraq cari oxunan faylı göstərir */}
+                <span className="small font-monospace fw-semibold">📄 {currentDisplayFile}</span>
                 <button 
                   type="button" 
                   className="btn btn-sm btn-light py-0 px-3 small font-monospace shadow-sm fw-semibold"
@@ -222,7 +281,6 @@ export const LoggingPageV2: React.FC = () => {
                 </button>
               </div>
               
-              {/* Terminal Gövdəsi (whiteSpace: 'pre' və overflowX ilə sürüşmə təmin olundu) */}
               <div 
                 className="card-body p-0 font-monospace text-start"
                 style={{ 
@@ -231,16 +289,15 @@ export const LoggingPageV2: React.FC = () => {
                   overflowX: 'auto', 
                   fontSize: '0.85rem',
                   lineHeight: '1.6',
-                  backgroundColor: '#1e1e1e', // Sürməyi-Qara yumşaq fon
+                  backgroundColor: '#1e1e1e', 
                   boxShadow: 'inset 0 0 20px rgba(0,0,0,0.8)'
                 }}
               >
                 {logs.map((line, index) => {
-                  // Log səviyyəsinə görə rəng təyini (Highlighting)
                   let logLevelClass = 'text-light';
-                  if (line.includes('INFO')) logLevelClass = 'text-info'; // Mavi
-                  if (line.includes('WARN')) logLevelClass = 'text-warning'; // Sarı
-                  if (line.includes('ERROR')) logLevelClass = 'text-danger fw-bold'; // Qırmızı
+                  if (line.includes('INFO')) logLevelClass = 'text-info'; 
+                  if (line.includes('WARN')) logLevelClass = 'text-warning'; 
+                  if (line.includes('ERROR')) logLevelClass = 'text-danger fw-bold'; 
 
                   return (
                     <div 
@@ -248,28 +305,24 @@ export const LoggingPageV2: React.FC = () => {
                       className="d-flex align-items-center py-0.5 px-3 hover-log-line"
                       style={{
                         backgroundColor: index % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent',
-                        whiteSpace: 'pre', // Sətirlərin aşağı qatlanmasını tam bloklayır
+                        whiteSpace: 'pre', 
                         minWidth: 'max-content'
                       }}
                     >
-                      {/* Nizamlı Sətir Nömrələri sütunu */}
                       <span 
                         className="text-muted me-3 select-none text-end border-end pe-2" 
                         style={{ minWidth: '45px', userSelect: 'none', fontSize: '0.8rem', color: '#6e7681' }}
                       >
                         {index + 1}
                       </span>
-                      
-                      {/* Rəngləndirilmiş Log mətni */}
                       <span className={logLevelClass}>{line}</span>
                     </div>
                   );
                 })}
 
-                {/* Boş fayl xəbərdarlığı */}
                 {logs.length === 0 && (
                   <div className="text-center text-muted py-5 font-monospace">
-                    Fayl daxilində oxunacaq heç bir log sətri tapılmadı.
+                    {currentDisplayFile} faylı daxilində oxunacaq log sətri tapılmadı.
                   </div>
                 )}
               </div>
@@ -279,7 +332,6 @@ export const LoggingPageV2: React.FC = () => {
         </main>
       </div>
       
-      {/* Sətir üzərinə gəldikdə çıxan CSS animasiya stili */}
       <style>{`
         .hover-log-line:hover {
           background-color: rgba(255, 255, 255, 0.07) !important;

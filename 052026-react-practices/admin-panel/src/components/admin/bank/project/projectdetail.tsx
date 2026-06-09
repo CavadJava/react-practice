@@ -7,6 +7,12 @@ const ProjectDetail = () => {
     const { uniqueId } = useParams();
 
     const project = projectsData.find((p) => p.uniqueId === uniqueId);
+    const [environment, setEnvironment] = useState<'dev' | 'prod'>('dev');
+
+    const serviceName = project?.environments[environment].serviceName;
+    const swaggerUrl = project?.environments[environment].swaggerUrl;
+    const directoryPath = project?.environments[environment].directoryPath;
+    const status = "UP";
     
     // 2. Cədvəlin açıq və ya qapalı olmasını idarə edən state (Default olaraq açıq - true)
     const [showTables, setShowTables] = useState<boolean>(true)
@@ -20,7 +26,7 @@ const ProjectDetail = () => {
         );
     }
 
-    const isUp = project.status.toUpperCase() === 'UP';
+    const isUp = 'UP';
 
     return (
     <div className="container-fluid">
@@ -37,7 +43,7 @@ const ProjectDetail = () => {
               <div className="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                 <h3 className="mb-0">{project.name}</h3>
                 <span className={`badge ${isUp ? 'bg-success' : 'bg-danger'} fs-5`}>
-                  {project.status}
+                  {status}
                 </span>
               </div>
               
@@ -62,37 +68,8 @@ const ProjectDetail = () => {
                     <table className="table table-bordered mt-3">
                       <tbody>
                         <tr>
-                          <th>PID</th>
-                          <td>{project.pid}</td>
-                        </tr>
-                        <tr>
                           <th>Qovluq Yolu (Path)</th>
-                          <td><code>{project.path}</code></td>
-                        </tr>
-                        <tr>
-                          <th>Versiya</th>
-                          <td><span className="badge bg-secondary">{project.version}</span></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* Resurs Göstəricilər */}
-                  <div className="col-md-6">
-                    <h5>Resurs və Server Vəziyyəti</h5>
-                    <table className="table table-bordered mt-3">
-                      <tbody>
-                        <tr>
-                          <th>CPU İstifadəsi</th>
-                          <td>{project.cpuUsage}</td>
-                        </tr>
-                        <tr>
-                          <th>Yaddaş (RAM)</th>
-                          <td>{project.memoryUsage}</td>
-                        </tr>
-                        <tr>
-                          <th>Son Yenilənmə (Deploy)</th>
-                          <td>{project.lastDeployment}</td>
+                          <td><code>{directoryPath}</code></td>
                         </tr>
                       </tbody>
                     </table>
@@ -103,7 +80,7 @@ const ProjectDetail = () => {
               
               {/* Card Footer */}
               <div className="card-footer bg-light">
-                <a href={project.swaggerUrl} target="_blank" rel="noopener noreferrer" className="btn btn-success">
+                <a href={swaggerUrl} target="_blank" rel="noopener noreferrer" className="btn btn-success">
                   Swagger Sənədlərini Aç (API)
                 </a>
               </div>
