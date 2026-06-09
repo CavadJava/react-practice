@@ -5,21 +5,29 @@ import { slugify } from '../utils/slugify';
 import type { BreadcrumbItem } from '../components/common/Breadcrumb';
 import Breadcrumb from '../components/common/Breadcrumb';
 
-// Şəkildəki kimi məhsul adını təmizləyən və yığcam model adını saxlayan funksiya
+// Məhsul adının sonundakı kodları silən və şəkildəki kimi yalnız yığcam modeli saxlayan funksiya
 const cleanProductName = (name: string): string => {
-  // Əgər adda vergül varsa (Məs: "iPhone 17 Pro Max, 256 GB..."), vergülə qədər olan hissəni götürürük
-  let shortName = name.split(',')[0];
+  let shortName = name.split(',')[0]; // Vergül varsa, sonrasını silir
 
-  // Modellərin sonundakı spesifik istehsal kodlarını və konfiqurasiya yazılarını təmizləyirik
-  // Məsələn: G614JV, 90NROC61, 83DF009KRK, FX707ZM və s. tipli kodları silir
-  shortName = shortName.replace(/\b[A-Z0-9]{4,12}-[A-Z0-9]{4,12}\b/g, ''); // "G614JV-N4525" tipli birləşmiş kodlar üçün
-  shortName = shortName.replace(/\b[A-Z0-9]{6,15}\b/gi, ''); // Tək qalan istehsalat kodları üçün
+  // Brend və seriya adlarını (Lenovo, Legion, Asus, ROG və s.) təmizləyirik ki, geriyə yalnız model qalsın
+  shortName = shortName.replace(/\b(lenovo|legion|asus|rog|strix|tuf|gaming|hp|probook|acer|nitro|msi|titan|raider|scar)\b/gi, '');
 
-  // Ardıcıl yaranan boşluqları təmizləyirik
-  return shortName.replace(/\s+/g, ' ').trim();
+  // Spesifik istehsal kodlarını və seriya nömrələrini (Məs: 16IRX9, G614JV, 83DF009KRK) silirik
+  shortName = shortName.replace(/\b[A-Z0-9]{4,12}-[A-Z0-9]{4,12}\b/g, ''); 
+  shortName = shortName.replace(/\b[A-Z0-9]{5,15}\b/gi, ''); 
+
+  // Artıq qalan boşluqları təmizləyirik
+  let finalName = shortName.replace(/\s+/g, ' ').trim();
+
+  // Əgər təmizləmədən sonra hər şey silinibsə, fallback olaraq adın ilk 3 sözünü saxlayırıq
+  if (!finalName) {
+    finalName = name.split(' ').slice(0, 3).join(' ');
+  }
+
+  return finalName;
 };
 
-// Məhsul adına əsasən aid olduğu kateqoriyaları təmiz tapmaq üçün axtarış funksiyası
+// Məhsul adına əsasən aid olduğu ana və alt kateqoriyaları tapan funksiya
 const findCategoryByProductName = (productName: string) => {
   const lowerName = productName.toLowerCase();
   
@@ -44,7 +52,7 @@ const findCategoryByProductName = (productName: string) => {
       categoryName: 'Smartfonlar', 
       categorySlug: 'smartfonlar', 
       subCategoryName: lowerName.includes('iphone') ? 'Apple' : 'Smartfonlar', 
-      subCategorySlug: lowerName.includes('iphone') ? 'apple' : '' 
+      subCategorySlug: lowerName.includes('iphone') ? 'apple' : 'smartfonlar' 
     };
   }
 
@@ -56,15 +64,15 @@ function ProductDetails() {
   const productName = id ? decodeURIComponent(id) : 'Məhsul Detalları';
   const { addToCart, toggleWishlist, isInWishlist } = useShop();
 
-  // Kateqoriya ağacını təyin edirik
+  // Kateqoriya məlumatlarını analiz edirik
   const detectedPath = findCategoryByProductName(productName);
 
-  // Naviqasiya zəncirinin qurulması
+  // Naviqasiya zəncirinin başladılması
   const breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Əsas Səhifə', url: '/' }
   ];
 
-  // Əgər həm ana, həm də alt kateqoriya mövcuddursa super item yaradırıq
+  // 1. İSTƏDİYİNİZ DÜZƏLİŞ: Model adından əvvəl Main və Sub kateqoriyanı "Super İtem" olaraq daxil edirik
   if (detectedPath.categoryName && detectedPath.subCategoryName) {
     const formattedSubName = detectedPath.subCategoryName
       .split(' ')
@@ -73,7 +81,7 @@ function ProductDetails() {
 
     breadcrumbItems.push({
       label: `${detectedPath.categoryName} / ${formattedSubName}`,
-      url: `/kataloq/${detectedPath.categorySlug}/${detectedPath.subCategorySlug}`
+      url: `/kataloq/${detectedPath.categorySlug}/${detectedPath.subCategorySlug}` // Kateqoriyaya geri qayıtmaq üçün link
     });
   } 
   else if (detectedPath.categoryName) {
@@ -83,16 +91,15 @@ function ProductDetails() {
     });
   }
 
-  // İKİNCİ ŞƏKİLDƏKİ DÜZƏLİŞ:
-  // Məhsulun tam adı yerinə filtrdən keçmiş yığcam model adını naviqasiya zəncirinin sonuna qoyuruq
-  const dynamicShortTitle = cleanProductName(productName);
+  // 2. ŞƏKİLDƏKİ YIĞCAM MODEL ADI: Ən sona linksiz element olaraq modelin qısaldılmış adını daxil edirik
+  const modelShortName = cleanProductName(productName);
   breadcrumbItems.push({
-    label: dynamicShortTitle
+    label: modelShortName // Məsələn: "Pro 5"
   });
 
-  // Mock product specific to this page
+  // Mock qiymət və şəkil məlumatları
   const productPrice = "1500 ₼";
-  const productImageUrl = `https://via.placeholder.com/400/EEEEEE/000000?text=${encodeURIComponent(dynamicShortTitle)}`;
+  const productImageUrl = `https://via.placeholder.com/400/EEEEEE/000000?text=${encodeURIComponent(modelShortName)}`;
 
   const handleAddToCart = () => {
     addToCart({ name: productName, price: productPrice, imageUrl: productImageUrl });
@@ -107,11 +114,11 @@ function ProductDetails() {
 
   return (
     <div className="main-content" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-      {/* Tam yenilənmiş yığcam başlıqlı breadcrumb */}
+      {/* Tam inteqrasiya olunmuş yeni naviqasiya zənciri */}
       <Breadcrumb items={breadcrumbItems} />
 
       <div style={{ padding: '40px', display: 'flex', flexDirection: 'column', gap: '30px', textAlign: 'left' }}>
-        {/* Səhifə daxilindəki əsas başlıqda isə istifadəçinin tam texniki adı görməsi daha yaxşıdır */}
+        {/* Səhifə daxilində tam texniki ad görünür */}
         <h2>{productName}</h2>
         
         <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
@@ -130,7 +137,7 @@ function ProductDetails() {
               Qiymət: {productPrice}
             </div>
             <p style={{ color: '#666', lineHeight: '1.6' }}>
-              Bu məhsul haqqında ətraflı məlumat burada yerləşəcək. Məhsulun xüsusiyyətləri, texniki göstəriciləri və istifadə qaydaları barədə geniş təsvir bu hissədə olcaq.
+              Bu məhsul haqqında ətraflı məlumat burada yerləşəcək. Məhsulun xüsusiyyətləri, texniki göstəriciləri və istifadə qaydaları barədə geniş təsvir bu hissədə olacaq.
             </p>
             
             <ul style={{ paddingLeft: '20px', color: '#444', display: 'flex', flexDirection: 'column', gap: '10px' }}>

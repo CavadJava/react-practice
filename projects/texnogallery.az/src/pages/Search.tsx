@@ -1,5 +1,8 @@
 import { useSearchParams } from 'react-router-dom';
 import ProductList from '../components/sections/ProductList';
+import Sidebar from '../components/layout/Sidebar';
+import type { BreadcrumbItem } from '../components/common/Breadcrumb';
+import Breadcrumb from '../components/common/Breadcrumb';
 
 function Search() {
   const [searchParams] = useSearchParams();
@@ -17,7 +20,7 @@ function Search() {
     { name: "Apple Watch Series 9", description: "Sağlamlığınız üçün ən yaxşı köməkçi.", price: "999 ₼", oldPrice: "1199 ₼", imageUrl: "https://via.placeholder.com/150/FF0000/FFFFFF?text=Apple+Watch", badge: '-200 ₼' },
   ];
 
-  // Simple filtering logic (case-insensitive)
+  // Case-insensitive filtering logic
   const filteredProducts = query 
     ? allProducts.filter(product => 
         product.name.toLowerCase().includes(query.toLowerCase()) || 
@@ -25,29 +28,54 @@ function Search() {
       )
     : [];
 
-  return (
-    <div className="main-content" style={{ padding: '40px', width: '100%', display: 'flex', flexDirection: 'column', gap: '30px' }}>
-      <div>
-        <h2>Axtarış Nəticələri</h2>
-        {query ? (
-          <p style={{ color: '#666', marginTop: '10px' }}>
-            "{query}" üçün <strong>{filteredProducts.length}</strong> nəticə tapıldı.
-          </p>
-        ) : (
-          <p style={{ color: '#666', marginTop: '10px' }}>
-            Axtarış üçün yuxarıdakı axtarış çubuğuna mətn daxil edin.
-          </p>
-        )}
-      </div>
+  // Dinamik Breadcrumb (Naviqasiya Zənciri) massivinin nizamlanması
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Əsas Səhifə', url: '/' }
+  ];
 
-      {filteredProducts.length > 0 ? (
-        <ProductList title="" products={filteredProducts} />
-      ) : query ? (
-        <div style={{ padding: '40px', textAlign: 'center', backgroundColor: '#f9f9f9', borderRadius: '12px' }}>
-          <h3 style={{ color: '#555' }}>Uyğun məhsul tapılmadı</h3>
-          <p style={{ color: '#888', marginTop: '10px' }}>Zəhmət olmasa fərqli açar sözlərlə yenidən cəhd edin.</p>
+  if (query) {
+    breadcrumbItems.push({
+      label: `Axtarış: "${query}" (${filteredProducts.length})`
+    });
+  } else {
+    breadcrumbItems.push({
+      label: 'Axtarış'
+    });
+  }
+
+  return (
+    <div className="main-content">
+      {/* Sol tərəfdə kataloq menyumuzun qorunub saxlanması */}
+      <Sidebar />
+
+      <div className="content-area">
+        {/* Səhifənin ən yuxarı hissəsində tam dinamik naviqasiya zənciri */}
+        <Breadcrumb items={breadcrumbItems} />
+
+        <div style={{ padding: '40px', display: 'flex', flexDirection: 'column', gap: '30px', textAlign: 'left' }}>
+          <div>
+            <h2>Axtarış Nəticələri</h2>
+            {query ? (
+              <p style={{ color: '#666', marginTop: '10px' }}>
+                "{query}" sorğusu üçün <strong>{filteredProducts.length}</strong> məhsul tapıldı.
+              </p>
+            ) : (
+              <p style={{ color: '#666', marginTop: '10px' }}>
+                Axtarış etmək üçün yuxarıdakı axtarış çubuğuna mətn daxil edin.
+              </p>
+            )}
+          </div>
+
+          {filteredProducts.length > 0 ? (
+            <ProductList title="" products={filteredProducts} />
+          ) : query ? (
+            <div style={{ padding: '60px 20px', textAlign: 'center', backgroundColor: '#f9f9f9', borderRadius: '12px', border: '1px solid #eee' }}>
+              <h3 style={{ color: '#555', marginBottom: '10px' }}>Uyğun məhsul tapılmadı</h3>
+              <p style={{ color: '#888' }}>Zəhmət olmasa fərqli açar sözlərlə yenidən cəhd edin.</p>
+            </div>
+          ) : null}
         </div>
-      ) : null}
+      </div>
     </div>
   );
 }
