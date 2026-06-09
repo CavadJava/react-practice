@@ -11,7 +11,8 @@ const LoginForm = () => {
     // login logic here
 
     // redirect to admin page
-    navigate('/admin')
+    console.log("redirected")
+    navigate('/dashboard')
   }
 
   return (
