@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>166 Kargo - Amerika və Türkiyədən Çatdırılma</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <style>
+        /* 166 Kargo Brend Rəngləri */
+        :root {
+            --brand-yellow: #f8c325;
+            --brand-blue: #0056b3;
+            --brand-dark: #1a1a1a;
+            --bg-light: #fdfcf7;
+            --text-muted: #6c757d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff;
+            color: #333;
+        }
+
+        /* Yuxarı Mini Menyu */
+        .top-nav {
+            background-color: #fafafa;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+        .top-nav a {
+            color: #666;
+            text-decoration: none;
+        }
+        .top-nav a:hover {
+            color: var(--brand-blue);
+        }
+
+        /* Əsas Menyu (Navbar) */
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 24px;
+            color: #111;
+        }
+        .navbar-brand span {
+            background-color: var(--brand-dark);
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+        .nav-link {
+            font-weight: 500;
+            color: #444 !important;
+        }
+        .nav-link:hover {
+            color: var(--brand-blue) !important;
+        }
+        .hotline-btn {
+            background-color: #fff;
+            border: 2px solid #eaeaea;
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-weight: 700;
+            color: var(--brand-dark);
+            text-decoration: none;
+            display: inline-block;
+        }
+        .hotline-btn i {
+            color: var(--brand-yellow);
+            margin-right: 5px;
+        }
+
+        /* Hero / Banner Bölməsi */
+        .hero-section {
+            background-color: var(--bg-light);
+            padding: 60px 0;
+            border-bottom: 1px solid #f0edd7;
+        }
+        .hero-banner {
+            background: linear-gradient(135px, #fdf4cd 0%, #fff7d6 100%);
+            border-radius: 20px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            min-height: 380px;
+        }
+        .hero-banner h1 {
+            font-weight: 800;
+            color: var(--brand-dark);
+            font-size: 32px;
+            max-width: 300px;
+        }
+        .hero-banner h1 span {
+            color: var(--brand-blue);
+        }
+
+        /* Giriş Kartı */
+        .login-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid #f0f0f0;
+        }
+        .login-card h3 {
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-control {
+            background-color: #f8f9fa;
+            border: 1px solid #eee;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        .form-control:focus {
+            background-color: #fff;
+            border-color: var(--brand-yellow);
+            box-shadow: 0 0 0 0.25rem rgba(248, 195, 37, 0.25);
+        }
+        .btn-brand-yellow {
+            background-color: var(--brand-yellow);
+            color: var(--brand-dark);
+            font-weight: 700;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            width: 100%;
+        }
+        .btn-brand-yellow:hover {
+            background-color: #e2b01d;
+        }
+
+        /* Bağlama Axtar */
+        .search-section {
+            padding: 40px 0;
+        }
+        .search-box .form-control {
+            border-radius: 8px 0 0 8px;
+            border: 2px solid var(--brand-yellow);
+            background-color: #fff;
+        }
+        .search-box .btn {
+            border-radius: 0 8px 8px 0;
+            background-color: var(--brand-yellow);
+            font-weight: 700;
+            padding: 0 30px;
+            border: 2px solid var(--brand-yellow);
+        }
+
+        /* Tarif Qutuları */
+        .rate-card {
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 20px;
+            background: #fff;
+            height: 100%;
+        }
+        .rate-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        .rate-header img {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .rate-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 14px;
+            border-bottom: 1px dashed #f0f0f0;
+        }
+        .rate-row:last-child {
+            border-bottom: none;
+        }
+
+        /* Necə İşləyir Seksiyası */
+        .step-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            background-color: #fdf3cd;
+            color: #d1a119;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+        .step-title {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .step-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Son Xəbərlər */
+        .news-card {
+            background-color: #f8f9fa;
+            border-radius: 16px;
+            padding: 20px;
+            border: none;
+            height: 100%;
+            transition: transform 0.2s;
+        }
+        .news-card:hover {
+            transform: translateY(-5px);
+        }
+        .news-img-placeholder {
+            background: linear-gradient(135px, #fbc2eb 0%, #a6c1ee 100%);
+            border-radius: 12px;
+            height: 160px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+        }
+        .news-date {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 12px;
+            display: block;
+        }
+        .news-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 8px;
+            color: #222;
+        }
+
+        /* Mağazalar */
+        .brand-logo {
+            max-height: 35px;
+            filter: grayscale(100%);
+            opacity: 0.6;
+            transition: all 0.3s;
+        }
+        .brand-logo:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #fbfbfb;
+            border-top: 1px solid #eee;
+            padding-top: 50px;
+        }
+        .footer-heading {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #111;
+        }
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        .footer-links a {
+            color: #555;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover {
+            color: var(--brand-blue);
+        }
+        .contact-info li {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+        }
+        .contact-info i {
+            margin-right: 10px;
+            margin-top: 4px;
+            color: #333;
+        }
+        .social-icons a {
+            color: #333;
+            font-size: 20px;
+            margin-right: 15px;
+            transition: color 0.2s;
+        }
+        .social-icons a:hover {
+            color: var(--brand-blue);
+        }
+        .copyright-bar {
+            background-color: #222;
+            color: #fff;
+            font-size: 13px;
+            padding: 15px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-nav py-2">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex gap-3">
+                <a href="#">Tez-tez verilən suallar</a>
+                <a href="#">Bloq</a>
+            </div>
+            <div class="d-flex gap-3 align-items-center">
+                <a href="#" class="text-primary fw-bold">Daxil olun</a>
+                <a href="#">Qeydiyyatdan keç</a>
+                <a href="#" class="btn btn-sm btn-warning px-3" style="font-size: 12px; font-weight: 600;">Hədiyyəli Giriş</a>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#">166<span>KARGO</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-2">
+                    <li class="nav-item"><a class="nav-link" href="#">Haqqımızda</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Nümunə saytlar</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Tariflər</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Xəbərlər və Yeniliklər</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Filial və məntəqələr</a></li>
+                </ul>
+                <div class="d-flex align-items-center gap-3">
+                    <select class="form-select form-select-sm border-0 w-auto bg-light">
+                        <option>AZ</option>
+                        <option>EN</option>
+                        <option>RU</option>
+                    </select>
+                    <a href="tel:*0166" class="hotline-btn">
+                        <i class="fa-solid fa-phone-volume"></i> *0166
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <div class="container">
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-7">
+                    <div class="hero-banner d-flex flex-column justify-content-center">
+                        <h1>Amerika sifarişini <span>evinə kimi</span> çatdıraq!</h1>
+                        <p class="text-muted mt-2">Sürətli, etibarlı və münasib qiymətlərlə daşınma.</p>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="login-card">
+                        <h3>İstifadəçi girişi</h3>
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">E-poçt</label>
+                                <input type="email" class="form-control" placeholder="E-poçt ünvanınız">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">Şifrə</label>
+                                <input type="password" class="form-control" placeholder="Şifrəniz">
+                            </div>
+                            <button type="submit" class="btn btn-brand-yellow mt-2">Daxil ol</button>
+                            <div class="text-center mt-3 small">
+                                <a href="#" class="text-muted text-decoration-none">Şifrəni unutmusunuz?</a> 
+                                <a href="#" class="text-warning fw-bold ms-1 text-decoration-none">Qeydiyyatdan keç</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="search-section bg-light border-bottom">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8 text-center">
+                    <h4 class="fw-bold mb-3">Bağlama axtar</h4>
+                    <div class="input-group search-box shadow-sm">
+                        <input type="text" class="form-control form-control-lg" placeholder="Bağlama kodunu daxil edin">
+                        <button class="btn btn-warning" type="button">Axtar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 border-bottom">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <h4 class="fw-bold mb-4">Tariflər</h4>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="rate-card shadow-sm">
+                                <div class="rate-header">
+                                    <img src="https://flagcdn.com/w40/tr.png" alt="Turkey">
+                                    <span>Türkiyə</span>
+                                </div>
+                                <div class="rate-row"><span>0.000 - 0.100 kq</span><span class="fw-bold">0.88 $</span></div>
+                                <div class="rate-row"><span>0.101 - 0.250 kq</span><span class="fw-bold">1.65 $</span></div>
+                                <div class="rate-row"><span>0.251 - 0.500 kq</span><span class="fw-bold">2.30 $</span></div>
+                                <div class="rate-row"><span>0.501 - 0.700 kq</span><span class="fw-bold">3.50 $</span></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="rate-card shadow-sm">
+                                <div class="rate-header">
+                                    <img src="https://flagcdn.com/w40/us.png" alt="USA">
+                                    <span>ABŞ</span>
+                                </div>
+                                <div class="rate-row"><span>0.000 - 0.100 kq</span><span class="fw-bold">3.00 $</span></div>
+                                <div class="rate-row"><span>0.101 - 0.250 kq</span><span class="fw-bold">5.50 $</span></div>
+                                <div class="rate-row"><span>0.251 - 0.500 kq</span><span class="fw-bold">7.00 $</span></div>
+                                <div class="rate-row"><span>0.501 - 0.700 kq</span><span class="fw-bold">8.50 $</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <h4 class="fw-bold mb-4">Kalkulyator</h4>
+                    <div class="p-4 border rounded-3 bg-white shadow-sm">
+                        <div class="mb-3">
+                            <label class="small text-muted mb-1">Ölkə seç</label>
+                            <select class="form-select"><option>Türkiyə</option><option>ABŞ</option></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-muted mb-1">Çəki (kq)</label>
+                            <input type="number" class="form-control" placeholder="0.00">
+                        </div>
+                        <button class="btn btn-brand-yellow">Hesabla</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 bg-white">
+        <div class="container">
+            <h3 class="fw-bold mb-5">Necə işləyir?</h3>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="d-flex flex-column align-items-start">
+                        <div class="step-icon-wrapper">
+                            <i class="fa-solid fa-address-card"></i>
+                        </div>
+                        <div class="step-title">Qeydiyyatdan keçirsiniz</div>
+                        <div class="step-desc">Sizə Türkiyə və ABŞ-da yerləşən anbarların ünvanlarını göndəririk.</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex flex-column align-items-start">
+                        <div class="step-icon-wrapper">
+                            <i class="fa-solid fa-basket-shopping"></i>
+                        </div>
+                        <div class="step-title">Sifariş et</div>
+                        <div class="step-desc">Türkiyəyə çatdıran veb saytdan alış-veriş edirsiniz (əgər sifariş etməkdə problem yaranarsa, məhsulun linkini bizə göndərin, bank kartının vasitəsilə ödənişi həyata keçirin, biz sizin üçün sifariş edək).</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex flex-column align-items-start">
+                        <div class="step-icon-wrapper">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+                        <div class="step-title">Bağlamanı əldə edin</div>
+                        <div class="step-desc">Sifarişinizi Bakı ofisimizdən götürürsünüz və ya evinizə çatdırılma xidmətimizdən istifadə edirsiniz.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold m-0">Son xəbərlər</h3>
+                <a href="#" class="text-muted text-decoration-none small">Hamısını gör &gt;</a>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="news-card shadow-sm">
+                        <div class="news-img-placeholder" style="background: linear-gradient(135px, #f6d365 0%, #fda085 100%);">Smart Customs</div>
+                        <span class="news-date">03 iyun, 2026</span>
+                        <div class="news-title">Smart customs-da yenilik var!</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="news-card shadow-sm">
+                        <div class="news-img-placeholder" style="background: linear-gradient(135px, #f8c325 0%, #ee7b12 100%);">Trendyol</div>
+                        <span class="news-date">06 may, 2026</span>
+                        <div class="news-title">Trendyolda böyük endirim fürsəti başladı!</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="news-card shadow-sm">
+                        <div class="news-img-placeholder" style="background: linear-gradient(135px, #203a43 0%, #2c5364 100%);">Amerika</div>
+                        <span class="news-date">05 may, 2026</span>
+                        <div class="news-title">Amerikadan həftədə 2 dəfə çatdırılma!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 bg-white border-bottom">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold m-0" style="color: #444;">Bəzi mağazalar</h5>
+                <a href="#" class="text-muted text-decoration-none small">Hamısını gör &gt;</a>
+            </div>
+            <div class="row g-4 align-items-center text-center">
+                <div class="col-4 col-md-2"><img src="https://upload.wikimedia.org/wikipedia/commons/2/2c/Trendyol_logo.svg" class="img-fluid brand-logo" alt="Trendyol"></div>
+                <div class="col-4 col-md-2"><span class="fw-bold text-dark brand-logo d-inline-block">DeFacto</span></div>
+                <div class="col-4 col-md-2"><span class="fw-bold text-dark brand-logo d-inline-block">KOTON</span></div>
+                <div class="col-4 col-md-2"><span class="fw-bold text-dark brand-logo d-inline-block">ZARA</span></div>
+                <div class="col-4 col-md-2"><span class="text-muted brand-logo d-inline-block" style="font-style: italic;">gittigidiyor</span></div>
+                <div class="col-4 col-md-2"><span class="fw-bold text-danger brand-logo d-inline-block">H&M</span></div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container pb-5">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <a class="navbar-brand d-block mb-3" href="#">166<span>KARGO</span></a>
+                    <div class="social-icons mt-3">
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-heading">Keçidlər</div>
+                    <ul class="footer-links">
+                        <li><a href="#">&rsaquo; Tez-tez verilən suallar</a></li>
+                        <li><a href="#">&rsaquo; Sifariş şərtləri</a></li>
+                        <li><a href="#">&rsaquo; Daşınma şərtləri</a></li>
+                        <li><a href="#">&rsaquo; Gizlilik şərtləri</a></li>
+                        <li><a href="#">&rsaquo; İstifadəçi razılaşması</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <div class="footer-heading">Əlaqə</div>
+                    <ul class="contact-info list-unstyled p-0 m-0">
+                        <li><i class="fa-solid fa-location-dot"></i> Bakı şəhəri, Səbayıl rayonu, Şeyx Şamil küç. 16</li>
+                        <li><i class="fa-solid fa-phone"></i> *0166 , 0125260166</li>
+                        <li><i class="fa-solid fa-envelope"></i> info@166karqo.az</li>
+                        <li><i class="fa-solid fa-clock"></i> Həftə içi 10:00 - 20:00 , Şənbə 11:00-18:00</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="copyright-bar text-center">
+            <div class="container">
+                &copy; 2026 166 Kargo | Bütün hüquqlar qorunur
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

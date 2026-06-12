@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeslaHubs - Tez-tez Rast Gəlinən Problemlər və Servis Müraciəti</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --tesla-black: #111111;
+            --tesla-red: #cc0000;
+            --tesla-dark-gray: #1e1e1e;
+            --tesla-light-gray: #f4f4f5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: var(--tesla-black);
+        }
+
+        /* Naviqasiya Menyusu */
+        .navbar {
+            background-color: var(--tesla-black);
+            padding: 15px 0;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #ffffff !important;
+        }
+        .navbar-brand span {
+            color: var(--tesla-red);
+        }
+        .nav-link {
+            color: #e4e4e7 !important;
+            font-weight: 500;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--tesla-red) !important;
+        }
+
+        /* Səhifə Başlığı */
+        .page-header {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=1920') no-repeat center center/cover;
+            padding: 50px 0;
+            color: #ffffff;
+            margin-bottom: 50px;
+        }
+
+        /* Problem Kartları (Paylaşdığınız Şəkil Üslubunda) */
+        .problem-card {
+            background: #ffffff;
+            border: 1px solid var(--tesla-red); /* Şəkildəki kimi qırmızı incə çərçivə */
+            border-radius: 12px;
+            padding: 35px 25px;
+            text-align: center;
+            height: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+        .problem-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+        .problem-icon {
+            font-size: 2.5rem;
+            color: var(--tesla-red);
+            margin-bottom: 20px;
+        }
+        .problem-card h4 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--tesla-black);
+        }
+        .problem-card p {
+            font-size: 0.95rem;
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        /* Düymələr */
+        .btn-tesla {
+            background-color: var(--tesla-red);
+            color: #ffffff;
+            font-weight: 600;
+            border-radius: 4px;
+            border: none;
+            padding: 10px 24px;
+            transition: background 0.3s;
+        }
+        .btn-tesla:hover {
+            background-color: #b30000;
+            color: #ffffff;
+        }
+
+        /* Modal (Popup) və Forma Stil tərzi */
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            overflow: hidden;
+        }
+        .modal-header {
+            background-color: var(--tesla-black);
+            color: #ffffff;
+            border-bottom: none;
+            padding: 20px;
+        }
+        .modal-header .btn-close {
+            filter: invert(1); /* Qara arxa fonda bağlama düyməsinin ağ görünməsi üçün */
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--tesla-red);
+            box-shadow: 0 0 0 0.25rem rgba(204, 0, 0, 0.15);
+        }
+        .form-label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--tesla-dark-gray);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--tesla-black);
+            color: #a1a1aa;
+            padding: 30px 0;
+            margin-top: 80px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">TESLA<span>HUBS</span></a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#">Ana Səhifə</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#">Xidmətlər və Problemlər</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <header class="page-header text-center">
+        <div class="container">
+            <h1 class="display-5 fw-bold m-0">Tesla Nasazlıq Kataloqu</h1>
+            <p class="lead text-light-50 mt-2 mb-0">Tez-tez qarşılaşılan problemlər və anında onlayn servis qeydiyyatı</p>
+        </div>
+    </header>
+
+    <main class="container my-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Xarakterik Tesla Problemləri</h2>
+            <p class="text-muted">Avtomobilinizdə aşağıdakı nasazlıqlardan biri mövcuddursa, dərhal bizə müraciət edə bilərsiniz</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="problem-card">
+                    <div class="problem-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                    <h4>Proqram Donmaları</h4>
+                    <p>Mərkəzi monitorun (MCU) qəfil sönməsi, sensorun cavab verməməsi, naviqasiya və LTE şəbəkə bağlantısının itməsi halları.</p>
+                    <button class="btn btn-tesla btn-open-modal" data-problem="Proqram təminatı xətaları">Daha Ətraflı / Müraciət</button>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="problem-card">
+                    <div class="problem-icon"><i class="fa-solid fa-car-rear"></i></div>
+                    <h4>Pnevmo-Asqı Nasazlığı</h4>
+                    <p>Model S və X modellərində pnevmatik balonların hava buraxması, kompressorun sıradan çıxması və ya asqı kalibrasiyasının pozulması.</p>
+                    <button class="btn btn-tesla btn-open-modal" data-problem="Asqı və Amortizasiya">Daha Ətraflı / Müraciət</button>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="problem-card">
+                    <div class="problem-icon"><i class="fa-solid fa-battery-quarter"></i></div>
+                    <h4>12V / 16V Akkumulyator</h4>
+                    <p>Ekranda "Electrical system backup power is unavailable" xəbərdarlığının çıxması və köməkçi batareyanın dəyişdirilməsi ehtiyacı.</p>
+                    <button class="btn btn-tesla btn-open-modal" data-problem="12V/16V Batareya">Daha Ətraflı / Müraciət</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="requestModalLabel"><i class="fa-solid fa-screwdriver-wrench me-2 text-danger"></i>Servis Müraciət Forması</h5>
+                    <button type="button" class="btn-close" data-bs-theme="dark" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="teslaServiceForm" enctype="multipart/form-data">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="fullName" class="form-label">Adınız və Soyadınız *</label>
+                                <input type="text" class="form-control" id="fullName" placeholder="Məsələn: Əli Məmmədov" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Əlaqə Nömrəsi *</label>
+                                <input type="tel" class="form-control" id="phone" placeholder="Məsələn: +994 (50) 123-4567" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="vinCode" class="form-label">Avtomobilin VIN Kodu (17 simvol) *</label>
+                                <input type="text" class="form-control text-uppercase" id="vinCode" maxlength="17" placeholder="1HGCR2F8XHAxxxxxx" required>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="carModel" class="form-label">Model *</label>
+                                <select class="form-select" id="carModel" required>
+                                    <option value="" selected disabled>Seçin</option>
+                                    <option value="Model S">Model S</option>
+                                    <option value="Model 3">Model 3</option>
+                                    <option value="Model X">Model X</option>
+                                    <option value="Model Y">Model Y</option>
+                                    <option value="Cybertruck">Cybertruck</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="carYear" class="form-label">Buraxılış İli *</label>
+                                <select class="form-select" id="carYear" required>
+                                    <option value="" selected disabled>Seçin</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2022">2022</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2020">2020</option>
+                                    <option value="2019">2019</option>
+                                    <option value="2018">2018</option>
+                                    <option value="2017">2016-dan əvvəl</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="problemsSelect" class="form-label">Mövcud Problemlər (Birdən çox seçə bilərsiniz) *</label>
+                                <select class="form-select" id="problemsSelect" multiple size="4" required>
+                                    <option value="Proqram təminatı xətaları">Proqram təminatı və Ekran donmaları</option>
+                                    <option value="Asqı və Amortizasiya">Pnevmatik asqı / Mexaniki səs problemləri</option>
+                                    <option value="12V/16V Batareya">Köməkçi Akkumulyator xətası</option>
+                                    <option value="BMS / Əsas Batareya">BMS və Yüksək gərginlikli batareya nasazlığı</option>
+                                    <option value="Şarj problemi">Şarj prosesinin kəsilməsi / Port xətası</option>
+                                    <option value="Kuzov və Optika">Far və kuzov elektronikasının işləməməsi</option>
+                                </select>
+                                <div class="form-text text-muted">Windows-da `Ctrl` və ya Mac-da `Cmd` düyməsini sıxılı saxlayaraq bir neçə variant seçə bilərsiniz.</div>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="problemDescription" class="form-label">Problemin Təsviri (Əlavə qeydlər)</label>
+                                <textarea class="form-control" id="problemDescription" rows="3" placeholder="Nasazlığı qısaca təsvir edin..."></textarea>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Xətanın Şəkli və ya Videosunu yükləyin (Çoxlu fayl seçimi aktivdir)</label>
+                                <input type="file" class="form-control" id="problemFiles" name="files[]" multiple accept="image/*,video/*">
+                                <div class="form-text text-muted">Maksimum 5 fayl (PNG, JPG, MP4) yükləyə bilərsiniz.</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">İmtina</button>
+                            <button type="submit" class="btn btn-tesla btn-sm"><i class="fa-solid fa-paper-plane me-2"></i>Sorğunu Göndər</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center">
+        <div class="container">
+            <p class="mb-0 small">© 2026 TeslaHubs. Bütün hüquqlar qorunur.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Bootstrap Modal obyektini yaradırıq
+            const myModal = new bootstrap.Modal(document.getElementById('requestModal'));
+            const modalTitle = document.getElementById('requestModalLabel');
+            const problemsSelect = document.getElementById('problemsSelect');
+            const form = document.getElementById('teslaServiceForm');
+
+            // Səhifədəki "Daha Ətraflı / Müraciət" düymələrinə kliklənmə hadisəsi
+            document.querySelectorAll('.btn-open-modal').forEach(button => {
+                button.addEventListener('click', function() {
+                    const primaryProblem = this.getAttribute('data-problem');
+                    
+                    // Kliklənən kartın növünə uyğun olaraq dropdown-da həmin variantı avtomatik seçirik
+                    for (let option of problemsSelect.options) {
+                        if (option.value === primaryProblem) {
+                            option.selected = true;
+                        } else {
+                            option.selected = false; // Digər seçimləri ilkin olaraq təmizləyirik
+                        }
+                    }
+                    
+                    // Modalı ekranda açırıq
+                    myModal.show();
+                });
+            });
+
+            // Formun göndərilməsi (Submit) simulyasiyası
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // Səhifənin yenilənməsinin qarşısını alırıq
+
+                // Seçilmiş bütün variantları konsolda yoxlamaq üçün massivə yığırıq
+                let selectedProblems = Array.from(problemsSelect.selectedOptions).map(option => option.value);
+
+                // Faylların götürülməsi (Multipart data strukturu üçün)
+                const fileInput = document.getElementById('problemFiles');
+                const files = fileInput.files;
+
+                // Burada real Backend (API) olmadığı üçün müştəriyə uğurlu bildiriş göstəririk
+                alert(`Təşəkkür edirik, ${document.getElementById('fullName').value}! \nSorğunuz qəbul edildi. Seçilmiş problemlər: ${selectedProblems.join(', ')}. \nYüklənən fayl sayı: ${files.length}. \nTezliklə menecerimiz sizinlə əlaqə saxlayacaq.`);
+                
+                form.reset(); // Formu təmizləyirik
+                myModal.hide(); // Modalı bağlayırıq
+            });
+        });
+    </script>
+</body>
+</html>

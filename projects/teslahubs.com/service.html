@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeslaHubs - Professional Servis və Xidmətlər</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --tesla-black: #111111;
+            --tesla-red: #cc0000;
+            --tesla-dark-gray: #1e1e1e;
+            --tesla-light-gray: #f4f4f5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: var(--tesla-black);
+        }
+
+        /* Naviqasiya Menyusu */
+        .navbar {
+            background-color: var(--tesla-black);
+            padding: 15px 0;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #ffffff !important;
+        }
+        .navbar-brand span {
+            color: var(--tesla-red);
+        }
+        .nav-link {
+            color: #e4e4e7 !important;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--tesla-red) !important;
+        }
+        .btn-tesla {
+            background-color: var(--tesla-red);
+            color: #ffffff;
+            font-weight: 600;
+            border-radius: 4px;
+            border: none;
+            transition: background 0.3s;
+        }
+        .btn-tesla:hover {
+            background-color: #b30000;
+            color: #ffffff;
+        }
+
+        /* Səhifə Başlığı (Header) */
+        .page-header {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=1920') no-repeat center center/cover;
+            padding: 60px 0;
+            color: #ffffff;
+            margin-bottom: 50px;
+        }
+
+        /* Xidmət Tabları (Tabs) */
+        .nav-pills .nav-link {
+            color: var(--tesla-black);
+            background-color: var(--tesla-light-gray);
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .nav-pills .nav-link.active, .nav-pills .nav-link:hover {
+            background-color: var(--tesla-red) !important;
+            color: #ffffff !important;
+        }
+
+        /* Xidmət Kartları */
+        .service-detail-card {
+            background: #ffffff;
+            border: 1px solid #e4e4e7;
+            border-radius: 8px;
+            padding: 25px;
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+        .service-detail-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-color: var(--tesla-red);
+        }
+        .service-icon-box {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(204, 0, 0, 0.1);
+            color: var(--tesla-red);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        /* Qiymət Cədvəli */
+        .table-responsive {
+            border: 1px solid #e4e4e7;
+            border-radius: 8px;
+            background-color: #ffffff;
+        }
+        .table thead th {
+            background-color: var(--tesla-black);
+            color: #ffffff;
+            border: none;
+            padding: 15px;
+        }
+        .table tbody td {
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+        /* Rezervasiya Forması */
+        .booking-section {
+            background-color: var(--tesla-light-gray);
+            border-radius: 12px;
+            padding: 40px;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--tesla-red);
+            box-shadow: 0 0 0 0.25xlrem rgba(204, 0, 0, 0.25);
+        }
+
+        /* Alt Hissə (Footer) */
+        footer {
+            background-color: var(--tesla-black);
+            color: #a1a1aa;
+            padding: 60px 0 20px 0;
+            margin-top: 80px;
+        }
+        footer h5 {
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        footer a {
+            color: #a1a1aa;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        footer a:hover {
+            color: #ffffff;
+        }
+        .copyright-bar {
+            border-top: 1px solid #27272a;
+            margin-top: 40px;
+            padding-top: 20px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">TESLA<span>HUBS</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#servicesNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="servicesNavbar">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Ana Səhifə</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#">Xidmətlər</a></li>
+                    <li class="nav-item"><a class="nav-link" href="parts.html">Ehtiyat Hissələri</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html#about">Haqqımızda</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Əlaqə</a></li>
+                </ul>
+                <div class="ms-lg-4">
+                    <a href="tel:+9940000000" class="btn btn-tesla btn-sm"><i class="fa-solid fa-phone me-2"></i>Zəng Edin</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="page-header text-center">
+        <div class="container">
+            <h1 class="display-5 fw-bold m-0">Peşəkar Servis Xidmətləri</h1>
+            <p class="lead text-light-50 mt-2 mb-0">Tesla mühəndislərimiz tərəfindən yüksək texnologiyalı həllər</p>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <div class="d-flex justify-content-center mb-5">
+            <div class="nav nav-pills" id="v-pills-tab" role="tablist">
+                <button class="nav-link active" id="software-tab" data-bs-toggle="pill" data-bs-target="#software" type="button" role="tab">Proqram Təminatı</button>
+                <button class="nav-link" id="mechanical-tab" data-bs-toggle="pill" data-bs-target="#mechanical" type="button" role="tab">Mexaniki və Asqı</button>
+                <button class="nav-link" id="battery-tab" data-bs-toggle="pill" data-bs-target="#battery" type="button" role="tab">Batareya və Elektronika</button>
+            </div>
+        </div>
+
+        <div class="tab-content" id="v-pills-tabContent">
+            
+            <div class="tab-pane fade show active" id="software" role="tabpanel">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="service-detail-card">
+                            <div class="service-icon-box"><i class="fa-solid fa-laptop-code"></i></div>
+                            <h5 class="fw-bold">Diaqnostika və Firmware</h5>
+                            <p class="text-muted small mb-0">Rəsmi Tesla diaqnostika sistemləri ilə avtomobildəki gizli xətaların tapılması və proqram təminatının son versiyaya yenilənməsi.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="service-detail-card">
+                            <div class="service-icon-box"><i class="fa-solid fa-sim-card"></i></div>
+                            <h5 class="fw-bold">Naviqasiya və LTE Aktivləşdirilməsi</h5>
+                            <p class="text-muted small mb-0">Azərbaycan xəritələrinin naviqasiya sisteminə yazılması, yerli SIM kart dəstəyinin və LTE şəbəkəsinin aktiv edilməsi.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="service-detail-card">
+                            <div class="service-icon-box"><i class="fa-solid fa-key"></i></div>
+                            <h5 class="fw-bold">Açar və Mobil Proqram Tanıdılması</h5>
+                            <p class="text-muted small mb-0">Yeni açar kartların, pultların (Key Fob) və Tesla rəsmi mobil tətbiqinin avtomobilə təhlükəsiz şəkildə bağlanması.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="mechanical" role="tabpanel">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="service-detail-card">
+                            <div class="service-icon-box"><i class="fa-solid fa-circle-dot"></i></div>
+                            <h5 class="fw-bold">Əyləc Sistemi Servisi</h5>
+                            <p class="text-muted small mb-0">Əyləc bəndlərinin (baddaların) dəyişdirilməsi, supportların təmizlənməsi və rekuperasiya sisteminə uyğun nizamlanması.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="service-detail-card">
+                            <div class="service-icon-box"><i class="fa-solid fa-car-rear"></i></div>
+                            <h5 class="fw-bold">Pnevmatik Asqı Təmiri</h5>
+                            <p class="text-muted small mb-0">Model S və Model X-lərdə pnevmo-balonların, hava kompressorlarının diaqnostikası, kalibrasiyası və təmiri.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="service-detail-card">
+                            <div class="service-icon-box"><i class="fa-solid fa-shield-halved"></i></div>
+                            <h5 class="fw-bold">Kuzov və Şassi Gücləndirilməsi</h5>
+                            <p class="text-muted small mb-0">Şassidə yarana biləcək boşluqların aradan qaldırılması və alt qoruyucu panellərin montajı.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="battery" role="tabpanel">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="service-detail-card">
+                            <div class="service-icon-box"><i class="fa-solid fa-battery-three-quarters"></i></div>
+                            <h5 class="fw-bold">BMS və Batareya Balanslaşdırma</h5>
+                            <p class="text-muted small mb-0">Yüksək gərginlikli əsas batareyanın (HV Battery) hüceyrələrinin yoxlanılması və BMS proqram kalibrasiyası.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="service-detail-card">
+                            <div class="service-icon-box"><i class="fa-solid fa-plug"></i></div>
+                            <h5 class="fw-bold">İnverter və Sürücü Bloku (Drive Unit)</h5>
+                            <p class="text-muted small mb-0">Elektrik mühərrikinin və inverter blokunun soyutma mayesinin yenilənməsi, elektron xətaların aradan qaldırılması.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="service-detail-card">
+                            <div class="service-icon-box"><i class="fa-solid fa-bolt"></i></div>
+                            <h5 class="fw-bold">12V/16V Köməkçi Batareya Dəyişimi</h5>
+                            <p class="text-muted small mb-0">Ekranda köməkçi batareya xəbərdarlığı çıxdıqda orijinal litiy-ion və ya AGM akkumulyatorla əvəz edilməsi.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="my-5 pt-4">
+            <h3 class="fw-bold text-center mb-4">Xidmət Tarifləri</h3>
+            <div class="table-responsive">
+                <table class="table table-hover m-0">
+                    <thead>
+                        <tr>
+                            <th>Xidmətin Adı</th>
+                            <th>Müddət</th>
+                            <th class="text-end">Başlanğıc Qiymət</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><i class="fa-solid fa-check text-success me-2"></i> Tam Kompüter Diaqnostikası</td>
+                            <td>30-45 dəqiqə</td>
+                            <td class="text-end fw-bold text-danger">50 AZN</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa-solid fa-check text-success me-2"></i> LTE və Region Dəyişimi (Naviqasiya daxil)</td>
+                            <td>2-4 saat</td>
+                            <td class="text-end fw-bold text-danger">350 AZN</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa-solid fa-check text-success me-2"></i> Ön Asqı Mexaniki Diaqnostikası və Təmiri</td>
+                            <td>1-2 saat</td>
+                            <td class="text-end fw-bold text-danger">80 AZN</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa-solid fa-check text-success me-2"></i> Drive Unit (Mühərrik) Maye Yenilənməsi</td>
+                            <td>1 saat</td>
+                            <td class="text-end fw-bold text-danger">120 AZN</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="booking-section mt-5">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-5">
+                    <h3 class="fw-bold mb-3">Onlayn Növbə Alın</h3>
+                    <p class="text-muted mb-0">Servisimizdə vaxt itirməmək üçün formu dolduraraq onlayn rezervasiya edin. Menecerlərimiz qısa müddətdə sizinlə əlaqə saxlayacaq.</p>
+                </div>
+                <div class="col-lg-7">
+                    <form>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" placeholder="Adınız və Soyadınız" required>
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="tel" class="form-control" placeholder="Telefon Nömrəniz" required>
+                            </div>
+                            <div class="col-sm-6">
+                                <select class="form-select" required>
+                                    <option value="" selected disabled>Model seçin</option>
+                                    <option>Model S</option>
+                                    <option>Model 3</option>
+                                    <option>Model X</option>
+                                    <option>Model Y</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <select class="form-select" required>
+                                    <option value="" selected disabled>Əsas Xidmət növü</option>
+                                    <option>Proqram Təminatı</option>
+                                    <option>Mexaniki Təmir</option>
+                                    <option>Batareya / Elektronika</option>
+                                    <option>Digər</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-tesla w-100 py-2.5">Rezervasiyanı Təsdiqlə</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer id="contact">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5 class="navbar-brand text-white mb-3">TESLA<span>HUBS</span></h5>
+                    <p class="small mb-4">Tesla avtomobilləri üçün mükəmməl xidmət və keyfiyyətli ehtiyat hissələrinin mərkəzi.</p>
+                    <div class="d-flex gap-3 fs-5">
+                        <a href="#" class="text-white-50"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#" class="text-white-50"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="text-white-50"><i class="fa-brands fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3 offset-lg-1">
+                    <h5>Keçidlər</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="index.html">Ana Səhifə</a></li>
+                        <li class="mb-2"><a href="#">Xidmətlər</a></li>
+                        <li class="mb-2"><a href="parts.html">Ehtiyat Hissələri</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-lg-4">
+                    <h5>Əlaqə</h5>
+                    <ul class="list-unstyled text-light small">
+                        <li class="mb-2"><i class="fa-solid fa-location-dot me-2 text-danger"></i> Bakı şəhəri, Babək prospekti 45</li>
+                        <li class="mb-2"><i class="fa-solid fa-phone me-2 text-danger"></i> +994 (50) 123-4567</li>
+                        <li class="mb-2"><i class="fa-solid fa-envelope me-2 text-danger"></i> info@teslahubs.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row copyright-bar text-center text-md-start">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2026 TeslaHubs. Bütün hüquqlar qorunur.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

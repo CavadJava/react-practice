@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qeydiyyat - 166 Kargo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --brand-yellow: #f8c325;
+            --brand-dark: #1d2124;
+            --bg-light: #f8f9fa;
+            --input-bg: #f1f3f5;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--brand-dark);
+        }
+
+        /* Üst Mini Menyu */
+        .top-nav {
+            font-size: 13px;
+            border-bottom: 1px solid #e9ecef;
+            background-color: #fff;
+        }
+        .top-nav a {
+            color: #6c757d;
+            text-decoration: none;
+        }
+        .top-nav a:hover {
+            color: var(--brand-dark);
+        }
+
+        /* Əsas Naviqasiya */
+        .main-navbar {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+        .navbar-nav .nav-link {
+            color: #495057;
+            font-weight: 500;
+            font-size: 15px;
+            margin-right: 15px;
+        }
+        .navbar-nav .nav-link:hover {
+            color: var(--brand-yellow);
+        }
+        .hotline-btn {
+            font-weight: bold;
+            color: var(--brand-yellow);
+            font-size: 22px;
+            text-decoration: none;
+        }
+
+        /* Qeydiyyat Kartı */
+        .register-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            padding: 30px;
+        }
+        .form-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        .form-control, .form-select {
+            background-color: var(--input-bg);
+            border: 1px solid transparent;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 14px;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: #fff;
+            border-color: var(--brand-yellow);
+            box-shadow: 0 0 0 0.25rem rgba(248, 195, 37, 0.25);
+        }
+        
+        /* Switch (Hüquqi şəxs) */
+        .form-check-input:checked {
+            background-color: var(--brand-yellow);
+            border-color: var(--brand-yellow);
+        }
+
+        /* Düymə */
+        .btn-submit {
+            background-color: var(--brand-yellow);
+            border: none;
+            color: var(--brand-dark);
+            font-weight: 600;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .btn-submit:hover {
+            background-color: #e0ae1b;
+            color: #000;
+        }
+
+        /* Video Bölməsi */
+        .video-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .video-wrapper {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Footer */
+        footer {
+            background-color: #fff;
+            border-top: 1px solid #e9ecef;
+            padding: 40px 0 20px 0;
+            margin-top: 60px;
+        }
+        .footer-heading {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .footer-links list-unstyled li {
+            margin-bottom: 10px;
+        }
+        .footer-links a {
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .footer-links a:hover {
+            color: var(--brand-yellow);
+        }
+        .contact-info p {
+            font-size: 14px;
+            color: #495057;
+            margin-bottom: 10px;
+        }
+        .social-icons a {
+            color: var(--brand-dark);
+            font-size: 20px;
+            margin-right: 15px;
+            transition: color 0.3s;
+        }
+        .social-icons a:hover {
+            color: var(--brand-yellow);
+        }
+        .copyright-bar {
+            background-color: #1e2229;
+            color: #fff;
+            font-size: 13px;
+            padding: 15px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-nav py-2 d-none d-md-block">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex gap-4">
+                <a href="#">Tez-tez verilən suallar</a>
+                <a href="#">Əlaqə</a>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <a href="#" class="btn btn-sm btn-outline-primary px-3" style="border-radius: 20px; font-size: 12px;">digital login ●</a>
+                <a href="#">Qeydiyyatdan keç</a>
+                <a href="#" class="btn btn-sm btn-warning px-3 fw-bold" style="background-color: var(--brand-yellow); border:none;"><i class="fa-regular fa-user me-1"></i> İstifadəçi girişi</a>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg main-navbar py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="https://166karqo.az/assets/front/img/logo.svg" alt="166 Cargo Logo" height="40" onerror="this.src='https://placehold.co/120x40?text=166+CARGO'">
+            </a>
+            <button class="navbar-toggler" type="text/css" data-bs-toggle="collapse" data-bs-target="#mainMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainMenu">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="#">Haqqımızda</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Nümunə saytlar</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Tariflər</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Xəbərlər və Yeniliklər</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Filial və məntəqələr</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">AZ</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-menu-item" href="#">EN</a></li>
+                            <li><a class="dropdown-menu-item" href="#">RU</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <a href="tel:*0166" class="hotline-btn"><i class="fa-solid fa-phone-volume me-1"></i> *0166</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="row g-4 justify-content-between align-items-start">
+            
+            <div class="col-lg-6">
+                <div class="register-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="h4 fw-bold m-0">Qeydiyyat</h2>
+                        <div class="form-check form-switch d-flex align-items-center gap-2">
+                            <label class="form-check-label fw-bold small text-muted" for="huquqiShaxs">Hüquqi şəxs</label>
+                            <input class="form-check-input" type="checkbox" id="huquqiShaxs" style="width: 40px; height: 20px; cursor: pointer;">
+                        </div>
+                    </div>
+
+                    <form>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Adınız</label>
+                                <input type="text" class="form-control" placeholder="">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Soyadınız</label>
+                                <input type="text" class="form-control" placeholder="">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">E-poçta</label>
+                                <input type="email" class="form-control" placeholder="">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Telefon</label>
+                                <div class="input-group">
+                                    <select class="form-select border-0 bg-light" style="max-width: 90px; border-radius: 8px 0 0 8px;">
+                                        <option>010</option>
+                                        <option>050</option>
+                                        <option>051</option>
+                                        <option>055</option>
+                                        <option>070</option>
+                                        <option>077</option>
+                                    </select>
+                                    <input type="text" class="form-control" style="border-radius: 0 8px 8px 0;">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label d-block">Cins</label>
+                                <div class="pt-2">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="cins" id="kisi" value="kisi">
+                                        <label class="form-check-label" for="kisi">Kişi</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="cins" id="qadin" value="qadin">
+                                        <label class="form-check-label" for="qadin">Qadın</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Doğum tarixi</label>
+                                <input type="date" class="form-control">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Milliyyət</label>
+                                <select class="form-select">
+                                    <option>Azerbaijan</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">S/v seriya nömrəsi</label>
+                                <div class="input-group">
+                                    <select class="form-select bg-light" style="max-width: 80px; border-radius: 8px 0 0 8px;">
+                                        <option>AA</option>
+                                        <option>AZE</option>
+                                        <option>MYI</option>
+                                    </select>
+                                    <input type="text" class="form-control" style="border-radius: 0 8px 8px 0;">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">S/V Fin kodu</label>
+                                <input type="text" class="form-control" placeholder="">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Məntəqə.</label>
+                                <select class="form-select">
+                                    <option>İçərişəhər, Bakı şəhəri, Səbail rayonu</option>
+                                    <option>Gənclik filialı</option>
+                                    <option>Sumqayıt filialı</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Ünvan</label>
+                                <input type="text" class="form-control" placeholder="">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Şifrə</label>
+                                <input type="password" class="form-control" placeholder="">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Təkrar şifrə</label>
+                                <input type="password" class="form-control" placeholder="">
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="razilasmasi">
+                                    <label class="form-check-label small fw-bold text-primary" for="razilasmasi" style="cursor:pointer;">
+                                        İstifadəçi razılaşması
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-submit w-100">Qeydiyyatı tamamla →</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-5 ps-lg-4">
+                <h3 class="video-title">Qeydiyyatdan keçməkdə çətinlik çəkirsinizsə videonu izləyin</h3>
+                <div class="video-wrapper">
+                    <div class="ratio ratio-16x9 bg-dark">
+                        <video controls poster="https://placehold.co/600x400/1d2124/ffffff?text=Necə+qeydiyyatdan+keçmək+olar%3F">
+                            <source src="#" type="video/mp4">
+                            Sizin brauzeriniz video teqini dəstəkləmir.
+                        </video>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <img src="https://166karqo.az/assets/front/img/logo.svg" alt="166 Cargo" height="45" class="mb-3" onerror="this.src='https://placehold.co/120x40?text=166+CARGO'">
+                    <div class="social-icons mt-3">
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4 footer-links">
+                    <h4 class="footer-heading">Keçidlər</h4>
+                    <ul class="list-unstyled">
+                        <li><a href="#">› Tez-tez verilən suallar</a></li>
+                        <li><a href="#">› Sifariş şərtləri</a></li>
+                        <li><a href="#">› Daşınma şərtləri</a></li>
+                        <li><a href="#">› Gizlilik şərtləri</a></li>
+                        <li><a href="#">› İstifadəçi razılaşması</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 contact-info">
+                    <h4 class="footer-heading">Əlaqə</h4>
+                    <p><i class="fa-solid fa-location-dot text-muted me-2"></i> Bakı şəhəri, Səbail rayonu, Şeyx Şamil küç. 16</p>
+                    <p><i class="fa-solid fa-phone text-muted me-2"></i> *0166, 0125260166</p>
+                    <p><i class="fa-solid fa-envelope text-muted me-2"></i> info@166karqo.az</p>
+                    <p><i class="fa-solid fa-clock text-muted me-2"></i> Həftə içi 10:00 - 20:00 , Şənbə 11:00-18:00</p>
+                </div>
+            </div>
+        </div>
+        <div class="copyright-bar text-center mt-5">
+            <div class="container">
+                © 2026 166 Karqo | Bütün hüquqlar qorunur
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

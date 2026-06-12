@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeslaHubs - Avtomobil və Ehtiyat Hissələri</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --tesla-black: #111111;
+            --tesla-red: #cc0000;
+            --tesla-dark-gray: #1e1e1e;
+            --tesla-light-gray: #f4f4f5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: var(--tesla-black);
+        }
+
+        /* Naviqasiya Menyusu */
+        .navbar {
+            background-color: rgba(17, 17, 17, 0.95);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #ffffff !important;
+        }
+        .navbar-brand span {
+            color: var(--tesla-red);
+        }
+        .nav-link {
+            color: #e4e4e7 !important;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .nav-link:hover {
+            color: var(--tesla-red) !important;
+        }
+
+        /* Hero (Giriş) Bölməsi */
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=1920') no-repeat center center/cover;
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            color: #ffffff;
+        }
+        .btn-tesla {
+            background-color: var(--tesla-red);
+            color: #ffffff;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 4px;
+            border: none;
+            transition: background 0.3s;
+        }
+        .btn-tesla:hover {
+            background-color: #b30000;
+            color: #ffffff;
+        }
+        .btn-outline-tesla {
+            border: 2px solid #ffffff;
+            color: #ffffff;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .outline-tesla:hover {
+            background-color: #ffffff;
+            color: var(--tesla-black);
+        }
+
+        /* Xidmət/Kateqoriya Kartları */
+        .category-card {
+            background: #ffffff;
+            border: 1px solid #e4e4e7;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            border-color: var(--tesla-red);
+        }
+        .category-icon {
+            font-size: 2.5rem;
+            color: var(--tesla-red);
+            margin-bottom: 20px;
+        }
+
+        /* Məhsullar Bölməsi */
+        .product-card {
+            background-color: #ffffff;
+            border: 1px solid #e4e4e7;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        .product-img {
+            height: 220px;
+            object-fit: cover;
+            width: 100%;
+            background-color: var(--tesla-light-gray);
+        }
+        .product-price {
+            color: var(--tesla-red);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        /* Alt Hissə (Footer) */
+        footer {
+            background-color: var(--tesla-black);
+            color: #a1a1aa;
+            padding: 60px 0 20px 0;
+        }
+        footer h5 {
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        footer a {
+            color: #a1a1aa;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        footer a:hover {
+            color: #ffffff;
+        }
+        .social-icons a {
+            font-size: 1.3rem;
+            margin-right: 15px;
+            color: #a1a1aa;
+            transition: color 0.3s;
+        }
+        .social-icons a:hover {
+            color: var(--tesla-red);
+        }
+        .copyright-bar {
+            border-top: 1px solid #27272a;
+            margin-top: 40px;
+            padding-top: 20px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">TESLA<span>HUBS</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link active" href="#">Ana Səhifə</a></li>
+                    <li class="nav-item"><a class="nav-link" href="service.html">Xidmətlər</a></li>
+                    <li class="nav-item"><a class="nav-link" href="parts.html">Ehtiyat Hissələri</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">Haqqımızda</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html">Əlaqə</a></li>
+                </ul>
+                <div class="ms-lg-4">
+                    <a href="tel:+9940000000" class="btn btn-tesla btn-sm"><i class="fa-solid fa-phone me-2"></i>Zəng Edin</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero-section">
+        <div class="container text-center text-lg-start">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-3 fw-bold mb-3 text-white">Tesla Dünyasına Professional Dəstək</h1>
+                    <p class="lead mb-4 text-light">Tesla avtomobillərinin satışı, professional servisi və orijinal ehtiyat hissələrinin tək ünvanı.</p>
+                    <div class="d-sm-flex justify-content-center justify-content-lg-start gap-3">
+                        <a href="#products" class="btn btn-tesla mb-3 mb-sm-0">Kataloqa Bax</a>
+                        <a href="#contact" class="btn btn-outline-tesla outline-tesla">Xidmət Rezerv Et</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="categories" class="py-5 bg-light">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">Biz Nə Təklif Edirik?</h2>
+                <p class="text-muted">Gördüyümüz hər bir işdə tam peşəkarlıq və zəmanət təqdim edirik</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="category-card">
+                        <div class="category-icon"><i class="fa-solid fa-car-side"></i></div>
+                        <h4 class="fw-bold mb-3">Avtomobil Satışı</h4>
+                        <p class="text-muted mb-0">İdeal vəziyyətdə, yoxlanılmış Tesla modellərinin sifarişi və birbaşa satışı.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="category-card">
+                        <div class="category-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                        <h4 class="fw-bold mb-3">Peşəkar Servis</h4>
+                        <p class="text-muted mb-0">Yüksək texnologiyalı avadanlıqlarla proqram təminatı və mexaniki təmir dəstəyi.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="category-card">
+                        <div class="category-icon"><i class="fa-solid fa-gears"></i></div>
+                        <h4 class="fw-bold mb-3">Orijinal Hissələr</h4>
+                        <p class="text-muted mb-0">Tesla modelləri üçün zavod istehsalı olan bütün növ ehtiyat hissələrinin anbarı.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="products" class="py-5">
+        <div class="container py-4">
+            <div class="d-flex justify-content-between align-items-end mb-5">
+                <div>
+                    <h2 class="fw-bold mb-0">Ehtiyat Hissələri</h2>
+                    <p class="text-muted mb-0 mt-2">Model S, Model 3, Model X və Model Y üçün ehtiyat hissələri</p>
+                </div>
+                <a href="parts.html" class="btn btn-outline-dark btn-sm d-none d-sm-block">Hamısına Bax <i class="fa-solid fa-arrow-right ms-2"></i></a>
+            </div>
+            <div class="row g-4">
+                <div class="col-6 col-lg-3">
+                    <div class="product-card">
+                        <img src="https://images.unsplash.com/photo-1486006920555-c77dce18193b?q=80&w=500" alt="Ehtiyat Hissəsi" class="product-img">
+                        <div class="p-3">
+                            <span class="badge bg-secondary mb-2">Model 3 / Y</span>
+                            <h6 class="fw-bold text-truncate mb-2">Ön Əyləc Bəndləri (Brembo)</h6>
+                            <div class="product-price">120 AZN</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="product-card">
+                        <img src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=500" alt="Ehtiyat Hissəsi" class="product-img">
+                        <div class="p-3">
+                            <span class="badge bg-secondary mb-2">Bütün Modellər</span>
+                            <h6 class="fw-bold text-truncate mb-2">Tesla Divar Şarj Cihazı (Gen 3)</h6>
+                            <div class="product-price">850 AZN</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="product-card">
+                        <img src="https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?q=80&w=500" alt="Ehtiyat Hissəsi" class="product-img">
+                        <div class="p-3">
+                            <span class="badge bg-secondary mb-2">Model S / X</span>
+                            <h6 class="fw-bold text-truncate mb-2">Hava Asqı Kompressoru</h6>
+                            <div class="product-price">640 AZN</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="product-card">
+                        <img src="https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=500" alt="Ehtiyat Hissəsi" class="product-img">
+                        <div class="p-3">
+                            <span class="badge bg-secondary mb-2">Model 3</span>
+                            <h6 class="fw-bold text-truncate mb-2">Sağ Ön Far (LED Matrix)</h6>
+                            <div class="product-price">1100 AZN</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-5 bg-light">
+        <div class="container py-4">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <img src="https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=800" alt="Tesla Service" class="img-fluid rounded shadow-sm">
+                </div>
+                <div class="col-lg-6">
+                    <span class="text-danger fw-bold text-uppercase tracking-wider">Niyə TeslaHubs?</span>
+                    <h2 class="fw-bold mt-2 mb-4">Azərbaycanın Ən İnnovativ Tesla Mərkəzi</h2>
+                    <p class="text-muted mb-4">Biz Tesla istifadəçilərinin qarşılaşdığı bütün proqram təminatı və mexaniki çətinlikləri aradan qaldırmaq üçün ixtisaslaşmışıq. Avtomobilinizin sazlığı və təhlükəsizliyi bizim üçün prioritetdir.</p>
+                    <div class="row g-3">
+                        <div class="col-sm-6 d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-success"></i>
+                            <span class="fw-semibold">Rəsmi Diaqnostika</span>
+                        </div>
+                        <div class="col-sm-6 d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-success"></i>
+                            <span class="fw-semibold">Təcrübəli Mühəndislər</span>
+                        </div>
+                        <div class="col-sm-6 d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-success"></i>
+                            <span class="fw-semibold">Sürətli Çatdırılma</span>
+                        </div>
+                        <div class="col-sm-6 d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-success"></i>
+                            <span class="fw-semibold">7/24 Müştəri Dəstəyi</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5 class="navbar-brand text-white mb-3">TESLA<span>HUBS</span></h5>
+                    <p class="small mb-4">Tesla avtomobilləri üçün mükəmməl xidmət və keyfiyyətli ehtiyat hissələrinin mərkəzi.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-2 offset-lg-1">
+                    <h5>Keçidlər</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#">Ana Səhifə</a></li>
+                        <li class="mb-2"><a href="#categories">Xidmətlər</a></li>
+                        <li class="mb-2"><a href="#products">Məhsullar</a></li>
+                        <li class="mb-2"><a href="#about">Haqqımızda</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <h5>Modellər</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#">Model S</a></li>
+                        <li class="mb-2"><a href="#">Model 3</a></li>
+                        <li class="mb-2"><a href="#">Model X</a></li>
+                        <li class="mb-2"><a href="#">Model Y</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h5>Əlaqə</h5>
+                    <ul class="list-unstyled text-light small">
+                        <li class="mb-3 d-flex gap-2">
+                            <i class="fa-solid fa-location-dot mt-1 text-danger"></i>
+                            <span>Bakı şəhəri, Babək prospekti 45, Azərbaycan</span>
+                        </li>
+                        <li class="mb-3 d-flex gap-2">
+                            <i class="fa-solid fa-phone text-danger"></i>
+                            <span>+994 (50) 123-4567</span>
+                        </li>
+                        <li class="mb-3 d-flex gap-2">
+                            <i class="fa-solid fa-envelope text-danger"></i>
+                            <span>info@teslahubs.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row copyright-bar text-center text-md-start">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <p class="mb-0">&copy; 2026 TeslaHubs. Bütün hüquqlar qorunur.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="small me-3">İstifadə Şərtləri</a>
+                    <a href="#" class="small">Gizlilik Siyasəti</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

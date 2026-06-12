@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeslaHubs - Servis Müraciəti və Problemlər</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --tesla-black: #111111;
+            --tesla-red: #cc0000;
+            --tesla-dark-gray: #1e1e1e;
+            --tesla-light-gray: #f4f4f5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9f9;
+            color: var(--tesla-black);
+        }
+
+        /* Başlıq */
+        .page-header {
+            background-color: var(--tesla-black);
+            padding: 40px 0;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .page-header h1 {
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .page-header span {
+            color: var(--tesla-red);
+        }
+
+        /* Problem Kartları */
+        .problem-card {
+            background: #ffffff;
+            border: 1px solid var(--tesla-red);
+            border-radius: 8px;
+            padding: 30px 20px;
+            text-align: center;
+            height: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .problem-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .problem-icon {
+            font-size: 2.5rem;
+            color: var(--tesla-red);
+            margin-bottom: 15px;
+        }
+        .problem-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .problem-desc {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        /* Düymə */
+        .btn-tesla {
+            background-color: var(--tesla-red);
+            color: #ffffff;
+            font-weight: 600;
+            border-radius: 4px;
+            border: none;
+            padding: 10px 20px;
+            transition: 0.3s;
+        }
+        .btn-tesla:hover {
+            background-color: #a30000;
+            color: #ffffff;
+        }
+
+        /* Modal Forma Dizaynı */
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+        }
+        .modal-header {
+            background-color: var(--tesla-black);
+            color: white;
+            border-bottom: 3px solid var(--tesla-red);
+        }
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+        .form-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--tesla-red);
+            box-shadow: 0 0 0 0.2rem rgba(204, 0, 0, 0.25);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="page-header">
+        <div class="container">
+            <h1>TESLA<span>HUBS</span> Texniki Dəstək</h1>
+            <p class="mb-0 text-light">Avtomobilinizdə yaranan problemləri seçin və onlayn müraciət edin</p>
+        </div>
+    </header>
+
+    <main class="container mb-5">
+        <div class="row g-4">
+            
+            <div class="col-md-4">
+                <div class="problem-card">
+                    <div class="problem-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                    <div class="problem-title">Proqram Təminatı və Ekran</div>
+                    <div class="problem-desc">Mərkəzi ekranın donması, naviqasiya və LTE xətaları, sistemin yenilənməməsi kimi problemlər.</div>
+                    <button class="btn btn-tesla trigger-modal-btn" data-problem="software">Daha Ətraflı / Müraciət</button>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="problem-card">
+                    <div class="problem-icon"><i class="fa-solid fa-car-burst"></i></div>
+                    <div class="problem-title">Pnevmatik Asqı və Mexanika</div>
+                    <div class="problem-desc">Hava kompressorunun sıradan çıxması, alt hissədən gələn səslər və asqı kalibrasiyası.</div>
+                    <button class="btn btn-tesla trigger-modal-btn" data-problem="mechanical">Daha Ətraflı / Müraciət</button>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="problem-card">
+                    <div class="problem-icon"><i class="fa-solid fa-car-battery"></i></div>
+                    <div class="problem-title">Batareya və Şarj (BMS)</div>
+                    <div class="problem-desc">12V köməkçi akkumulyator xəbərdarlığı, şarjın kəsilməsi və əsas batareya (BMS) xətaları.</div>
+                    <button class="btn btn-tesla trigger-modal-btn" data-problem="battery">Daha Ətraflı / Müraciət</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div class="modal fade" id="requestModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-wrench me-2"></i>Servis Müraciət Formu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bağla"></button>
+                </div>
+                
+                <div class="modal-body p-4">
+                    <form id="serviceForm" enctype="multipart/form-data">
+                        <div class="row g-3">
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">Ad və Soyadınız *</label>
+                                <input type="text" class="form-control" id="fullName" placeholder="Məsələn: Vüsal Məmmədov" required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">Əlaqə Nömrəsi *</label>
+                                <input type="tel" class="form-control" id="phone" placeholder="+994 (50) 000-0000" required>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Avtomobilin VIN Kodu *</label>
+                                <input type="text" class="form-control text-uppercase" id="vin" maxlength="17" placeholder="17 simvollu şassi nömrəsini daxil edin" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Avtomobilin Modeli *</label>
+                                <select class="form-select" id="carModel" required>
+                                    <option value="" disabled selected>Seçin</option>
+                                    <option value="Model S">Model S</option>
+                                    <option value="Model 3">Model 3</option>
+                                    <option value="Model X">Model X</option>
+                                    <option value="Model Y">Model Y</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Buraxılış İli *</label>
+                                <select class="form-select" id="carYear" required>
+                                    <option value="" disabled selected>Seçin</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2022">2022</option>
+                                    <option value="2021">2021</option>
+                                    <option value="older">2020 və daha köhnə</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Mövcud Problemlər (Bir neçə seçim edə bilərsiniz) *</label>
+                                <select class="form-select" id="problemList" multiple size="4" required>
+                                    <option value="software">Proqram təminatı və Ekran donmaları</option>
+                                    <option value="mechanical">Asqı sistemi, Səs və Mexaniki xətalar</option>
+                                    <option value="battery">Yüksək gərginlikli batareya (BMS) və 12V Akkumulyator</option>
+                                    <option value="charging">Şarj prosesi və Port problemləri</option>
+                                    <option value="other">Digər (Aşağıda qeyd edin)</option>
+                                </select>
+                                <small class="text-muted">Kompüterdə çoxlu seçim üçün "Ctrl" (və ya Mac-da "Cmd") düyməsini sıxılı saxlayın.</small>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Problemin Təsviri</label>
+                                <textarea class="form-control" id="problemDescription" rows="3" placeholder="Avtomobildəki nasazlığı ətraflı yazın..."></textarea>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Şəkil və ya Video əlavə edin (Maksimum 5 fayl)</label>
+                                <input type="file" class="form-control" id="problemFiles" name="attachments[]" multiple accept="image/*,video/*">
+                                <small class="text-muted">Ekranda yaranan xəta kodlarının (error) şəklini çəkib yükləyə bilərsiniz.</small>
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bağla</button>
+                            <button type="submit" class="btn btn-tesla"><i class="fa-solid fa-paper-plane me-2"></i>Sorğunu Göndər</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // DÜZƏLİŞ BURADA EDİLDİ: "bootstrap.Modal" kiçik hərflə yazılmalıdır
+            const requestModal = new bootstrap.Modal(document.getElementById('requestModal'));
+            const problemListDropdown = document.getElementById('problemList');
+            const serviceForm = document.getElementById('serviceForm');
+
+            // 1. "Daha Ətraflı" düyməsinə kliklədikdə Formun açılması və avtomatik seçim
+            document.querySelectorAll('.trigger-modal-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const problemType = this.getAttribute('data-problem');
+                    
+                    // Bütün seçimləri sıfırlayırıq, sonra yalnız kliklənən problemi seçirik
+                    for (let option of problemListDropdown.options) {
+                        option.selected = (option.value === problemType);
+                    }
+                    
+                    requestModal.show();
+                });
+            });
+
+            // 2. Form Göndəriləndə (Submit)
+            serviceForm.addEventListener('submit', function(e) {
+                e.preventDefault(); // Səhifə yenilənməsinin qarşısını alır
+
+                const customerName = document.getElementById('fullName').value;
+                const files = document.getElementById('problemFiles').files;
+                const selectedProblems = Array.from(problemListDropdown.selectedOptions).map(opt => opt.text);
+
+                // Burada real olaraq datalar backend-ə göndərilməlidir. Biz sadəcə xəbərdarlıq edirik:
+                alert(`Təşəkkürlər ${customerName}!\n\nSorğunuz uğurla qəbul edildi.\nSeçilmiş Problemlər: ${selectedProblems.join(', ')}\nƏlavə edilən fayl sayı: ${files.length}\n\nQısa zamanda sizinlə əlaqə saxlayacağıq.`);
+                
+                serviceForm.reset();
+                requestModal.hide();
+            });
+        });
+    </script>
+</body>
+</html>
