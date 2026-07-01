@@ -3,8 +3,7 @@ import './Navbar.css';
 function Navbar() {
   return (
     <nav className="navbar">
-      {/* Navbar content will go here */}
-      <h2>Navbar</h2>
+      {/* This can be used for top-level navigation, like Home, About, Contact */}
     </nav>
   );
 }

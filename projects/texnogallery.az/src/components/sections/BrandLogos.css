@@ -1,8 +1,43 @@
-.brand-logos {
-  padding: 1rem;
-  text-align: center;
-  background-color: #fff;
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
-  margin-bottom: 1rem;
+.brand-logos-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 32px;
+  padding: 24px;
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-sm);
+}
+
+.brand-logo {
+  max-height: 35px;
+  width: auto;
+  opacity: 0.6;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  filter: grayscale(100%);
+  cursor: pointer;
+}
+
+.brand-logo:hover {
+  opacity: 1;
+  filter: grayscale(0%);
+  transform: scale(1.05);
+}
+
+.more-brands-button {
+  background-color: var(--bg-color);
+  color: var(--text-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.more-brands-button:hover {
+  background-color: var(--border-color);
 }

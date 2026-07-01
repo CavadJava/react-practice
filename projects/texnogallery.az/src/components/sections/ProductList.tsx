@@ -5,6 +5,9 @@ interface Product {
   name: string;
   price: string;
   imageUrl: string;
+  oldPrice?: string;
+  badge?: string;
+  description?: string;
 }
 
 interface ProductListProps {
