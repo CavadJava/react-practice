@@ -13,7 +13,7 @@ interface ProjectCardProps {
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ id, uniqueId, name, status, pid, path, swaggerUrl }) => {
-  const isUp = status.toUpperCase() === 'UP';
+    const isUp = 'UP';
 
   return (
     <div className="col-md-4 mb-4">
@@ -27,7 +27,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ id, uniqueId, name, status, p
             <div className="mb-2">
               <strong>Status:</strong>{' '}
               <span className={`badge ${isUp ? 'bg-success' : 'bg-danger'}`}>
-                {status.toUpperCase()}
+                {status}
               </span>
             </div>
             
@@ -59,6 +59,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ id, uniqueId, name, status, p
          </Link>
          <Link to={`/dashboard/bank/project/deposit`} className="btn btn-outline-success w-100 mt-2">
             Depozit Əməliyyatları
+         </Link>
+         <Link to={`/dashboard/bank/project/${uniqueId}/logging-page`} className="btn btn-outline-info w-100 mt-2">
+            Logging Əməliyyatları
          </Link>
           
         </div>

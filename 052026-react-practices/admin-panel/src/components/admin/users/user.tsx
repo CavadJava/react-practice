@@ -1,25 +1,13 @@
+import LeftMenu from "../menu/leftmenu";
+
 const User = () => {
     return (
         <div className="container-fluid">
           <div className="row">
             {/* Sidebar */}
-            <nav className="col-md-3 col-lg-2 d-md-block bg-dark sidebar vh-100 p-3 text-white collapse">
-            <h4 className="text-center mb-4">Admin Panel</h4>
-            <ul className="nav flex-column">
-                <li className="nav-item">
-                <a className="nav-link text-white active" href="/dashboard">Dashboard</a>
-                </li>
-                <li className="nav-item">
-                <a className="nav-link text-white" href="/dashboard/users">İstifadəçilər</a>
-                </li>
-                <li className="nav-item">
-                <a className="nav-link text-white" href="/dashboard/projects">Layihələr</a>
-                </li>
-                <li className="nav-item">
-                <a className="nav-link text-white" href="/dashboard/companies">Şirkətlər</a>
-                </li>
-            </ul>
-            </nav>
+            
+          <LeftMenu />
+      
 
         {/* Əsas Hissə */}
         <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
