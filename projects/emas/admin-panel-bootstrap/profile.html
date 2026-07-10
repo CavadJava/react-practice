@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EMAS — Profil</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .profile-card {
+      background: linear-gradient(135deg, #0d3b6e 0%, #1565c0 100%);
+      border-radius: 14px; padding: 32px; color: #fff; text-align: center;
+    }
+    .profile-avatar-wrap { position: relative; display: inline-block; margin-bottom: 16px; }
+    .profile-avatar {
+      width: 96px; height: 96px; border-radius: 50%;
+      background: rgba(255,255,255,0.2); border: 3px solid rgba(255,255,255,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; font-weight: 800; color: #fff; margin: 0 auto;
+    }
+    .profile-avatar-edit {
+      position: absolute; bottom: 0; right: 0;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #fff; color: #1565c0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; cursor: pointer; border: 2px solid #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,.2);
+    }
+    .profile-name { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .profile-role { font-size: 13px; opacity: .75; margin-bottom: 12px; }
+    .profile-meta { display: flex; justify-content: center; gap: 24px; }
+    .profile-meta div { text-align: center; }
+    .profile-meta .val { font-size: 20px; font-weight: 700; }
+    .profile-meta .lbl { font-size: 11px; opacity: .7; }
+    .info-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f5f6f8; }
+    .info-row:last-child { border-bottom: none; }
+    .info-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .info-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+    .info-val { font-size: 13.5px; font-weight: 600; color: var(--text); }
+    .activity-list .act-item { padding: 10px 0; }
+    .strength-bar { height: 4px; border-radius: 2px; margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+<aside id="sidebar" class="sidebar"></aside>
+
+<div class="main-wrapper">
+  <header class="topbar">
+    <div>
+      <div class="tb-title"><i class="bi bi-person-circle text-primary me-2"></i>Profil</div>
+      <div class="tb-crumb">Parametrlər / Şəxsi Məlumatlar</div>
+    </div>
+    <div class="tb-search">
+      <i class="bi bi-search"></i>
+      <input type="text" placeholder="Axtar...">
+    </div>
+    <div class="tb-right">
+      <div class="tb-clock">
+        <div class="tb-date" id="live-date"></div>
+        <div class="tb-time" id="live-time"></div>
+      </div>
+      <div class="tb-divider"></div>
+      <div class="live-dot me-2">Canlı</div>
+      <div class="tb-icon"><i class="bi bi-bell"></i><span class="tb-dot"></span></div>
+      <div class="tb-divider"></div>
+      <div class="tb-user">
+        <div class="tb-avatar">İH</div>
+        <div><div class="tb-uname">İlham Həsənov</div><div class="tb-urole">Baş Admin</div></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="content">
+    <div class="page-header">
+      <h2>Şəxsi Profil</h2>
+      <p>Hesab məlumatlarınızı idarə edin</p>
+    </div>
+
+    <div class="row g-3">
+
+      <!-- LEFT: Profile Card + Quick Info -->
+      <div class="col-lg-4 d-flex flex-column gap-3">
+        <!-- Profile Hero Card -->
+        <div class="profile-card">
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar" id="avatarInitials">İH</div>
+            <div class="profile-avatar-edit" onclick="document.getElementById('avatarUpload').click()" title="Şəkil yüklə">
+              <i class="bi bi-camera"></i>
+            </div>
+            <input type="file" id="avatarUpload" accept="image/*" style="display:none;" onchange="previewAvatar(this)">
+          </div>
+          <div class="profile-name" id="displayName">İlham Həsənov</div>
+          <div class="profile-role"><span class="role-badge role-admin me-2">Admin</span>Baş Administrator</div>
+          <div class="profile-meta">
+            <div><div class="val">148</div><div class="lbl">Müraciət</div></div>
+            <div><div class="val">32</div><div class="lbl">Müştəri</div></div>
+            <div><div class="val">5</div><div class="lbl">İl</div></div>
+          </div>
+        </div>
+
+        <!-- Quick Info -->
+        <div class="panel">
+          <div class="panel-header"><h5><i class="bi bi-info-circle me-2 text-primary"></i>Hesab Məlumatı</h5></div>
+          <div class="p-3">
+            <div class="info-row">
+              <div class="info-icon c-blue"><i class="bi bi-building"></i></div>
+              <div><div class="info-label">Şöbə</div><div class="info-val">İnformasiya Texnologiyaları</div></div>
+            </div>
+            <div class="info-row">
+              <div class="info-icon c-green"><i class="bi bi-geo-alt"></i></div>
+              <div><div class="info-label">Ünvan</div><div class="info-val">Bakı, Azərbaycan</div></div>
+            </div>
+            <div class="info-row">
+              <div class="info-icon c-orange"><i class="bi bi-calendar3"></i></div>
+              <div><div class="info-label">Qoşulma Tarixi</div><div class="info-val">15 Mart 2021</div></div>
+            </div>
+            <div class="info-row">
+              <div class="info-icon c-teal"><i class="bi bi-clock"></i></div>
+              <div><div class="info-label">Son Giriş</div><div class="info-val">11.07.2026 09:14</div></div>
+            </div>
+            <div class="info-row">
+              <div class="info-icon c-purple"><i class="bi bi-shield-check"></i></div>
+              <div>
+                <div class="info-label">2FA Doğrulama</div>
+                <div class="d-flex align-items-center gap-2 mt-1">
+                  <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="toggle2fa" checked>
+                  </div>
+                  <span class="badge-status bs-active" id="twofa-lbl">Aktiv</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Tabs -->
+      <div class="col-lg-8 d-flex flex-column gap-3">
+        <div class="panel">
+          <!-- TAB NAV -->
+          <ul class="nav nav-tabs px-3 pt-2" id="profileTabs">
+            <li class="nav-item"><button class="nav-link active" onclick="showTab('tab-info',this)"><i class="bi bi-person me-1"></i>Məlumatlar</button></li>
+            <li class="nav-item"><button class="nav-link" onclick="showTab('tab-password',this)"><i class="bi bi-lock me-1"></i>Şifrə</button></li>
+            <li class="nav-item"><button class="nav-link" onclick="showTab('tab-activity',this)"><i class="bi bi-clock-history me-1"></i>Fəaliyyət</button></li>
+            <li class="nav-item"><button class="nav-link" onclick="showTab('tab-notif',this)"><i class="bi bi-bell me-1"></i>Bildiriş</button></li>
+          </ul>
+
+          <!-- TAB: Məlumatlar -->
+          <div id="tab-info" class="p-4">
+            <form onsubmit="saveInfo(event)">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Ad *</label>
+                  <input class="form-control" id="pAd" value="İlham" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Soyad *</label>
+                  <input class="form-control" id="pSoyad" value="Həsənov" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Email *</label>
+                  <input type="email" class="form-control" id="pEmail" value="i.hasanov@emas.gov.az" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Telefon</label>
+                  <input class="form-control" id="pTelefon" value="+994 50 777 88 99">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Şöbə</label>
+                  <select class="form-select" id="pSobe">
+                    <option selected>İnformasiya Texnologiyaları</option>
+                    <option>Sosial Yardım Şöbəsi</option>
+                    <option>Maliyyə Şöbəsi</option>
+                    <option>Hüquq Şöbəsi</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Vəzifə</label>
+                  <input class="form-control" id="pVezife" value="Baş Administrator">
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Haqqında</label>
+                  <textarea class="form-control" id="pAbout" rows="3">EMAS sisteminin baş administratoru. İT altyapısı, istifadəçi idarəetməsi və sistem təhlükəsizliyi üzrə məsuldur.</textarea>
+                </div>
+                <div class="col-12">
+                  <button class="btn btn-primary" type="submit"><i class="bi bi-check-lg me-1"></i>Dəyişiklikləri Saxla</button>
+                  <span id="saveMsg" class="ms-3 text-success d-none"><i class="bi bi-check-circle me-1"></i>Saxlanıldı!</span>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- TAB: Şifrə -->
+          <div id="tab-password" class="p-4" style="display:none;">
+            <form onsubmit="changePassword(event)">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label">Cari Şifrə *</label>
+                  <div class="input-group">
+                    <input type="password" class="form-control" id="pwdCurrent" placeholder="Cari şifrənizi daxil edin">
+                    <button class="btn btn-outline-secondary" type="button" onclick="toggleField('pwdCurrent')"><i class="bi bi-eye"></i></button>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Yeni Şifrə *</label>
+                  <div class="input-group">
+                    <input type="password" class="form-control" id="pwdNew" placeholder="Yeni şifrə" oninput="checkStrength()">
+                    <button class="btn btn-outline-secondary" type="button" onclick="toggleField('pwdNew')"><i class="bi bi-eye"></i></button>
+                  </div>
+                  <div id="strengthWrap" style="display:none;">
+                    <div class="d-flex justify-content-between mt-1">
+                      <small id="strengthLabel" class="text-muted">Zəif</small>
+                    </div>
+                    <div class="strength-bar" style="background:#f0f2f5;">
+                      <div id="strengthBar" style="height:100%;width:0;border-radius:2px;transition:all .3s;"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Yeni Şifrəni Təkrarla *</label>
+                  <div class="input-group">
+                    <input type="password" class="form-control" id="pwdConfirm" placeholder="Yenidən daxil edin">
+                    <button class="btn btn-outline-secondary" type="button" onclick="toggleField('pwdConfirm')"><i class="bi bi-eye"></i></button>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="p-3 rounded" style="background:#f8f9fb;font-size:12.5px;">
+                    <strong>Şifrə tələbləri:</strong>
+                    <ul class="mb-0 mt-1 ps-3">
+                      <li id="req-len" class="text-muted">Minimum 8 simvol</li>
+                      <li id="req-upper" class="text-muted">Böyük hərf (A-Z)</li>
+                      <li id="req-num" class="text-muted">Rəqəm (0-9)</li>
+                      <li id="req-special" class="text-muted">Xüsusi simvol (!@#$)</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <button class="btn btn-danger" type="submit"><i class="bi bi-lock me-1"></i>Şifrəni Dəyiş</button>
+                  <span id="pwdMsg" class="ms-3 d-none"></span>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- TAB: Fəaliyyət -->
+          <div id="tab-activity" class="p-0" style="display:none;">
+            <div class="activity-list" id="actList">
+              <div class="act-item" style="padding:12px 24px;border-bottom:1px solid #f5f6f8;">
+                <div class="act-icon c-green"><i class="bi bi-box-arrow-in-right"></i></div>
+                <div><div class="act-text">Sistemə <strong>giriş</strong> edildi — Chrome / Windows</div><div class="act-time">11.07.2026 09:14 · IP: 10.0.0.45</div></div>
+              </div>
+              <div class="act-item" style="padding:12px 24px;border-bottom:1px solid #f5f6f8;">
+                <div class="act-icon c-blue"><i class="bi bi-pencil-square"></i></div>
+                <div><div class="act-text"><strong>Müraciət #MÜR-2026-1203</strong> redaktə edildi</div><div class="act-time">10.07.2026 16:42</div></div>
+              </div>
+              <div class="act-item" style="padding:12px 24px;border-bottom:1px solid #f5f6f8;">
+                <div class="act-icon c-green"><i class="bi bi-person-plus"></i></div>
+                <div><div class="act-text">Yeni istifadəçi <strong>Gülnar Məmmədova</strong> əlavə edildi</div><div class="act-time">10.07.2026 14:15</div></div>
+              </div>
+              <div class="act-item" style="padding:12px 24px;border-bottom:1px solid #f5f6f8;">
+                <div class="act-icon c-orange"><i class="bi bi-cash-coin"></i></div>
+                <div><div class="act-text"><strong>₼24,800</strong> ödəniş prosesi başladıldı</div><div class="act-time">10.07.2026 11:30</div></div>
+              </div>
+              <div class="act-item" style="padding:12px 24px;border-bottom:1px solid #f5f6f8;">
+                <div class="act-icon c-purple"><i class="bi bi-file-earmark-bar-graph"></i></div>
+                <div><div class="act-text">İyun ayı <strong>hesabatı</strong> export edildi</div><div class="act-time">09.07.2026 17:08</div></div>
+              </div>
+              <div class="act-item" style="padding:12px 24px;">
+                <div class="act-icon c-red"><i class="bi bi-box-arrow-right"></i></div>
+                <div><div class="act-text">Sistemdən <strong>çıxış</strong> edildi</div><div class="act-time">09.07.2026 18:00</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB: Bildiriş -->
+          <div id="tab-notif" class="p-4" style="display:none;">
+            <h6 class="mb-3 fw-bold">Email Bildirişlər</h6>
+            <div class="d-flex flex-column gap-3 mb-4">
+              <div class="d-flex justify-content-between align-items-center p-3 rounded" style="background:#f8f9fb;">
+                <div><div style="font-weight:600;font-size:13.5px;">Yeni Müraciət</div><div style="font-size:12px;color:#888;">Yeni müraciət daxil olduqda bildiriş al</div></div>
+                <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" checked></div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center p-3 rounded" style="background:#f8f9fb;">
+                <div><div style="font-weight:600;font-size:13.5px;">Ödəniş Bildirişi</div><div style="font-size:12px;color:#888;">Ödənişlər tamamlandıqda məlumat al</div></div>
+                <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" checked></div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center p-3 rounded" style="background:#f8f9fb;">
+                <div><div style="font-weight:600;font-size:13.5px;">Sistem Xəbərdarl.</div><div style="font-size:12px;color:#888;">Sistem xətaları haqqında bildiriş</div></div>
+                <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" checked></div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center p-3 rounded" style="background:#f8f9fb;">
+                <div><div style="font-weight:600;font-size:13.5px;">Həftəlik Hesabat</div><div style="font-size:12px;color:#888;">Həftəlik statistika özeti</div></div>
+                <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox"></div>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-sm"><i class="bi bi-check-lg me-1"></i>Bildiriş Parametrlərini Saxla</button>
+          </div>
+        </div>
+
+        <!-- SESSION INFO -->
+        <div class="panel">
+          <div class="panel-header"><h5><i class="bi bi-display me-2 text-warning"></i>Aktiv Sessiyalar</h5></div>
+          <div class="p-3">
+            <div class="d-flex justify-content-between align-items-center p-3 rounded mb-2" style="background:#f8f9fb;border:1px solid var(--border);">
+              <div class="d-flex gap-3 align-items-center">
+                <i class="bi bi-laptop text-primary" style="font-size:22px;"></i>
+                <div>
+                  <div style="font-weight:600;font-size:13px;">Chrome — Windows 11</div>
+                  <div style="font-size:11px;color:#888;">Bakı, AZ · IP: 10.0.0.45 · <span class="live-dot">Cari sessiya</span></div>
+                </div>
+              </div>
+              <span class="badge-status bs-active">Aktiv</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center p-3 rounded" style="background:#f8f9fb;border:1px solid var(--border);">
+              <div class="d-flex gap-3 align-items-center">
+                <i class="bi bi-phone text-muted" style="font-size:22px;"></i>
+                <div>
+                  <div style="font-weight:600;font-size:13px;">Safari — iPhone 15</div>
+                  <div style="font-size:11px;color:#888;">Bakı, AZ · IP: 10.0.1.12 · Son giriş: 10.07.2026</div>
+                </div>
+              </div>
+              <button class="btn btn-outline-danger btn-sm py-0 px-2" style="font-size:11px;">Sonlandır</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="main-footer">
+    <small>© 2026 EMAS — Elektron Sosial Müavinət İdarəetmə Sistemi</small>
+    <small>Versiya 3.1.4 · <a href="#">Dəstək</a></small>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/sidebar.js"></script>
+<script>
+initSidebar('settings');
+
+function showTab(id, btn) {
+  document.querySelectorAll('[id^="tab-"]').forEach(el => el.style.display = 'none');
+  document.getElementById(id).style.display = 'block';
+  document.querySelectorAll('#profileTabs .nav-link').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function saveInfo(e) {
+  e.preventDefault();
+  const ad = document.getElementById('pAd').value.trim();
+  const soyad = document.getElementById('pSoyad').value.trim();
+  document.getElementById('displayName').textContent = `${ad} ${soyad}`;
+  document.getElementById('avatarInitials').textContent = (ad[0]||'') + (soyad[0]||'');
+  const msg = document.getElementById('saveMsg');
+  msg.classList.remove('d-none');
+  setTimeout(() => msg.classList.add('d-none'), 3000);
+}
+
+function changePassword(e) {
+  e.preventDefault();
+  const cur = document.getElementById('pwdCurrent').value;
+  const nw  = document.getElementById('pwdNew').value;
+  const con = document.getElementById('pwdConfirm').value;
+  const msg = document.getElementById('pwdMsg');
+  if (!cur) { showPwdMsg('Cari şifrəni daxil edin.', 'danger'); return; }
+  if (nw !== con) { showPwdMsg('Şifrələr uyğun gəlmir.', 'danger'); return; }
+  if (nw.length < 8) { showPwdMsg('Şifrə minimum 8 simvol olmalıdır.', 'danger'); return; }
+  showPwdMsg('Şifrə uğurla dəyişdirildi!', 'success');
+  ['pwdCurrent','pwdNew','pwdConfirm'].forEach(id => document.getElementById(id).value = '');
+}
+
+function showPwdMsg(txt, type) {
+  const msg = document.getElementById('pwdMsg');
+  msg.className = `ms-3 text-${type}`;
+  msg.textContent = txt;
+  msg.classList.remove('d-none');
+  setTimeout(() => msg.classList.add('d-none'), 4000);
+}
+
+function checkStrength() {
+  const val = document.getElementById('pwdNew').value;
+  const wrap = document.getElementById('strengthWrap');
+  const bar  = document.getElementById('strengthBar');
+  const lbl  = document.getElementById('strengthLabel');
+  wrap.style.display = val ? 'block' : 'none';
+  const checks = [val.length >= 8, /[A-Z]/.test(val), /[0-9]/.test(val), /[!@#$%^&*]/.test(val)];
+  const score = checks.filter(Boolean).length;
+  const colors = ['#e53935','#f57f17','#fdd835','#2e7d32'];
+  const labels = ['Çox Zəif','Zəif','Orta','Güclü'];
+  bar.style.width = (score*25)+'%';
+  bar.style.background = colors[score-1] || '#e53935';
+  lbl.textContent = labels[score-1] || '';
+  lbl.style.color = colors[score-1] || '#e53935';
+  // Requirements
+  const reqs = [
+    {id:'req-len',    ok: val.length>=8},
+    {id:'req-upper',  ok: /[A-Z]/.test(val)},
+    {id:'req-num',    ok: /[0-9]/.test(val)},
+    {id:'req-special',ok: /[!@#$%^&*]/.test(val)},
+  ];
+  reqs.forEach(r => {
+    const el=document.getElementById(r.id);
+    el.style.color = r.ok ? '#2e7d32' : '#888';
+    el.textContent = (r.ok ? '✓ ' : '') + el.textContent.replace('✓ ','');
+  });
+}
+
+function toggleField(id) {
+  const el = document.getElementById(id);
+  el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+function previewAvatar(input) {
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const av = document.getElementById('avatarInitials');
+    av.style.backgroundImage = `url(${e.target.result})`;
+    av.style.backgroundSize = 'cover';
+    av.style.backgroundPosition = 'center';
+    av.textContent = '';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+document.getElementById('toggle2fa').addEventListener('change', function() {
+  document.getElementById('twofa-lbl').textContent = this.checked ? 'Aktiv' : 'Deaktiv';
+  document.getElementById('twofa-lbl').className = 'badge-status ' + (this.checked ? 'bs-active' : 'bs-inactive');
+});
+</script>
+</body>
+</html>

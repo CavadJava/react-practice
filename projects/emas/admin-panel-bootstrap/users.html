@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EMAS — İstifadəçilər</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<aside id="sidebar" class="sidebar"></aside>
+
+<div class="main-wrapper">
+  <header class="topbar">
+    <div>
+      <div class="tb-title"><i class="bi bi-person-badge text-primary me-2"></i>İstifadəçilər</div>
+      <div class="tb-crumb">Sistem / İstifadəçi İdarəetməsi</div>
+    </div>
+    <div class="tb-search">
+      <i class="bi bi-search"></i>
+      <input type="text" id="searchInput" placeholder="Ad, email axtar..." oninput="filterUsers()">
+    </div>
+    <div class="tb-right">
+      <div class="tb-clock">
+        <div class="tb-date" id="live-date"></div>
+        <div class="tb-time" id="live-time"></div>
+      </div>
+      <div class="tb-divider"></div>
+      <div class="live-dot me-2">Canlı</div>
+      <div class="tb-icon"><i class="bi bi-bell"></i><span class="tb-dot"></span></div>
+      <div class="tb-divider"></div>
+      <a href="profile.html" class="tb-user">
+        <div class="tb-avatar">İH</div>
+        <div><div class="tb-uname">İlham Həsənov</div><div class="tb-urole">Baş Admin</div></div>
+      </a>
+    </div>
+  </header>
+
+  <main class="content">
+    <div class="page-header d-flex align-items-center justify-content-between">
+      <div>
+        <h2>İstifadəçi İdarəetməsi</h2>
+        <p>Sistemə daxil olan bütün istifadəçiləri idarə edin</p>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="roles.html" class="btn btn-outline-secondary btn-sm"><i class="bi bi-shield-half me-1"></i>Rol İdarəetməsi</a>
+        <button class="btn btn-primary btn-sm" onclick="openAddUser()" data-bs-toggle="modal" data-bs-target="#modalUser">
+          <i class="bi bi-person-plus me-1"></i>Yeni İstifadəçi
+        </button>
+      </div>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div><div class="s-label">Ümumi</div><div class="s-val" id="sc-total">8</div></div>
+          <div class="s-icon c-blue"><i class="bi bi-people-fill"></i></div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div><div class="s-label">Aktiv</div><div class="s-val" id="sc-active">6</div></div>
+          <div class="s-icon c-green"><i class="bi bi-person-check-fill"></i></div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div><div class="s-label">Bloklanan</div><div class="s-val" id="sc-blocked">2</div></div>
+          <div class="s-icon c-red"><i class="bi bi-person-x-fill"></i></div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div><div class="s-label">Online</div><div class="s-val" id="online-count">3</div></div>
+          <div class="s-icon c-teal"><i class="bi bi-circle-fill" style="font-size:16px;"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="panel">
+      <div class="panel-header">
+        <h5><i class="bi bi-table me-2 text-primary"></i>İstifadəçi Siyahısı</h5>
+        <div class="d-flex gap-2">
+          <select class="form-select form-select-sm" style="width:130px;" onchange="filterByRole(this.value)">
+            <option value="">Bütün Rollar</option>
+            <option value="Admin">Admin</option>
+            <option value="Manager">Manager</option>
+            <option value="Operator">Operator</option>
+            <option value="Viewer">Viewer</option>
+          </select>
+          <select class="form-select form-select-sm" style="width:130px;" onchange="filterByStatus(this.value)">
+            <option value="">Bütün Status</option>
+            <option value="Aktiv">Aktiv</option>
+            <option value="Bloklanan">Bloklanan</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>İstifadəçi</th>
+              <th>Email</th>
+              <th>Şöbə</th>
+              <th>Rol</th>
+              <th>Son Giriş</th>
+              <th>Status</th>
+              <th>Əməliyyat</th>
+            </tr>
+          </thead>
+          <tbody id="userTbody"></tbody>
+        </table>
+      </div>
+      <div class="d-flex align-items-center justify-content-between px-4 py-3" style="border-top:1px solid #f5f6f8;">
+        <small class="text-muted" id="pag-info"></small>
+        <nav><ul class="pagination pagination-sm mb-0" id="pagination"></ul></nav>
+      </div>
+    </div>
+  </main>
+
+  <footer class="main-footer">
+    <small>© 2026 EMAS — Elektron Sosial Müavinət İdarəetmə Sistemi</small>
+    <small>Versiya 3.1.4 · <a href="profile.html">Profil</a></small>
+  </footer>
+</div>
+
+<!-- ADD / EDIT USER MODAL -->
+<div class="modal fade" id="modalUser" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="uModalTitle">Yeni İstifadəçi</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="uEditId">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Ad *</label>
+            <input class="form-control" id="uAd" placeholder="Ad">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Soyad *</label>
+            <input class="form-control" id="uSoyad" placeholder="Soyad">
+          </div>
+          <div class="col-12">
+            <label class="form-label">Email *</label>
+            <input type="email" class="form-control" id="uEmail" placeholder="email@emas.gov.az">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Şöbə</label>
+            <select class="form-select" id="uSobe">
+              <option value="">Seçin...</option>
+              <option>Sosial Yardım Şöbəsi</option>
+              <option>Maliyyə Şöbəsi</option>
+              <option>İnformasiya Texnologiyaları</option>
+              <option>Hüquq Şöbəsi</option>
+              <option>Kadrlar Şöbəsi</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Rol *</label>
+            <select class="form-select" id="uRol">
+              <option value="Viewer">Viewer — Yalnız oxu</option>
+              <option value="Operator">Operator — Məlumat daxil et</option>
+              <option value="Manager">Manager — İdarəetmə</option>
+              <option value="Admin">Admin — Tam hüquq</option>
+            </select>
+          </div>
+          <div class="col-md-6" id="uPasswordGroup">
+            <label class="form-label">Şifrə *</label>
+            <div class="input-group">
+              <input type="password" class="form-control" id="uPassword" placeholder="••••••••">
+              <button class="btn btn-outline-secondary" type="button" onclick="togglePwd()"><i class="bi bi-eye" id="uPwdIcon"></i></button>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Status</label>
+            <select class="form-select" id="uStatus">
+              <option value="Aktiv">Aktiv</option>
+              <option value="Bloklanan">Bloklanan</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Ləğv Et</button>
+        <button class="btn btn-primary" onclick="saveUser()"><i class="bi bi-check-lg me-1"></i>Yadda Saxla</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal fade" id="modalDelUser" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title text-danger"><i class="bi bi-person-x me-2"></i>İstifadəçini Sil</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body"><p>Bu istifadəçini sistemdən silmək istədiyinizə əminsiniz?</p><p class="text-muted small" id="del-uname"></p></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Ləğv Et</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmDelUser()"><i class="bi bi-trash me-1"></i>Sil</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/sidebar.js"></script>
+<script>
+initSidebar('users');
+initOnlineCounter('online-count');
+
+let users = [
+  { id:1, ad:'İlham',  soyad:'Həsənov',    email:'i.hasanov@emas.gov.az',    sobe:'İnformasiya Texnologiyaları', rol:'Admin',    status:'Aktiv',     giris:'11.07.2026 09:14', online:true  },
+  { id:2, ad:'Leyla',  soyad:'Quliyeva',   email:'l.quliyeva@emas.gov.az',   sobe:'Sosial Yardım Şöbəsi',       rol:'Manager',  status:'Aktiv',     giris:'11.07.2026 08:55', online:true  },
+  { id:3, ad:'Tural',  soyad:'Abbasov',    email:'t.abbasov@emas.gov.az',    sobe:'Maliyyə Şöbəsi',             rol:'Manager',  status:'Aktiv',     giris:'10.07.2026 17:30', online:false },
+  { id:4, ad:'Gülnar', soyad:'Məmmədova',  email:'g.mammadova@emas.gov.az',  sobe:'Sosial Yardım Şöbəsi',       rol:'Operator', status:'Aktiv',     giris:'11.07.2026 09:02', online:true  },
+  { id:5, ad:'Rəşad',  soyad:'Əliyev',     email:'r.aliyev@emas.gov.az',     sobe:'Hüquq Şöbəsi',              rol:'Operator', status:'Aktiv',     giris:'09.07.2026 14:22', online:false },
+  { id:6, ad:'Anar',   soyad:'Nəsirov',    email:'a.nasirov@emas.gov.az',    sobe:'Sosial Yardım Şöbəsi',       rol:'Operator', status:'Aktiv',     giris:'11.07.2026 10:05', online:false },
+  { id:7, ad:'Samirə', soyad:'İbrahimova', email:'s.ibrahimova@emas.gov.az', sobe:'Kadrlar Şöbəsi',             rol:'Viewer',   status:'Bloklanan', giris:'01.06.2026 11:00', online:false },
+  { id:8, ad:'Orxan',  soyad:'Hüseyanov',  email:'o.huseyanov@emas.gov.az',  sobe:'Maliyyə Şöbəsi',             rol:'Viewer',   status:'Bloklanan', giris:'15.05.2026 09:40', online:false },
+];
+let nextUid = 9;
+let delUid = null;
+let roleFilter = '';
+let statusFilter = '';
+let searchFilter = '';
+const PER_PAGE = 10;
+let curPage = 1;
+
+const ROLE_CLS = { Admin:'role-admin', Manager:'role-manager', Operator:'role-operator', Viewer:'role-viewer' };
+const AV_COLORS = ['c-blue','c-green','c-purple','c-orange','c-teal','c-red'];
+
+function filteredUsers() {
+  return users.filter(u => {
+    const q = searchFilter.toLowerCase();
+    const mq = !q || `${u.ad} ${u.soyad} ${u.email}`.toLowerCase().includes(q);
+    const mr = !roleFilter || u.rol === roleFilter;
+    const ms = !statusFilter || u.status === statusFilter;
+    return mq && mr && ms;
+  });
+}
+
+function renderUsers() {
+  const data = filteredUsers();
+  const start = (curPage-1)*PER_PAGE;
+  const page = data.slice(start, start+PER_PAGE);
+  const tbody = document.getElementById('userTbody');
+  tbody.innerHTML = page.map(u => {
+    const initials = (u.ad[0]||'')+(u.soyad[0]||'');
+    const cls = AV_COLORS[(u.id-1)%AV_COLORS.length];
+    const statusHtml = u.status === 'Aktiv'
+      ? '<span class="badge-status bs-active">Aktiv</span>'
+      : '<span class="badge-status bs-suspended">Bloklanan</span>';
+    const onlineDot = u.online ? '<span class="live-dot ms-1" style="font-size:10px;">Online</span>' : '';
+    return `<tr>
+      <td>
+        <div class="d-flex align-items-center gap-2">
+          <div class="avatar avatar-sm ${cls}">${initials}</div>
+          <div>
+            <div style="font-weight:600;">${u.ad} ${u.soyad}</div>
+            <div style="font-size:11px;color:#999;">${u.sobe}</div>
+          </div>
+          ${onlineDot}
+        </div>
+      </td>
+      <td><small>${u.email}</small></td>
+      <td><small>${u.sobe}</small></td>
+      <td><span class="role-badge ${ROLE_CLS[u.rol]}">${u.rol}</span></td>
+      <td><small>${u.giris}</small></td>
+      <td>${statusHtml}</td>
+      <td>
+        <div class="d-flex gap-1">
+          <button class="btn btn-outline-primary btn-sm py-0 px-2" style="font-size:11px;" onclick="openEditUser(${u.id})" data-bs-toggle="modal" data-bs-target="#modalUser"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-outline-${u.status==='Aktiv'?'warning':'success'} btn-sm py-0 px-2" style="font-size:11px;" onclick="toggleBlock(${u.id})">
+            <i class="bi bi-${u.status==='Aktiv'?'lock':'unlock'}"></i>
+          </button>
+          <button class="btn btn-outline-danger btn-sm py-0 px-2" style="font-size:11px;" onclick="openDelUser(${u.id})" data-bs-toggle="modal" data-bs-target="#modalDelUser"><i class="bi bi-trash"></i></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  const total = data.length;
+  const totalPages = Math.max(1, Math.ceil(total/PER_PAGE));
+  let pag = `<li class="page-item ${curPage===1?'disabled':''}"><a class="page-link" href="#" onclick="goPg(${curPage-1});return false;">‹</a></li>`;
+  for (let p=1;p<=totalPages;p++) pag += `<li class="page-item ${p===curPage?'active':''}"><a class="page-link" href="#" onclick="goPg(${p});return false;">${p}</a></li>`;
+  pag += `<li class="page-item ${curPage===totalPages?'disabled':''}"><a class="page-link" href="#" onclick="goPg(${curPage+1});return false;">›</a></li>`;
+  document.getElementById('pagination').innerHTML = pag;
+  document.getElementById('pag-info').textContent = `${start+1}–${Math.min(start+PER_PAGE,total)} / ${total} istifadəçi`;
+
+  // Update stats
+  document.getElementById('sc-total').textContent   = users.length;
+  document.getElementById('sc-active').textContent   = users.filter(u=>u.status==='Aktiv').length;
+  document.getElementById('sc-blocked').textContent  = users.filter(u=>u.status==='Bloklanan').length;
+}
+
+function goPg(p) {
+  const max = Math.ceil(filteredUsers().length/PER_PAGE);
+  if (p<1||p>max) return;
+  curPage=p; renderUsers();
+}
+function filterUsers() { searchFilter=document.getElementById('searchInput').value; curPage=1; renderUsers(); }
+function filterByRole(v) { roleFilter=v; curPage=1; renderUsers(); }
+function filterByStatus(v) { statusFilter=v; curPage=1; renderUsers(); }
+
+function clearUForm() {
+  ['uAd','uSoyad','uEmail','uPassword'].forEach(id=>document.getElementById(id).value='');
+  ['uSobe','uRol','uStatus'].forEach(id=>document.getElementById(id).value=id==='uStatus'?'Aktiv':id==='uRol'?'Operator':'');
+  document.getElementById('uEditId').value='';
+}
+
+function openAddUser() {
+  document.getElementById('uModalTitle').textContent='Yeni İstifadəçi';
+  document.getElementById('uPasswordGroup').style.display='block';
+  clearUForm();
+}
+
+function openEditUser(id) {
+  const u = users.find(x=>x.id===id); if(!u) return;
+  document.getElementById('uModalTitle').textContent='İstifadəçi Redaktə Et';
+  document.getElementById('uPasswordGroup').style.display='none';
+  document.getElementById('uEditId').value=id;
+  document.getElementById('uAd').value=u.ad;
+  document.getElementById('uSoyad').value=u.soyad;
+  document.getElementById('uEmail').value=u.email;
+  document.getElementById('uSobe').value=u.sobe;
+  document.getElementById('uRol').value=u.rol;
+  document.getElementById('uStatus').value=u.status;
+}
+
+function saveUser() {
+  const ad=document.getElementById('uAd').value.trim();
+  const soyad=document.getElementById('uSoyad').value.trim();
+  const email=document.getElementById('uEmail').value.trim();
+  if(!ad||!soyad||!email){alert('Ad, soyad, email mütləqdir.');return;}
+  const editId=document.getElementById('uEditId').value;
+  const data={ad,soyad,email,sobe:document.getElementById('uSobe').value,rol:document.getElementById('uRol').value,status:document.getElementById('uStatus').value};
+  if(editId){
+    const idx=users.findIndex(u=>u.id===+editId);
+    if(idx!==-1) users[idx]={...users[idx],...data};
+  } else {
+    data.id=nextUid++;data.giris='—';data.online=false;
+    users.push(data);
+  }
+  bootstrap.Modal.getInstance(document.getElementById('modalUser')).hide();
+  renderUsers();
+}
+
+function toggleBlock(id) {
+  const u=users.find(x=>x.id===id); if(!u) return;
+  u.status=u.status==='Aktiv'?'Bloklanan':'Aktiv';
+  renderUsers();
+}
+
+function openDelUser(id) {
+  delUid=id;
+  const u=users.find(x=>x.id===id);
+  document.getElementById('del-uname').textContent=u?`${u.ad} ${u.soyad} — ${u.email}`:'';
+}
+function confirmDelUser() {
+  users=users.filter(u=>u.id!==delUid);
+  bootstrap.Modal.getInstance(document.getElementById('modalDelUser')).hide();
+  renderUsers();
+}
+
+function togglePwd() {
+  const inp=document.getElementById('uPassword');
+  const icon=document.getElementById('uPwdIcon');
+  if(inp.type==='password'){inp.type='text';icon.className='bi bi-eye-slash';}
+  else{inp.type='password';icon.className='bi bi-eye';}
+}
+
+// Open add modal if #new in URL
+if(window.location.search.includes('action=new')) {
+  setTimeout(()=>new bootstrap.Modal(document.getElementById('modalUser')).show(),400);
+}
+
+renderUsers();
+</script>
+</body>
+</html>

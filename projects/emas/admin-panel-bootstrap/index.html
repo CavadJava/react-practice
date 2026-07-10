@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EMAS — İdarəetmə Paneli</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<aside id="sidebar" class="sidebar"></aside>
+
+<div class="main-wrapper">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div>
+      <div class="tb-title"><i class="bi bi-grid-1x2-fill text-primary me-2"></i>İdarəetmə Paneli</div>
+      <div class="tb-crumb">Ana səhifə</div>
+    </div>
+    <div class="tb-search">
+      <i class="bi bi-search"></i>
+      <input type="text" placeholder="Müraciət, vətəndaş axtar...">
+    </div>
+    <div class="tb-right">
+      <div class="tb-clock">
+        <div class="tb-date" id="live-date"></div>
+        <div class="tb-time" id="live-time"></div>
+      </div>
+      <div class="tb-divider"></div>
+      <div class="live-dot me-2">Canlı</div>
+      <div class="tb-icon" title="Bildirişlər"><i class="bi bi-bell"></i><span class="tb-dot"></span></div>
+      <div class="tb-icon" title="Mesajlar"><i class="bi bi-chat-dots"></i></div>
+      <div class="tb-divider"></div>
+      <a href="profile.html" class="tb-user">
+        <div class="tb-avatar">İH</div>
+        <div>
+          <div class="tb-uname">İlham Həsənov</div>
+          <div class="tb-urole">Baş Admin</div>
+        </div>
+      </a>
+    </div>
+  </header>
+
+  <main class="content">
+    <!-- Page header -->
+    <div class="page-header d-flex align-items-center justify-content-between">
+      <div>
+        <h2>Xoş gəlmisiniz, İlham bəy 👋</h2>
+        <p>Sistem normal işləyir · Online: <strong id="online-count">8</strong> istifadəçi</p>
+      </div>
+      <button class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Yeni Müraciət</button>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="row g-3 mb-4">
+      <div class="col-xl-2 col-lg-4 col-sm-6">
+        <div class="stat-card">
+          <div>
+            <div class="s-label">Ümumi Benefisiar</div>
+            <div class="s-val" id="stat-ben" data-val="148320">148,320</div>
+            <div class="s-change up"><i class="bi bi-arrow-up-short"></i>2.4% bu ay</div>
+          </div>
+          <div class="s-icon c-blue"><i class="bi bi-people-fill"></i></div>
+        </div>
+      </div>
+      <div class="col-xl-2 col-lg-4 col-sm-6">
+        <div class="stat-card">
+          <div>
+            <div class="s-label">Aktiv Müraciət</div>
+            <div class="s-val" id="stat-app" data-val="1847">1,847</div>
+            <div class="s-change up"><i class="bi bi-arrow-up-short"></i>128 bu həftə</div>
+          </div>
+          <div class="s-icon c-orange"><i class="bi bi-file-earmark-text-fill"></i></div>
+        </div>
+      </div>
+      <div class="col-xl-2 col-lg-4 col-sm-6">
+        <div class="stat-card">
+          <div>
+            <div class="s-label">Təsdiqlənmiş</div>
+            <div class="s-val" id="stat-appr" data-val="1209">1,209</div>
+            <div class="s-change up"><i class="bi bi-arrow-up-short"></i>65.4%</div>
+          </div>
+          <div class="s-icon c-green"><i class="bi bi-check-circle-fill"></i></div>
+        </div>
+      </div>
+      <div class="col-xl-2 col-lg-4 col-sm-6">
+        <div class="stat-card">
+          <div>
+            <div class="s-label">Gözləyən</div>
+            <div class="s-val" id="stat-pend" data-val="412">412</div>
+            <div class="s-change down"><i class="bi bi-arrow-down-short"></i>12 azaldı</div>
+          </div>
+          <div class="s-icon c-orange"><i class="bi bi-hourglass-split"></i></div>
+        </div>
+      </div>
+      <div class="col-xl-2 col-lg-4 col-sm-6">
+        <div class="stat-card">
+          <div>
+            <div class="s-label">Bu Ay Ödəniş</div>
+            <div class="s-val">₼2.4M</div>
+            <div class="s-change up"><i class="bi bi-arrow-up-short"></i>5.1% artdı</div>
+          </div>
+          <div class="s-icon c-teal"><i class="bi bi-cash-stack"></i></div>
+        </div>
+      </div>
+      <div class="col-xl-2 col-lg-4 col-sm-6">
+        <div class="stat-card">
+          <div>
+            <div class="s-label">Rədd Edilmiş</div>
+            <div class="s-val" id="stat-rej" data-val="226">226</div>
+            <div class="s-change down"><i class="bi bi-arrow-down-short"></i>8 azaldı</div>
+          </div>
+          <div class="s-icon c-red"><i class="bi bi-x-circle-fill"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="panel mb-4">
+      <div class="panel-header">
+        <h5><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Sürətli Əməliyyatlar</h5>
+      </div>
+      <div class="p-3">
+        <div class="row g-2">
+          <div class="col-6 col-sm-4 col-md-2">
+            <div class="qa-btn"><i class="bi bi-file-earmark-plus"></i>Yeni Müraciət</div>
+          </div>
+          <div class="col-6 col-sm-4 col-md-2">
+            <a href="customers.html#new" class="qa-btn"><i class="bi bi-person-plus"></i>Müştəri Əlavə Et</a>
+          </div>
+          <div class="col-6 col-sm-4 col-md-2">
+            <div class="qa-btn"><i class="bi bi-credit-card"></i>Ödəniş Yarat</div>
+          </div>
+          <div class="col-6 col-sm-4 col-md-2">
+            <a href="customers.html" class="qa-btn"><i class="bi bi-search"></i>Müştəri Axtar</a>
+          </div>
+          <div class="col-6 col-sm-4 col-md-2">
+            <div class="qa-btn"><i class="bi bi-file-bar-graph"></i>Hesabat Al</div>
+          </div>
+          <div class="col-6 col-sm-4 col-md-2">
+            <a href="users.html" class="qa-btn"><i class="bi bi-people"></i>İstifadəçilər</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHART + WIDGETS -->
+    <div class="row g-3 mb-4">
+      <!-- Monthly bar chart -->
+      <div class="col-lg-8">
+        <div class="panel h-100">
+          <div class="panel-header">
+            <h5><i class="bi bi-bar-chart-line me-2 text-primary"></i>Aylıq Müraciətlər (2026)</h5>
+            <small class="text-success"><i class="bi bi-arrow-up-short"></i>18.2% ötən ilə nisbətən</small>
+          </div>
+          <div class="p-3">
+            <div style="display:flex;align-items:flex-end;gap:7px;height:140px;">
+              <!-- Jan–Jul filled, Aug–Dec placeholder -->
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;gap:4px;justify-content:flex-end;">
+                <small style="font-size:9px;color:#aaa;">982</small>
+                <div style="width:100%;height:62%;background:#d0e8ff;border-radius:4px 4px 0 0;" onmouseover="this.style.background='#1565c0'" onmouseout="this.style.background='#d0e8ff'"></div>
+                <small style="font-size:9px;color:#aaa;">Yan</small>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;gap:4px;justify-content:flex-end;">
+                <small style="font-size:9px;color:#aaa;">1,104</small>
+                <div style="width:100%;height:70%;background:#d0e8ff;border-radius:4px 4px 0 0;" onmouseover="this.style.background='#1565c0'" onmouseout="this.style.background='#d0e8ff'"></div>
+                <small style="font-size:9px;color:#aaa;">Fev</small>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;gap:4px;justify-content:flex-end;">
+                <small style="font-size:9px;color:#aaa;">1,348</small>
+                <div style="width:100%;height:85%;background:#d0e8ff;border-radius:4px 4px 0 0;" onmouseover="this.style.background='#1565c0'" onmouseout="this.style.background='#d0e8ff'"></div>
+                <small style="font-size:9px;color:#aaa;">Mar</small>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;gap:4px;justify-content:flex-end;">
+                <small style="font-size:9px;color:#aaa;">1,226</small>
+                <div style="width:100%;height:77%;background:#d0e8ff;border-radius:4px 4px 0 0;" onmouseover="this.style.background='#1565c0'" onmouseout="this.style.background='#d0e8ff'"></div>
+                <small style="font-size:9px;color:#aaa;">Apr</small>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;gap:4px;justify-content:flex-end;">
+                <small style="font-size:9px;color:#aaa;">1,580</small>
+                <div style="width:100%;height:100%;background:#d0e8ff;border-radius:4px 4px 0 0;" onmouseover="this.style.background='#1565c0'" onmouseout="this.style.background='#d0e8ff'"></div>
+                <small style="font-size:9px;color:#aaa;">May</small>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;gap:4px;justify-content:flex-end;">
+                <small style="font-size:9px;color:#aaa;">1,410</small>
+                <div style="width:100%;height:89%;background:#d0e8ff;border-radius:4px 4px 0 0;" onmouseover="this.style.background='#1565c0'" onmouseout="this.style.background='#d0e8ff'"></div>
+                <small style="font-size:9px;color:#aaa;">İyn</small>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;gap:4px;justify-content:flex-end;">
+                <small style="font-size:9px;color:#1565c0;font-weight:700;">1,847</small>
+                <div style="width:100%;height:116%;background:#1565c0;border-radius:4px 4px 0 0;box-shadow:0 4px 12px rgba(21,101,192,.35);"></div>
+                <small style="font-size:9px;color:#1565c0;font-weight:700;">İyl ●</small>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;gap:4px;justify-content:flex-end;">
+                <small style="font-size:9px;color:#ccc;">—</small>
+                <div style="width:100%;height:25%;background:#f0f2f5;border-radius:4px 4px 0 0;border:1px dashed #ddd;"></div>
+                <small style="font-size:9px;color:#ccc;">Avq</small>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;gap:4px;justify-content:flex-end;">
+                <small style="font-size:9px;color:#ccc;">—</small>
+                <div style="width:100%;height:25%;background:#f0f2f5;border-radius:4px 4px 0 0;border:1px dashed #ddd;"></div>
+                <small style="font-size:9px;color:#ccc;">Sen</small>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;gap:4px;justify-content:flex-end;">
+                <small style="font-size:9px;color:#ccc;">—</small>
+                <div style="width:100%;height:25%;background:#f0f2f5;border-radius:4px 4px 0 0;border:1px dashed #ddd;"></div>
+                <small style="font-size:9px;color:#ccc;">Okt</small>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;gap:4px;justify-content:flex-end;">
+                <small style="font-size:9px;color:#ccc;">—</small>
+                <div style="width:100%;height:25%;background:#f0f2f5;border-radius:4px 4px 0 0;border:1px dashed #ddd;"></div>
+                <small style="font-size:9px;color:#ccc;">Noy</small>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;gap:4px;justify-content:flex-end;">
+                <small style="font-size:9px;color:#ccc;">—</small>
+                <div style="width:100%;height:25%;background:#f0f2f5;border-radius:4px 4px 0 0;border:1px dashed #ddd;"></div>
+                <small style="font-size:9px;color:#ccc;">Dek</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Status + Notif -->
+      <div class="col-lg-4 d-flex flex-column gap-3">
+        <div class="panel">
+          <div class="panel-header"><h5><i class="bi bi-pie-chart me-2 text-success"></i>Status Bölgüsü</h5></div>
+          <div class="p-3 d-flex flex-column gap-2">
+            <div class="d-flex align-items-center gap-3">
+              <small style="min-width:100px;font-weight:600;font-size:12px;"><span style="color:#2e7d32;">●</span> Təsdiqlənmiş</small>
+              <div class="prog-bar flex-grow-1"><div class="prog-fill" style="width:65%;background:#2e7d32;"></div></div>
+              <small class="fw-bold">65%</small>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              <small style="min-width:100px;font-weight:600;font-size:12px;"><span style="color:#f57f17;">●</span> Gözləyən</small>
+              <div class="prog-bar flex-grow-1"><div class="prog-fill" style="width:22%;background:#f57f17;"></div></div>
+              <small class="fw-bold">22%</small>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              <small style="min-width:100px;font-weight:600;font-size:12px;"><span style="color:#c62828;">●</span> Rədd Edilmiş</small>
+              <div class="prog-bar flex-grow-1"><div class="prog-fill" style="width:12%;background:#c62828;"></div></div>
+              <small class="fw-bold">12%</small>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              <small style="min-width:100px;font-weight:600;font-size:12px;"><span style="color:#1565c0;">●</span> Baxılır</small>
+              <div class="prog-bar flex-grow-1"><div class="prog-fill" style="width:1%;background:#1565c0;"></div></div>
+              <small class="fw-bold">1%</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h5><i class="bi bi-bell-fill text-danger me-2"></i>Bildirişlər</h5>
+            <span class="badge bg-danger">5</span>
+          </div>
+          <div>
+            <div class="act-item">
+              <div class="act-icon c-orange"><i class="bi bi-hourglass"></i></div>
+              <div>
+                <div class="act-text"><strong>24 müraciət</strong> gözləyir</div>
+                <div class="act-time">2 dəq əvvəl</div>
+              </div>
+            </div>
+            <div class="act-item">
+              <div class="act-icon c-green"><i class="bi bi-check2"></i></div>
+              <div>
+                <div class="act-text"><strong>₼48,200</strong> köçürüldü</div>
+                <div class="act-time">15 dəq əvvəl</div>
+              </div>
+            </div>
+            <div class="act-item">
+              <div class="act-icon c-blue"><i class="bi bi-person-plus"></i></div>
+              <div>
+                <div class="act-text"><strong>12 yeni</strong> benefisiar</div>
+                <div class="act-time">1 saat əvvəl</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECENT APPLICATIONS TABLE -->
+    <div class="panel mb-4">
+      <div class="panel-header">
+        <h5><i class="bi bi-file-earmark-text me-2 text-primary"></i>Son Müraciətlər</h5>
+        <div class="d-flex gap-2">
+          <select class="form-select form-select-sm" style="width:130px;">
+            <option>Hamısı</option><option>Gözləyən</option><option>Təsdiqlənmiş</option>
+          </select>
+          <button class="btn btn-sm btn-primary"><i class="bi bi-plus-lg me-1"></i>Yeni</button>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead><tr><th>#</th><th>Müraciətçi</th><th>FİN</th><th>Xidmət</th><th>Rayon</th><th>Tarix</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td><small class="text-muted">MÜR-001</small></td>
+              <td><div class="d-flex align-items-center gap-2"><div class="avatar avatar-sm">AH</div><span>Aytən Hüseynova</span></div></td>
+              <td><code style="font-size:11px;">5BNM234</code></td>
+              <td><small>Sosial Yardım</small></td><td><small>Nəsimi</small></td><td><small>11.07.2026</small></td>
+              <td><span class="badge-status bs-pending">Gözləyən</span></td>
+              <td><button class="btn btn-xs btn-outline-primary btn-sm py-0 px-2" style="font-size:11px;">Bax</button></td>
+            </tr>
+            <tr>
+              <td><small class="text-muted">MÜR-002</small></td>
+              <td><div class="d-flex align-items-center gap-2"><div class="avatar avatar-sm" style="background:#e8f5e9;color:#2e7d32;">RM</div><span>Rauf Məmmədov</span></div></td>
+              <td><code style="font-size:11px;">7XKP901</code></td>
+              <td><small>Əlillik</small></td><td><small>Gəncə</small></td><td><small>10.07.2026</small></td>
+              <td><span class="badge-status bs-approved">Təsdiqlənmiş</span></td>
+              <td><button class="btn btn-xs btn-outline-primary btn-sm py-0 px-2" style="font-size:11px;">Bax</button></td>
+            </tr>
+            <tr>
+              <td><small class="text-muted">MÜR-003</small></td>
+              <td><div class="d-flex align-items-center gap-2"><div class="avatar avatar-sm" style="background:#f3e5f5;color:#6a1b9a;">LA</div><span>Lalə Əliyeva</span></div></td>
+              <td><code style="font-size:11px;">3CQR567</code></td>
+              <td><small>Tibbi Sığorta</small></td><td><small>Sumqayıt</small></td><td><small>10.07.2026</small></td>
+              <td><span class="badge-status bs-review">Baxılır</span></td>
+              <td><button class="btn btn-xs btn-outline-primary btn-sm py-0 px-2" style="font-size:11px;">Bax</button></td>
+            </tr>
+            <tr>
+              <td><small class="text-muted">MÜR-004</small></td>
+              <td><div class="d-flex align-items-center gap-2"><div class="avatar avatar-sm" style="background:#ffebee;color:#c62828;">NK</div><span>Nigar Kərimova</span></div></td>
+              <td><code style="font-size:11px;">9FZM012</code></td>
+              <td><small>Təhsil Müavinəti</small></td><td><small>Mingəçevir</small></td><td><small>09.07.2026</small></td>
+              <td><span class="badge-status bs-rejected">Rədd Edilmiş</span></td>
+              <td><button class="btn btn-xs btn-outline-primary btn-sm py-0 px-2" style="font-size:11px;">Bax</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ACTIVITY FEED + REGION -->
+    <div class="row g-3">
+      <div class="col-lg-6">
+        <div class="panel">
+          <div class="panel-header">
+            <h5><i class="bi bi-clock-history me-2"></i>Canlı Fəaliyyət</h5>
+            <span class="live-dot">Canlı</span>
+          </div>
+          <div id="live-feed">
+            <div class="act-item">
+              <div class="act-icon c-green"><i class="bi bi-check2-circle"></i></div>
+              <div><div class="act-text"><strong>Rauf Məmmədov</strong> müraciəti təsdiqləndi</div><div class="act-time">2 dəq əvvəl</div></div>
+            </div>
+            <div class="act-item">
+              <div class="act-icon c-blue"><i class="bi bi-person-plus-fill"></i></div>
+              <div><div class="act-text"><strong>3 yeni benefisiar</strong> əlavə edildi</div><div class="act-time">18 dəq əvvəl</div></div>
+            </div>
+            <div class="act-item">
+              <div class="act-icon c-teal"><i class="bi bi-cash"></i></div>
+              <div><div class="act-text"><strong>₼12,400</strong> Nəsimi benefisiarlarına köçürüldü</div><div class="act-time">45 dəq əvvəl</div></div>
+            </div>
+            <div class="act-item">
+              <div class="act-icon c-orange"><i class="bi bi-exclamation-triangle"></i></div>
+              <div><div class="act-text"><strong>Nigar Kərimova</strong> sənəd çatışmazlığından rədd edildi</div><div class="act-time">1 saat əvvəl</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="panel">
+          <div class="panel-header"><h5><i class="bi bi-map me-2 text-warning"></i>Rayon Üzrə Bölgü</h5></div>
+          <div class="p-3 d-flex flex-column gap-3">
+            <div class="d-flex align-items-center gap-3"><small style="min-width:90px;font-weight:600;"><i class="bi bi-geo-alt-fill text-primary me-1"></i>Bakı</small><div class="prog-bar flex-grow-1"><div class="prog-fill" style="width:72%;background:linear-gradient(90deg,#1565c0,#42a5f5);"></div></div><small class="fw-bold">72%</small></div>
+            <div class="d-flex align-items-center gap-3"><small style="min-width:90px;font-weight:600;"><i class="bi bi-geo-alt-fill text-success me-1"></i>Gəncə</small><div class="prog-bar flex-grow-1"><div class="prog-fill" style="width:48%;background:linear-gradient(90deg,#2e7d32,#66bb6a);"></div></div><small class="fw-bold">48%</small></div>
+            <div class="d-flex align-items-center gap-3"><small style="min-width:90px;font-weight:600;"><i class="bi bi-geo-alt-fill text-warning me-1"></i>Sumqayıt</small><div class="prog-bar flex-grow-1"><div class="prog-fill" style="width:35%;background:linear-gradient(90deg,#f57f17,#ffca28);"></div></div><small class="fw-bold">35%</small></div>
+            <div class="d-flex align-items-center gap-3"><small style="min-width:90px;font-weight:600;"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Lənkəran</small><div class="prog-bar flex-grow-1"><div class="prog-fill" style="width:22%;background:linear-gradient(90deg,#c62828,#ef5350);"></div></div><small class="fw-bold">22%</small></div>
+            <div class="d-flex align-items-center gap-3"><small style="min-width:90px;font-weight:600;font-size:11px;"><i class="bi bi-geo-alt-fill me-1" style="color:#6a1b9a;"></i>Mingəçevir</small><div class="prog-bar flex-grow-1"><div class="prog-fill" style="width:18%;background:linear-gradient(90deg,#6a1b9a,#ab47bc);"></div></div><small class="fw-bold">18%</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="main-footer">
+    <small>© 2026 EMAS — Elektron Sosial Müavinət İdarəetmə Sistemi</small>
+    <small>Versiya 3.1.4 · <a href="profile.html">Profil</a> · <a href="#">Dəstək</a></small>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/sidebar.js"></script>
+<script>
+  initSidebar('dashboard');
+  initLiveFeed('live-feed');
+  initOnlineCounter('online-count');
+  initLiveStats([
+    { elId: 'stat-app',  base: 1847, variance: 3 },
+    { elId: 'stat-pend', base: 412,  variance: 2 },
+    { elId: 'stat-appr', base: 1209, variance: 2 },
+    { elId: 'stat-rej',  base: 226,  variance: 1 },
+  ]);
+</script>
+</body>
+</html>
