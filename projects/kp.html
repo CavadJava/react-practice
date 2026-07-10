@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMAS - İdarəetmə Paneli</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-bg: #0d3b6e;
+            --sidebar-hover: #1a5fa8;
+            --sidebar-active: #1976d2;
+            --topbar-height: 64px;
+            --sidebar-width: 260px;
+            --accent: #1976d2;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f0f2f5; font-family: "Segoe UI", Roboto, Arial, sans-serif; color: #333; overflow-x: hidden; }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            min-height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            transition: width 0.3s;
+        }
+
+        .sidebar-logo {
+            padding: 0 20px;
+            height: var(--topbar-height);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-decoration: none;
+        }
+        .sidebar-logo .logo-icon {
+            width: 38px; height: 38px;
+            background: #1976d2;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: #fff;
+            flex-shrink: 0;
+        }
+        .sidebar-logo .logo-text { color: #fff; }
+        .sidebar-logo .logo-text strong { display: block; font-size: 16px; font-weight: 700; letter-spacing: 1px; }
+        .sidebar-logo .logo-text span { font-size: 10px; color: rgba(255,255,255,0.55); letter-spacing: 0.5px; }
+
+        .sidebar-section-label {
+            padding: 20px 20px 6px;
+            font-size: 10px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+        }
+
+        .sidebar-nav { list-style: none; padding: 10px 12px; margin: 0; }
+        .sidebar-nav li { margin-bottom: 2px; }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: rgba(255,255,255,0.72);
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 500;
+            transition: all 0.18s;
+        }
+        .sidebar-nav a i { font-size: 17px; flex-shrink: 0; }
+        .sidebar-nav a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .sidebar-nav a.active { background: var(--sidebar-active); color: #fff; box-shadow: 0 4px 12px rgba(25,118,210,0.4); }
+        .sidebar-nav .badge-pill {
+            margin-left: auto;
+            background: #e53935;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 20px;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 16px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-footer a {
+            display: flex; align-items: center; gap: 10px;
+            color: rgba(255,255,255,0.55);
+            text-decoration: none; font-size: 13px;
+            padding: 8px 10px; border-radius: 6px;
+            transition: all 0.18s;
+        }
+        .sidebar-footer a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+
+        /* ===== MAIN ===== */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== TOPBAR ===== */
+        .topbar {
+            height: var(--topbar-height);
+            background: #fff;
+            padding: 0 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e5e9f0;
+            position: sticky; top: 0; z-index: 900;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .topbar-left { display: flex; align-items: center; gap: 16px; }
+        .breadcrumb-title { font-size: 16px; font-weight: 600; color: #111; }
+        .breadcrumb-sub { font-size: 12px; color: #888; }
+
+        .topbar-search {
+            position: relative;
+            width: 280px;
+        }
+        .topbar-search input {
+            width: 100%; padding: 8px 14px 8px 38px;
+            border: 1px solid #e0e0e0; border-radius: 20px;
+            font-size: 13px; outline: none; background: #f8f9fb;
+            transition: border 0.2s;
+        }
+        .topbar-search input:focus { border-color: var(--accent); background: #fff; }
+        .topbar-search i { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 15px; }
+
+        .topbar-right { display: flex; align-items: center; gap: 18px; }
+        .topbar-icon-btn {
+            position: relative; color: #555;
+            font-size: 19px; cursor: pointer;
+            width: 38px; height: 38px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .topbar-icon-btn:hover { background: #f0f2f5; }
+        .topbar-badge {
+            position: absolute; top: 4px; right: 4px;
+            width: 8px; height: 8px;
+            background: #e53935; border-radius: 50%;
+            border: 2px solid #fff;
+        }
+        .divider-v { width: 1px; height: 28px; background: #e5e9f0; }
+        .topbar-user { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .topbar-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--accent); color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700;
+        }
+        .topbar-user-name { font-size: 13px; font-weight: 600; color: #222; }
+        .topbar-user-role { font-size: 11px; color: #999; }
+
+        /* ===== CONTENT ===== */
+        .content { padding: 28px; flex: 1; }
+
+        .page-header { margin-bottom: 24px; }
+        .page-header h2 { font-size: 20px; font-weight: 700; color: #111; margin-bottom: 4px; }
+        .page-header p { font-size: 13px; color: #888; }
+
+        /* ===== STAT CARDS ===== */
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 22px 24px;
+            border: 1px solid #eaecf0;
+            display: flex; align-items: center; justify-content: space-between;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .stat-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.07); transform: translateY(-2px); }
+        .stat-label { font-size: 12px; font-weight: 600; color: #777; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; }
+        .stat-value { font-size: 28px; font-weight: 700; color: #111; line-height: 1; }
+        .stat-change { font-size: 12px; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+        .stat-change.up { color: #2e7d32; }
+        .stat-change.down { color: #c62828; }
+        .stat-icon-wrap {
+            width: 52px; height: 52px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px;
+        }
+        .icon-blue  { background: #e3f0ff; color: #1565c0; }
+        .icon-green { background: #e8f5e9; color: #2e7d32; }
+        .icon-orange{ background: #fff3e0; color: #e65100; }
+        .icon-red   { background: #ffebee; color: #b71c1c; }
+        .icon-purple{ background: #f3e5f5; color: #6a1b9a; }
+        .icon-teal  { background: #e0f2f1; color: #00695c; }
+
+        /* ===== CARDS ===== */
+        .panel {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #eaecf0;
+            overflow: hidden;
+        }
+        .panel-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid #f0f2f5;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .panel-header h5 { margin: 0; font-size: 15px; font-weight: 600; color: #111; }
+        .panel-body { padding: 0; }
+
+        /* ===== TABLE ===== */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table thead tr { background: #f8f9fb; }
+        .data-table th {
+            padding: 12px 18px;
+            font-size: 11.5px; font-weight: 700; color: #666;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            border-bottom: 1px solid #f0f2f5;
+            white-space: nowrap;
+        }
+        .data-table td {
+            padding: 14px 18px;
+            font-size: 13.5px; color: #333;
+            border-bottom: 1px solid #f5f6f8;
+            vertical-align: middle;
+        }
+        .data-table tbody tr:last-child td { border-bottom: none; }
+        .data-table tbody tr:hover { background: #fafbfd; }
+
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 10px; border-radius: 20px;
+            font-size: 11.5px; font-weight: 600;
+        }
+        .status-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+        .badge-approved  { background: #e8f5e9; color: #2e7d32; }
+        .badge-pending   { background: #fff8e1; color: #f57f17; }
+        .badge-rejected  { background: #ffebee; color: #c62828; }
+        .badge-review    { background: #e3f2fd; color: #1565c0; }
+        .badge-cancelled { background: #f3e5f5; color: #6a1b9a; }
+
+        .avatar-sm {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: #e3f0ff; color: #1565c0;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700; flex-shrink: 0;
+        }
+
+        /* ===== QUICK ACTIONS ===== */
+        .quick-action-btn {
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            padding: 18px 10px;
+            border: 1px solid #eaecf0; border-radius: 10px;
+            background: #fff; color: #444;
+            text-decoration: none; font-size: 12px; font-weight: 600;
+            text-align: center; transition: all 0.18s;
+        }
+        .quick-action-btn i { font-size: 24px; color: var(--accent); }
+        .quick-action-btn:hover { border-color: var(--accent); background: #f0f7ff; color: var(--accent); box-shadow: 0 4px 12px rgba(25,118,210,0.12); }
+
+        /* ===== ACTIVITY LIST ===== */
+        .activity-item {
+            display: flex; gap: 14px; padding: 14px 22px;
+            border-bottom: 1px solid #f5f6f8;
+            align-items: flex-start;
+        }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-dot {
+            width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 16px;
+        }
+        .activity-text { font-size: 13px; color: #333; }
+        .activity-text strong { color: #111; }
+        .activity-time { font-size: 11px; color: #aaa; margin-top: 3px; }
+
+        /* ===== CHART PLACEHOLDER ===== */
+        .chart-area {
+            height: 200px; background: #f8f9fb;
+            border-radius: 8px; display: flex;
+            align-items: center; justify-content: center;
+            flex-direction: column; gap: 8px; color: #bbb; font-size: 13px;
+            margin: 16px 22px;
+        }
+        .chart-area i { font-size: 36px; }
+
+        /* Mini bar chart */
+        .mini-bars { display: flex; align-items: flex-end; gap: 6px; height: 60px; padding: 0 22px 16px; }
+        .mini-bar {
+            flex: 1; border-radius: 4px 4px 0 0;
+            background: #d0e8ff; transition: background 0.2s;
+            cursor: pointer; position: relative;
+        }
+        .mini-bar:hover { background: var(--accent); }
+        .mini-bar-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 9px; color: #aaa; white-space: nowrap; }
+
+        /* ===== NOTIFICATION WIDGET ===== */
+        .notif-item { display: flex; gap: 12px; padding: 12px 22px; border-bottom: 1px solid #f5f6f8; align-items: flex-start; }
+        .notif-item:last-child { border-bottom: none; }
+        .notif-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .notif-title { font-size: 13px; font-weight: 600; color: #222; }
+        .notif-desc { font-size: 12px; color: #888; }
+        .notif-time { font-size: 11px; color: #bbb; margin-left: auto; white-space: nowrap; padding-left: 8px; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            .sidebar { width: 0; overflow: hidden; }
+            .main-wrapper { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar">
+    <a href="#" class="sidebar-logo">
+        <div class="logo-icon"><i class="bi bi-shield-check"></i></div>
+        <div class="logo-text">
+            <strong>EMAS</strong>
+            <span>E-Sosial Sistemlər</span>
+        </div>
+    </a>
+
+    <p class="sidebar-section-label">Əsas</p>
+    <ul class="sidebar-nav">
+        <li><a href="#" class="active"><i class="bi bi-grid-1x2-fill"></i> İdarəetmə Paneli</a></li>
+        <li><a href="#"><i class="bi bi-file-earmark-text"></i> Müraciətlər <span class="badge-pill">24</span></a></li>
+        <li><a href="#"><i class="bi bi-people-fill"></i> Benefisiarlar</a></li>
+        <li><a href="#"><i class="bi bi-cash-stack"></i> Ödənişlər</a></li>
+        <li><a href="#"><i class="bi bi-clipboard2-check"></i> Yoxlamalar</a></li>
+    </ul>
+
+    <p class="sidebar-section-label">Xidmətlər</p>
+    <ul class="sidebar-nav">
+        <li><a href="#"><i class="bi bi-house-heart"></i> Sosial Yardım</a></li>
+        <li><a href="#"><i class="bi bi-hospital"></i> Tibbi Sığorta</a></li>
+        <li><a href="#"><i class="bi bi-mortarboard"></i> Təhsil Müavinəti</a></li>
+        <li><a href="#"><i class="bi bi-person-wheelchair"></i> Əlillik Dəstəyi</a></li>
+        <li><a href="#"><i class="bi bi-bar-chart-line"></i> Hesabatlar</a></li>
+    </ul>
+
+    <p class="sidebar-section-label">Sistem</p>
+    <ul class="sidebar-nav">
+        <li><a href="#"><i class="bi bi-person-badge"></i> İstifadəçilər</a></li>
+        <li><a href="#"><i class="bi bi-building"></i> Qurumlar</a></li>
+        <li><a href="#"><i class="bi bi-gear-fill"></i> Parametrlər</a></li>
+    </ul>
+
+    <div class="sidebar-footer">
+        <a href="#"><i class="bi bi-question-circle"></i> Yardım Mərkəzi</a>
+        <a href="#"><i class="bi bi-box-arrow-right"></i> Çıxış</a>
+    </div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<div class="main-wrapper">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <div>
+                <div class="breadcrumb-title">İdarəetmə Paneli</div>
+                <div class="breadcrumb-sub">Ana səhifə / Dashboard</div>
+            </div>
+        </div>
+
+        <div class="topbar-search">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Müraciət, vətəndaş axtar...">
+        </div>
+
+        <div class="topbar-right">
+            <div class="topbar-icon-btn" title="Bildirişlər">
+                <i class="bi bi-bell"></i>
+                <span class="topbar-badge"></span>
+            </div>
+            <div class="topbar-icon-btn" title="Tapşırıqlar">
+                <i class="bi bi-check2-square"></i>
+            </div>
+            <div class="topbar-icon-btn" title="Mesajlar">
+                <i class="bi bi-chat-dots"></i>
+                <span class="topbar-badge"></span>
+            </div>
+            <div class="divider-v"></div>
+            <div class="topbar-user">
+                <div class="topbar-avatar">İH</div>
+                <div>
+                    <div class="topbar-user-name">İlham Həsənov</div>
+                    <div class="topbar-user-role">Baş Administrator</div>
+                </div>
+                <i class="bi bi-chevron-down" style="font-size:11px;color:#aaa;margin-left:4px;"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+        <div class="page-header">
+            <h2>Salam, İlham bəy 👋</h2>
+            <p>Bugün 11 İyul 2026 · Sistem normal işləyir</p>
+        </div>
+
+        <!-- STAT CARDS -->
+        <div class="row g-3 mb-4">
+            <div class="col-xl-2 col-lg-4 col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-label">Ümumi Benefisiar</div>
+                        <div class="stat-value">148,320</div>
+                        <div class="stat-change up"><i class="bi bi-arrow-up-short"></i> 2.4% bu ay</div>
+                    </div>
+                    <div class="stat-icon-wrap icon-blue"><i class="bi bi-people-fill"></i></div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-lg-4 col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-label">Aktiv Müraciət</div>
+                        <div class="stat-value">1,847</div>
+                        <div class="stat-change up"><i class="bi bi-arrow-up-short"></i> 128 bu həftə</div>
+                    </div>
+                    <div class="stat-icon-wrap icon-orange"><i class="bi bi-file-earmark-text-fill"></i></div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-lg-4 col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-label">Təsdiqlənmiş</div>
+                        <div class="stat-value">1,209</div>
+                        <div class="stat-change up"><i class="bi bi-arrow-up-short"></i> 65.4%</div>
+                    </div>
+                    <div class="stat-icon-wrap icon-green"><i class="bi bi-check-circle-fill"></i></div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-lg-4 col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-label">Gözləyən</div>
+                        <div class="stat-value">412</div>
+                        <div class="stat-change down"><i class="bi bi-arrow-down-short"></i> 12 azaldı</div>
+                    </div>
+                    <div class="stat-icon-wrap icon-orange"><i class="bi bi-hourglass-split"></i></div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-lg-4 col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-label">Bu Ay Ödəniş</div>
+                        <div class="stat-value">₼2.4M</div>
+                        <div class="stat-change up"><i class="bi bi-arrow-up-short"></i> 5.1% artdı</div>
+                    </div>
+                    <div class="stat-icon-wrap icon-teal"><i class="bi bi-cash-stack"></i></div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-lg-4 col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-label">Rədd Edilmiş</div>
+                        <div class="stat-value">226</div>
+                        <div class="stat-change down"><i class="bi bi-arrow-down-short"></i> 8 azaldı</div>
+                    </div>
+                    <div class="stat-icon-wrap icon-red"><i class="bi bi-x-circle-fill"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUICK ACTIONS -->
+        <div class="panel mb-4">
+            <div class="panel-header">
+                <h5><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Sürətli Əməliyyatlar</h5>
+            </div>
+            <div class="panel-body p-3">
+                <div class="row g-2">
+                    <div class="col-6 col-sm-4 col-md-2">
+                        <a href="#" class="quick-action-btn">
+                            <i class="bi bi-file-earmark-plus"></i>
+                            Yeni Müraciət
+                        </a>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-2">
+                        <a href="#" class="quick-action-btn">
+                            <i class="bi bi-person-plus"></i>
+                            Benefisiar Əlavə Et
+                        </a>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-2">
+                        <a href="#" class="quick-action-btn">
+                            <i class="bi bi-credit-card"></i>
+                            Ödəniş Yarat
+                        </a>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-2">
+                        <a href="#" class="quick-action-btn">
+                            <i class="bi bi-search"></i>
+                            Vətəndaş Axtar
+                        </a>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-2">
+                        <a href="#" class="quick-action-btn">
+                            <i class="bi bi-file-bar-graph"></i>
+                            Hesabat Al
+                        </a>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-2">
+                        <a href="#" class="quick-action-btn">
+                            <i class="bi bi-printer"></i>
+                            Çap Et
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <!-- CHART -->
+            <div class="col-lg-8">
+                <div class="panel h-100">
+                    <div class="panel-header">
+                        <h5><i class="bi bi-bar-chart-line me-2 text-primary"></i>Aylıq Müraciətlər (2026)</h5>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-secondary active">Bar</button>
+                            <button class="btn btn-sm btn-outline-secondary">Xətt</button>
+                        </div>
+                    </div>
+                    <div class="panel-body p-3">
+                        <div class="d-flex justify-content-between align-items-center px-1 mb-3">
+                            <small class="text-muted">Cəmi: <strong class="text-dark">14,830</strong> müraciət</small>
+                            <small class="text-success"><i class="bi bi-arrow-up-short"></i> 18.2% ötən ilə nisbətən</small>
+                        </div>
+                        <!-- Simple CSS bar chart -->
+                        <div style="padding: 0 16px 24px;">
+                            <div class="d-flex align-items-flex-end gap-2" style="height:160px; align-items:flex-end;">
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <small style="font-size:10px;color:#888">982</small>
+                                    <div style="width:100%;background:#d0e8ff;border-radius:4px 4px 0 0;height:62%;transition:background .2s;" onmouseover="this.style.background='#1976d2'" onmouseout="this.style.background='#d0e8ff'"></div>
+                                    <small style="font-size:10px;color:#aaa">Yan</small>
+                                </div>
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <small style="font-size:10px;color:#888">1,104</small>
+                                    <div style="width:100%;background:#d0e8ff;border-radius:4px 4px 0 0;height:70%;transition:background .2s;" onmouseover="this.style.background='#1976d2'" onmouseout="this.style.background='#d0e8ff'"></div>
+                                    <small style="font-size:10px;color:#aaa">Fev</small>
+                                </div>
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <small style="font-size:10px;color:#888">1,348</small>
+                                    <div style="width:100%;background:#d0e8ff;border-radius:4px 4px 0 0;height:85%;transition:background .2s;" onmouseover="this.style.background='#1976d2'" onmouseout="this.style.background='#d0e8ff'"></div>
+                                    <small style="font-size:10px;color:#aaa">Mar</small>
+                                </div>
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <small style="font-size:10px;color:#888">1,226</small>
+                                    <div style="width:100%;background:#d0e8ff;border-radius:4px 4px 0 0;height:77%;transition:background .2s;" onmouseover="this.style.background='#1976d2'" onmouseout="this.style.background='#d0e8ff'"></div>
+                                    <small style="font-size:10px;color:#aaa">Apr</small>
+                                </div>
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <small style="font-size:10px;color:#888">1,580</small>
+                                    <div style="width:100%;background:#d0e8ff;border-radius:4px 4px 0 0;height:100%;transition:background .2s;" onmouseover="this.style.background='#1976d2'" onmouseout="this.style.background='#d0e8ff'"></div>
+                                    <small style="font-size:10px;color:#aaa">May</small>
+                                </div>
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <small style="font-size:10px;color:#888">1,410</small>
+                                    <div style="width:100%;background:#d0e8ff;border-radius:4px 4px 0 0;height:89%;transition:background .2s;" onmouseover="this.style.background='#1976d2'" onmouseout="this.style.background='#d0e8ff'"></div>
+                                    <small style="font-size:10px;color:#aaa">İyn</small>
+                                </div>
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <small style="font-size:10px;color:#888">1,847</small>
+                                    <div style="width:100%;background:#1976d2;border-radius:4px 4px 0 0;height:116%;box-shadow:0 4px 12px rgba(25,118,210,0.35);" ></div>
+                                    <small style="font-size:10px;color:#1976d2;font-weight:700">İyl ●</small>
+                                </div>
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <small style="font-size:10px;color:#ccc">-</small>
+                                    <div style="width:100%;background:#f0f2f5;border-radius:4px 4px 0 0;height:30%;border:1px dashed #ddd;"></div>
+                                    <small style="font-size:10px;color:#ccc">Avq</small>
+                                </div>
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <small style="font-size:10px;color:#ccc">-</small>
+                                    <div style="width:100%;background:#f0f2f5;border-radius:4px 4px 0 0;height:30%;border:1px dashed #ddd;"></div>
+                                    <small style="font-size:10px;color:#ccc">Sen</small>
+                                </div>
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <small style="font-size:10px;color:#ccc">-</small>
+                                    <div style="width:100%;background:#f0f2f5;border-radius:4px 4px 0 0;height:30%;border:1px dashed #ddd;"></div>
+                                    <small style="font-size:10px;color:#ccc">Okt</small>
+                                </div>
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <small style="font-size:10px;color:#ccc">-</small>
+                                    <div style="width:100%;background:#f0f2f5;border-radius:4px 4px 0 0;height:30%;border:1px dashed #ddd;"></div>
+                                    <small style="font-size:10px;color:#ccc">Noy</small>
+                                </div>
+                                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                                    <small style="font-size:10px;color:#ccc">-</small>
+                                    <div style="width:100%;background:#f0f2f5;border-radius:4px 4px 0 0;height:30%;border:1px dashed #ddd;"></div>
+                                    <small style="font-size:10px;color:#ccc">Dek</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STATUS PIE + NOTIFICATIONS -->
+            <div class="col-lg-4">
+                <div class="panel mb-3">
+                    <div class="panel-header">
+                        <h5><i class="bi bi-pie-chart me-2 text-success"></i>Status Bölgüsü</h5>
+                    </div>
+                    <div class="panel-body p-3">
+                        <div class="d-flex flex-column gap-2">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width:12px;height:12px;border-radius:3px;background:#2e7d32;"></div>
+                                    <small>Təsdiqlənmiş</small>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width:80px;height:6px;border-radius:3px;background:#e8f5e9;overflow:hidden;">
+                                        <div style="width:65%;height:100%;background:#2e7d32;border-radius:3px;"></div>
+                                    </div>
+                                    <small class="fw-bold">65%</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width:12px;height:12px;border-radius:3px;background:#f57f17;"></div>
+                                    <small>Gözləyən</small>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width:80px;height:6px;border-radius:3px;background:#fff8e1;overflow:hidden;">
+                                        <div style="width:22%;height:100%;background:#f57f17;border-radius:3px;"></div>
+                                    </div>
+                                    <small class="fw-bold">22%</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width:12px;height:12px;border-radius:3px;background:#c62828;"></div>
+                                    <small>Rədd Edilmiş</small>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width:80px;height:6px;border-radius:3px;background:#ffebee;overflow:hidden;">
+                                        <div style="width:12%;height:100%;background:#c62828;border-radius:3px;"></div>
+                                    </div>
+                                    <small class="fw-bold">12%</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width:12px;height:12px;border-radius:3px;background:#1565c0;"></div>
+                                    <small>Baxılır</small>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width:80px;height:6px;border-radius:3px;background:#e3f2fd;overflow:hidden;">
+                                        <div style="width:1%;height:100%;background:#1565c0;border-radius:3px;"></div>
+                                    </div>
+                                    <small class="fw-bold">1%</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h5><i class="bi bi-bell-fill text-danger me-2"></i>Bildirişlər</h5>
+                        <span class="badge bg-danger">5</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="notif-item">
+                            <div class="notif-icon icon-orange"><i class="bi bi-hourglass"></i></div>
+                            <div class="flex-grow-1">
+                                <div class="notif-title">24 müraciət gözləyir</div>
+                                <div class="notif-desc">Təcili baxılmalıdır</div>
+                            </div>
+                            <div class="notif-time">2 dəq</div>
+                        </div>
+                        <div class="notif-item">
+                            <div class="notif-icon icon-green"><i class="bi bi-check2"></i></div>
+                            <div class="flex-grow-1">
+                                <div class="notif-title">Ödəniş tamamlandı</div>
+                                <div class="notif-desc">₼48,200 köçürüldü</div>
+                            </div>
+                            <div class="notif-time">15 dəq</div>
+                        </div>
+                        <div class="notif-item">
+                            <div class="notif-icon icon-blue"><i class="bi bi-person-plus"></i></div>
+                            <div class="flex-grow-1">
+                                <div class="notif-title">Yeni qeydiyyat</div>
+                                <div class="notif-desc">12 yeni benefisiar</div>
+                            </div>
+                            <div class="notif-time">1 saat</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECENT APPLICATIONS TABLE -->
+        <div class="panel mb-4">
+            <div class="panel-header">
+                <h5><i class="bi bi-file-earmark-text me-2 text-primary"></i>Son Müraciətlər</h5>
+                <div class="d-flex gap-2 align-items-center">
+                    <select class="form-select form-select-sm" style="width:140px;">
+                        <option>Hamısı</option>
+                        <option>Gözləyən</option>
+                        <option>Təsdiqlənmiş</option>
+                        <option>Rədd Edilmiş</option>
+                    </select>
+                    <button class="btn btn-sm btn-primary"><i class="bi bi-plus-lg me-1"></i>Yeni</button>
+                    <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-download me-1"></i>Export</button>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Müraciətçi</th>
+                                <th>FİN Kod</th>
+                                <th>Xidmət Növü</th>
+                                <th>Rayon</th>
+                                <th>Tarix</th>
+                                <th>Status</th>
+                                <th>Əməliyyat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><small class="text-muted">MÜR-20260711-001</small></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-sm">AH</div>
+                                        <div>
+                                            <div style="font-weight:600;font-size:13px;">Aytən Hüseynova</div>
+                                            <div style="font-size:11px;color:#999;">+994 50 XXX XX XX</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><code style="font-size:12px;">5BNM234</code></td>
+                                <td><small>Sosial Yardım</small></td>
+                                <td><small>Bakı, Nəsimi</small></td>
+                                <td><small>11.07.2026</small></td>
+                                <td><span class="status-badge badge-pending">Gözləyən</span></td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-xs btn-outline-primary btn-sm py-0 px-2" style="font-size:11px;">Bax</button>
+                                        <button class="btn btn-xs btn-outline-success btn-sm py-0 px-2" style="font-size:11px;">Təsdiqlə</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><small class="text-muted">MÜR-20260711-002</small></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-sm" style="background:#e8f5e9;color:#2e7d32;">RM</div>
+                                        <div>
+                                            <div style="font-weight:600;font-size:13px;">Rauf Məmmədov</div>
+                                            <div style="font-size:11px;color:#999;">+994 55 XXX XX XX</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><code style="font-size:12px;">7XKP901</code></td>
+                                <td><small>Əlillik Müavinəti</small></td>
+                                <td><small>Gəncə</small></td>
+                                <td><small>10.07.2026</small></td>
+                                <td><span class="status-badge badge-approved">Təsdiqlənmiş</span></td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-xs btn-outline-primary btn-sm py-0 px-2" style="font-size:11px;">Bax</button>
+                                        <button class="btn btn-xs btn-outline-secondary btn-sm py-0 px-2" style="font-size:11px;">Çap</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><small class="text-muted">MÜR-20260710-048</small></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-sm" style="background:#f3e5f5;color:#6a1b9a;">LA</div>
+                                        <div>
+                                            <div style="font-weight:600;font-size:13px;">Lalə Əliyeva</div>
+                                            <div style="font-size:11px;color:#999;">+994 70 XXX XX XX</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><code style="font-size:12px;">3CQR567</code></td>
+                                <td><small>Tibbi Sığorta</small></td>
+                                <td><small>Sumqayıt</small></td>
+                                <td><small>10.07.2026</small></td>
+                                <td><span class="status-badge badge-review">Baxılır</span></td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-xs btn-outline-primary btn-sm py-0 px-2" style="font-size:11px;">Bax</button>
+                                        <button class="btn btn-xs btn-outline-success btn-sm py-0 px-2" style="font-size:11px;">Qərar</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><small class="text-muted">MÜR-20260709-031</small></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-sm" style="background:#ffebee;color:#c62828;">NK</div>
+                                        <div>
+                                            <div style="font-weight:600;font-size:13px;">Nigar Kərimova</div>
+                                            <div style="font-size:11px;color:#999;">+994 77 XXX XX XX</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><code style="font-size:12px;">9FZM012</code></td>
+                                <td><small>Təhsil Müavinəti</small></td>
+                                <td><small>Mingəçevir</small></td>
+                                <td><small>09.07.2026</small></td>
+                                <td><span class="status-badge badge-rejected">Rədd Edilmiş</span></td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-xs btn-outline-primary btn-sm py-0 px-2" style="font-size:11px;">Bax</button>
+                                        <button class="btn btn-xs btn-outline-warning btn-sm py-0 px-2" style="font-size:11px;">Yenilə</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><small class="text-muted">MÜR-20260709-025</small></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-sm" style="background:#e0f2f1;color:#00695c;">SI</div>
+                                        <div>
+                                            <div style="font-weight:600;font-size:13px;">Samir İsmayılov</div>
+                                            <div style="font-size:11px;color:#999;">+994 51 XXX XX XX</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><code style="font-size:12px;">2HWV345</code></td>
+                                <td><small>Sosial Yardım</small></td>
+                                <td><small>Lənkəran</small></td>
+                                <td><small>09.07.2026</small></td>
+                                <td><span class="status-badge badge-approved">Təsdiqlənmiş</span></td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-xs btn-outline-primary btn-sm py-0 px-2" style="font-size:11px;">Bax</button>
+                                        <button class="btn btn-xs btn-outline-secondary btn-sm py-0 px-2" style="font-size:11px;">Çap</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="d-flex align-items-center justify-content-between px-4 py-3" style="border-top:1px solid #f5f6f8;">
+                    <small class="text-muted">Cəmi 1,847 müraciətdən 1-5 göstərilir</small>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled"><a class="page-link" href="#">‹</a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">›</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECENT ACTIVITY -->
+        <div class="row g-3">
+            <div class="col-lg-6">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h5><i class="bi bi-clock-history me-2 text-secondary"></i>Son Fəaliyyətlər</h5>
+                        <a href="#" class="btn btn-sm btn-link text-primary p-0">Hamısını gör</a>
+                    </div>
+                    <div class="panel-body">
+                        <div class="activity-item">
+                            <div class="activity-dot icon-green"><i class="bi bi-check2-circle"></i></div>
+                            <div>
+                                <div class="activity-text"><strong>Rauf Məmmədov</strong> - müraciəti təsdiqləndi</div>
+                                <div class="activity-time">2 dəqiqə əvvəl · İlham Həsənov tərəfindən</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-dot icon-blue"><i class="bi bi-person-plus-fill"></i></div>
+                            <div>
+                                <div class="activity-text"><strong>3 yeni benefisiar</strong> sistemə əlavə edildi</div>
+                                <div class="activity-time">18 dəqiqə əvvəl · Avtomatik</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-dot icon-teal"><i class="bi bi-cash"></i></div>
+                            <div>
+                                <div class="activity-text"><strong>₼12,400</strong> Bakı Nəsimi rayonu benefisiarlarına köçürüldü</div>
+                                <div class="activity-time">45 dəqiqə əvvəl · Ödəniş sistemi</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-dot icon-orange"><i class="bi bi-exclamation-triangle"></i></div>
+                            <div>
+                                <div class="activity-text"><strong>Nigar Kərimova</strong> - sənədlər tamamlanmadığından rədd edildi</div>
+                                <div class="activity-time">1 saat əvvəl · Leyla Quliyeva tərəfindən</div>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-dot icon-purple"><i class="bi bi-file-earmark-bar-graph"></i></div>
+                            <div>
+                                <div class="activity-text">İyun ayı <strong>aylıq hesabat</strong> generasiya edildi</div>
+                                <div class="activity-time">2 saat əvvəl · Sistem</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h5><i class="bi bi-map me-2 text-warning"></i>Rayon Üzrə Bölgü</h5>
+                    </div>
+                    <div class="panel-body p-3">
+                        <div class="d-flex flex-column gap-3">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2" style="min-width:120px;">
+                                    <i class="bi bi-geo-alt-fill text-primary" style="font-size:13px;"></i>
+                                    <small style="font-weight:600;">Bakı</small>
+                                </div>
+                                <div class="flex-grow-1 mx-3" style="height:8px;background:#f0f2f5;border-radius:4px;overflow:hidden;">
+                                    <div style="width:72%;height:100%;background:linear-gradient(90deg,#1976d2,#42a5f5);border-radius:4px;"></div>
+                                </div>
+                                <small style="font-weight:700;min-width:40px;text-align:right;">72%</small>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2" style="min-width:120px;">
+                                    <i class="bi bi-geo-alt-fill text-success" style="font-size:13px;"></i>
+                                    <small style="font-weight:600;">Gəncə</small>
+                                </div>
+                                <div class="flex-grow-1 mx-3" style="height:8px;background:#f0f2f5;border-radius:4px;overflow:hidden;">
+                                    <div style="width:48%;height:100%;background:linear-gradient(90deg,#2e7d32,#66bb6a);border-radius:4px;"></div>
+                                </div>
+                                <small style="font-weight:700;min-width:40px;text-align:right;">48%</small>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2" style="min-width:120px;">
+                                    <i class="bi bi-geo-alt-fill text-warning" style="font-size:13px;"></i>
+                                    <small style="font-weight:600;">Sumqayıt</small>
+                                </div>
+                                <div class="flex-grow-1 mx-3" style="height:8px;background:#f0f2f5;border-radius:4px;overflow:hidden;">
+                                    <div style="width:35%;height:100%;background:linear-gradient(90deg,#f57f17,#ffca28);border-radius:4px;"></div>
+                                </div>
+                                <small style="font-weight:700;min-width:40px;text-align:right;">35%</small>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2" style="min-width:120px;">
+                                    <i class="bi bi-geo-alt-fill text-danger" style="font-size:13px;"></i>
+                                    <small style="font-weight:600;">Lənkəran</small>
+                                </div>
+                                <div class="flex-grow-1 mx-3" style="height:8px;background:#f0f2f5;border-radius:4px;overflow:hidden;">
+                                    <div style="width:22%;height:100%;background:linear-gradient(90deg,#c62828,#ef5350);border-radius:4px;"></div>
+                                </div>
+                                <small style="font-weight:700;min-width:40px;text-align:right;">22%</small>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2" style="min-width:120px;">
+                                    <i class="bi bi-geo-alt-fill" style="font-size:13px;color:#6a1b9a;"></i>
+                                    <small style="font-weight:600;">Mingəçevir</small>
+                                </div>
+                                <div class="flex-grow-1 mx-3" style="height:8px;background:#f0f2f5;border-radius:4px;overflow:hidden;">
+                                    <div style="width:18%;height:100%;background:linear-gradient(90deg,#6a1b9a,#ab47bc);border-radius:4px;"></div>
+                                </div>
+                                <small style="font-weight:700;min-width:40px;text-align:right;">18%</small>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2" style="min-width:120px;">
+                                    <i class="bi bi-geo-alt-fill" style="font-size:13px;color:#00695c;"></i>
+                                    <small style="font-weight:600;">Digər</small>
+                                </div>
+                                <div class="flex-grow-1 mx-3" style="height:8px;background:#f0f2f5;border-radius:4px;overflow:hidden;">
+                                    <div style="width:58%;height:100%;background:linear-gradient(90deg,#00695c,#26a69a);border-radius:4px;"></div>
+                                </div>
+                                <small style="font-weight:700;min-width:40px;text-align:right;">58%</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer style="padding:16px 28px;border-top:1px solid #eaecf0;background:#fff;display:flex;align-items:center;justify-content:space-between;">
+        <small class="text-muted">© 2026 EMAS — Elektron Sosial Müavinət İdarəetmə Sistemi</small>
+        <small class="text-muted">Versiya 3.1.4 · <a href="#" class="text-primary text-decoration-none">Dəstək</a> · <a href="#" class="text-primary text-decoration-none">Məxfilik Siyasəti</a></small>
+    </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Active nav on click
+    document.querySelectorAll('.sidebar-nav a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            document.querySelectorAll('.sidebar-nav a').forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin - Services Status</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    
+    <style>
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2 class="mb-4">Xidmətlərin İdarəedilməsi</h2>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">#</th>
+                            <th>Xidmət Adı (Service)</th>
+                            <th>Status</th>
+                            <th>Son Yoxlanış</th>
+                            <th class="text-end pe-4">Əməliyyatlar (Actions)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="ps-4">3</td>
+                            <td>
+                                <strong>Ödəniş API (Payment Gateway)</strong>
+                                <div class="text-muted small">Xarici Servis</div>
+                            </td>
+                            <td><span id="paymentStatusBadge" class="badge bg-secondary px-3 py-2">Yoxlanılmayıb</span></td>
+                            <td class="text-muted small" id="lastCheckTime">İndi</td>
+                            <td class="text-end pe-4">
+                                <button id="paymentCheckBtn" class="btn btn-sm btn-success me-1" onclick="checkPaymentStatus()">Check</button>
+                                <button class="btn btn-sm btn-danger me-1">Stop</button>
+                                <button class="btn btn-sm btn-warning">Restart</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function checkPaymentStatus() {
+        const btn = document.getElementById('paymentCheckBtn');
+        const statusBadge = document.getElementById('paymentStatusBadge');
+        const lastCheckTime = document.getElementById('lastCheckTime');
+        
+        // 1. Sorğu gedərkən UI-nı yüklənmə vəziyyətinə salırıq
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Gözləyin...';
+        
+        statusBadge.className = "badge bg-info text-dark px-3 py-2";
+        statusBadge.innerText = "Yoxlanılır...";
+
+        try {
+            // 2. Backend-ə GET sorğusu göndəririk
+            const response = await fetch("http://localhost:8081/test/check?serviceName=paymentGateway", {
+                method: "GET"
+            });
+            
+            // Əgər server 404, 500 kimi xəta qaytararsa
+            if (!response.ok) {
+                throw new Error("Server cavab vermədi (HTTP xətası)");
+            }
+
+            // 3. Cavabı JSON olaraq oxuyuruq (Məsələn: { "status": "UP" })
+            const data = await response.json();
+
+            // 4. Gələn cavaba uyğun Status sütununu dəyişirik
+            if (data.status === "UP") {
+                statusBadge.className = "badge bg-success px-3 py-2";
+                statusBadge.innerText = "UP";
+            } else if (data.status === "DOWN") {
+                statusBadge.className = "badge bg-danger px-3 py-2";
+                statusBadge.innerText = "DOWN";
+            } else {
+                statusBadge.className = "badge bg-warning text-dark px-3 py-2";
+                statusBadge.innerText = "BİLİNMİR";
+            }
+
+        } catch (error) {
+            // 5. Şəbəkə xətası və ya API sönülüdürsə bura işə düşür
+            console.error("API Xətası:", error);
+            
+            statusBadge.className = "badge bg-dark px-3 py-2";
+            statusBadge.innerText = "NETWORK_ERROR";
+            
+        } finally {
+            // 6. Sonda düyməni yenidən əvvəlki halına qaytarırıq və vaxtı yeniləyirik
+            btn.disabled = false;
+            btn.innerText = "Check";
+            
+            const now = new Date();
+            lastCheckTime.innerText = now.getHours() + ":" + String(now.getMinutes()).padStart(2, '0');
+        }
+    }
+</script>
+
+</body>
+</html>
