@@ -1,0 +1,2364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teslahubs Store – Tesla Accessories</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #e63946;
+      --dark: #0d0d0d;
+      --dark2: #1a1a1a;
+      --dark3: #242424;
+      --muted: #999;
+      --accent: #2563eb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fff;
+      color: #111;
+      margin: 0;
+    }
+
+    /* ── TOP BAR ── */
+    .top-bar {
+      background: var(--dark);
+      color: #fff;
+      font-size: .78rem;
+      letter-spacing: .03em;
+      text-align: center;
+      padding: 8px 0;
+    }
+    .top-bar span { color: #facc15; margin: 0 4px; }
+
+    /* ── NAV ── */
+    .navbar {
+      background: transparent;
+      border-bottom: none;
+      position: absolute !important;
+      top: 38px; left: 0; right: 0;
+      z-index: 100;
+    }
+    .navbar-brand {
+      font-weight: 900;
+      font-size: 1.1rem;
+      color: #fff !important;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+    .nav-link {
+      font-size: .78rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: rgba(255,255,255,.85) !important;
+    }
+    .nav-link.sale { color: var(--red) !important; font-weight: 700; }
+    .nav-link:hover { color: #fff !important; }
+    .nav-icons a { font-size: 1.1rem; color: rgba(255,255,255,.85); margin-left: 18px; }
+    .nav-icons a:hover { color: #fff; }
+    .cart-badge { position: relative; }
+    .cart-badge .badge {
+      position: absolute; top: -6px; right: -8px;
+      font-size: .6rem; padding: 2px 5px;
+      background: var(--red); border-radius: 99px;
+    }
+    .navbar-toggler { border-color: rgba(255,255,255,.3); }
+    .navbar-toggler-icon { filter: invert(1); }
+
+    /* Model Y active pill */
+    .nav-link.nav-pill-active {
+      background: #fff;
+      color: #111 !important;
+      border-radius: 50px;
+      padding-left: 14px !important;
+      padding-right: 14px !important;
+      font-weight: 600;
+    }
+    .nav-link.nav-pill-active:hover { color: #111 !important; }
+
+    /* ── MEGA MENU ── */
+    .mega-menu-wrapper {
+      position: static;
+    }
+    .mega-menu {
+      position: fixed !important;
+      top: 102px; left: 0; right: 0;
+      width: 100vw !important;
+      background: #111;
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      margin: 0 !important;
+      display: flex !important;
+      box-shadow: 0 12px 50px rgba(0,0,0,.8);
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+      visibility: hidden;
+      transition: opacity .22s ease, transform .22s ease, visibility .22s;
+    }
+    .mega-menu.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      visibility: visible;
+    }
+    .mega-cat {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      min-height: 260px;
+      border-right: 1px solid #1f1f1f;
+    }
+    .mega-cat:last-child { border-right: none; }
+    .mega-cat-img {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem;
+      transition: transform .4s ease;
+    }
+    .mega-cat:hover .mega-cat-img { transform: scale(1.06); }
+    .mega-cat-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.2) 60%, transparent 100%);
+    }
+    .mega-cat-body {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 18px 20px;
+    }
+    .mega-cat-title {
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mega-cat-title .arrow {
+      font-size: .9rem;
+      transition: transform .2s;
+    }
+    .mega-cat:hover .mega-cat-title .arrow { transform: translateX(4px); }
+    .mega-cat .sale-pill {
+      position: absolute;
+      top: 14px; left: 14px;
+      background: #22c55e;
+      color: #fff;
+      font-size: .68rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 99px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    /* individual card backgrounds */
+    .mega-cat.cat-bestsellers { background: linear-gradient(160deg,#1a1a1a,#0d0d0d); }
+    .mega-cat.cat-noise       { background: linear-gradient(160deg,#111820,#0d0d0d); }
+    .mega-cat.cat-tech        { background: linear-gradient(160deg,#0f1520,#0a0a14); }
+    .mega-cat.cat-wheels      { background: linear-gradient(160deg,#181010,#0d0d0d); }
+    .mega-cat.cat-lights      { background: linear-gradient(160deg,#1a1510,#0d0d0d); }
+
+    /* ── MODEL 3 MEGA MENU ── */
+    #model3Mega {
+      position: fixed !important;
+      top: 102px; left: 0; right: 0;
+      width: 100vw !important;
+      background: #0d0d0d;
+      border: none;
+      border-top: 1px solid #222;
+      padding: 0;
+      margin: 0 !important;
+      display: flex !important;
+      box-shadow: 0 12px 50px rgba(0,0,0,.8);
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+      visibility: hidden;
+      transition: opacity .22s ease, transform .22s ease, visibility .22s;
+    }
+    #model3Mega.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      visibility: visible;
+    }
+    /* grid fade when switching category */
+    .m3-grid {
+      transition: opacity .15s ease;
+    }
+    .m3-grid.fading { opacity: 0; }
+
+    /* ── ALL MODELS MEGA MENU ── */
+    #allModelsMega {
+      position: fixed !important;
+      top: 102px; left: 0; right: 0;
+      width: 100vw !important;
+      background: #0d0d0d;
+      border: none;
+      padding: 20px 24px 24px;
+      margin: 0 !important;
+      display: flex !important;
+      gap: 16px;
+      box-shadow: 0 12px 50px rgba(0,0,0,.8);
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+      visibility: hidden;
+      transition: opacity .22s ease, transform .22s ease, visibility .22s;
+    }
+    #allModelsMega.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      visibility: visible;
+    }
+    .am-card {
+      flex: 1;
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      min-height: 300px;
+      background: #111;
+      transition: transform .25s ease;
+      text-decoration: none;
+    }
+    .am-card:hover { transform: scale(1.015); }
+    .am-card svg { width: 100%; height: 100%; display: block; }
+    .am-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.75) 0%, rgba(0,0,0,.15) 55%, transparent 100%);
+      pointer-events: none;
+    }
+    .am-label {
+      position: absolute;
+      bottom: 22px; left: 22px; right: 22px;
+      display: flex; align-items: center; justify-content: space-between;
+      color: #fff;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+    .am-label .am-arrow {
+      font-size: 1.1rem;
+      opacity: .7;
+      transition: transform .2s, opacity .2s;
+    }
+    .am-card:hover .am-arrow { transform: translateX(5px); opacity: 1; }
+    /* sidebar */
+    .m3-sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      padding: 32px 24px;
+      border-right: 1px solid #1f1f1f;
+      display: flex;
+      flex-direction: column;
+    }
+    .m3-sidebar .collections-label {
+      font-size: .68rem;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .m3-cat-list { list-style: none; padding: 0; margin: 0; flex: 1; }
+    .m3-cat-list li a {
+      display: block;
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: #555;
+      text-decoration: none;
+      padding: 5px 0;
+      transition: color .15s;
+      line-height: 1.4;
+    }
+    .m3-cat-list li a.active,
+    .m3-cat-list li a:hover { color: #fff; }
+    .m3-view-all {
+      display: flex; align-items: center; gap: 6px;
+      color: #aaa; font-size: .85rem; font-weight: 500;
+      text-decoration: none;
+      padding-top: 24px;
+      border-top: 1px solid #222;
+      transition: color .15s;
+    }
+    .m3-view-all:hover { color: #fff; }
+    /* products area */
+    .m3-products {
+      flex: 1;
+      padding: 20px 24px;
+      overflow: hidden;
+    }
+    .m3-products-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .m3-most-popular {
+      font-size: .7rem;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-weight: 600;
+    }
+    .m3-view-cat {
+      font-size: .82rem;
+      color: #aaa;
+      text-decoration: none;
+      display: flex; align-items: center; gap: 5px;
+      transition: color .15s;
+    }
+    .m3-view-cat:hover { color: #fff; }
+    .m3-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    .m3-product-card {
+      background: #111;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .2s;
+      text-decoration: none;
+    }
+    .m3-product-card:hover { transform: translateY(-3px); }
+    .m3-product-card.light-bg .m3-img-area { background: #f0f0ee; }
+    .m3-img-area {
+      background: #1a1a1a;
+      height: 200px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .m3-img-area svg { width: 100%; height: 100%; }
+    .m3-edition-badge {
+      position: absolute;
+      top: 12px; left: 12px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+    .m3-edition-badge.green { background: #22c55e; color: #fff; }
+    .m3-edition-badge.blue  { background: #3b82f6; color: #fff; }
+    .m3-brand-tag {
+      position: absolute;
+      bottom: 8px; left: 10px;
+      font-size: .6rem;
+      color: rgba(255,255,255,.4);
+    }
+    .m3-card-body { padding: 12px 12px 14px; }
+    .m3-card-body .prod-name {
+      font-size: .78rem;
+      color: #ccc;
+      font-weight: 400;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+    .m3-card-body .prod-name.dark { color: #333; }
+    .m3-card-footer {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .m3-price {
+      font-size: .82rem;
+      color: #e05555;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .m3-price.dark { color: #cc3333; }
+    .m3-save {
+      background: #c0392b;
+      color: #fff;
+      font-size: .65rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: #0a0a0a;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding-top: 120px;
+    }
+    /* red ambient glow at bottom – simulates neon-lit garage */
+    .hero::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 55%;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 100%, rgba(180,20,20,.55) 0%, transparent 70%),
+        radial-gradient(ellipse 30% 50% at 8% 80%, rgba(200,30,30,.4) 0%, transparent 60%),
+        radial-gradient(ellipse 30% 50% at 92% 80%, rgba(200,30,30,.4) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 1;
+    }
+    /* vertical red light pillars */
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom, transparent 30%, rgba(120,0,0,.18) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .hero-content { position: relative; z-index: 10; padding-bottom: 30px; }
+    .hero-subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.35rem);
+      font-weight: 400;
+      color: rgba(255,255,255,.85);
+      letter-spacing: .04em;
+      margin-bottom: 6px;
+    }
+    .hero-discount-wrap {
+      position: relative;
+      display: inline-block;
+      margin: 6px 0 30px;
+    }
+    .hero-discount {
+      font-size: clamp(3rem, 9vw, 7rem);
+      font-weight: 900;
+      letter-spacing: -.02em;
+      line-height: 1;
+      color: #fff;
+      text-transform: uppercase;
+    }
+    /* red SVG oval outline around "UP TO 65% OFF" */
+    .hero-oval {
+      position: absolute;
+      inset: -14px -22px;
+      pointer-events: none;
+    }
+    .hero-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .btn-hero-primary {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      font-size: .95rem;
+      padding: 14px 36px;
+      border: none;
+      border-radius: 50px;
+      text-decoration: none;
+      display: inline-block;
+      transition: background .2s;
+    }
+    .btn-hero-primary:hover { background: #1d4ed8; color: #fff; }
+    .btn-hero-secondary {
+      background: transparent;
+      color: #fff;
+      font-weight: 600;
+      font-size: .95rem;
+      padding: 13px 36px;
+      border: 1.5px solid rgba(255,255,255,.45);
+      border-radius: 50px;
+      text-decoration: none;
+      display: inline-block;
+      transition: border-color .2s, background .2s;
+    }
+    .btn-hero-secondary:hover { border-color: #fff; background: rgba(255,255,255,.08); color: #fff; }
+    .hero-rating { font-size: .82rem; color: rgba(255,255,255,.6); margin-top: 22px; }
+    .hero-rating .stars { color: #facc15; letter-spacing: 2px; }
+    /* Tesla car SVG */
+    .hero-car-wrap {
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: min(90%, 900px);
+      z-index: 5;
+      pointer-events: none;
+    }
+    /* hero-badge used outside hero too */
+    .hero-badge {
+      display: inline-block;
+      background: var(--red);
+      color: #fff;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 99px;
+      margin-bottom: 18px;
+    }
+
+    /* ── MODELS BAR ── */
+    .models-bar {
+      background: var(--dark);
+      padding: 14px 0;
+    }
+    .models-bar .model-btn {
+      background: var(--dark3);
+      color: #ccc;
+      border: 1px solid #333;
+      font-size: .8rem;
+      font-weight: 600;
+      padding: 8px 20px;
+      border-radius: 6px;
+      margin: 4px;
+      cursor: pointer;
+      transition: all .2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .models-bar .model-btn:hover,
+    .models-bar .model-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* ── SECTION TITLES ── */
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -.02em;
+      margin-bottom: 6px;
+    }
+    .section-sub { color: var(--muted); font-size: .92rem; margin-bottom: 36px; }
+
+    /* ── PRODUCT CARD ── */
+    .product-card {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 14px;
+      overflow: hidden;
+      transition: box-shadow .2s, transform .2s;
+      height: 100%;
+    }
+    .product-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,.12); transform: translateY(-3px); }
+    .product-card .img-wrap {
+      background: #f5f5f5;
+      aspect-ratio: 1/1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+    }
+    .product-card .card-body { padding: 16px; }
+    .product-card .name { font-weight: 700; font-size: .9rem; margin-bottom: 6px; color: #111; }
+    .product-card .price { font-weight: 800; font-size: 1.05rem; color: var(--dark); }
+    .product-card .old-price { text-decoration: line-through; color: var(--muted); font-size: .82rem; margin-left: 6px; }
+    .product-card .save-badge {
+      background: #fee2e2; color: var(--red);
+      font-size: .72rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 99px;
+      display: inline-block; margin-left: 6px;
+    }
+    .product-card .stars { color: #facc15; font-size: .78rem; }
+    .product-card .review-count { color: var(--muted); font-size: .78rem; }
+    .btn-add {
+      background: var(--dark);
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 0;
+      width: 100%;
+      margin-top: 12px;
+      transition: background .2s;
+      cursor: pointer;
+    }
+    .btn-add:hover { background: var(--accent); }
+
+    /* ── WHY CHOOSE ── */
+    .why-card {
+      background: var(--dark2);
+      color: #fff;
+      border-radius: 14px;
+      padding: 32px 24px;
+      height: 100%;
+      transition: transform .2s;
+    }
+    .why-card:hover { transform: translateY(-4px); }
+    .why-card .icon { font-size: 2rem; color: var(--accent); margin-bottom: 14px; }
+    .why-card h5 { font-weight: 700; margin-bottom: 8px; }
+    .why-card p { color: #aaa; font-size: .88rem; margin: 0; line-height: 1.6; }
+
+    /* ── TESTIMONIALS ── */
+    .testimonial-section { background: #f8f8f8; }
+    .review-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 16px rgba(0,0,0,.06);
+      height: 100%;
+    }
+    .review-card .stars { color: #facc15; font-size: .9rem; margin-bottom: 8px; }
+    .review-card p { font-size: .88rem; color: #444; line-height: 1.6; margin-bottom: 14px; }
+    .review-card .author { font-weight: 700; font-size: .83rem; }
+    .review-card .date { color: var(--muted); font-size: .78rem; }
+    .verified { color: #22c55e; font-size: .72rem; font-weight: 700; }
+
+    /* ── DIGEST ── */
+    .digest-section { background: var(--dark); color: #fff; }
+    .digest-card {
+      background: var(--dark2);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: transform .2s;
+    }
+    .digest-card:hover { transform: translateY(-4px); }
+    .digest-card .digest-img {
+      background: var(--dark3);
+      height: 160px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3.5rem;
+    }
+    .digest-card .digest-body { padding: 20px; }
+    .digest-card .tag {
+      background: var(--accent);
+      color: #fff;
+      font-size: .7rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 99px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .digest-card h6 { font-weight: 700; margin: 10px 0 6px; font-size: .95rem; color: #fff; }
+    .digest-card .meta { color: #777; font-size: .78rem; }
+
+    /* ── PAYMENT STRIP ── */
+    .payment-strip { background: #f5f5f5; padding: 18px 0; }
+    .pay-icon {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: .75rem;
+      font-weight: 700;
+      color: #444;
+      margin: 4px;
+      display: inline-block;
+    }
+
+    /* ── FOOTER ── */
+    footer { background: var(--dark); color: #aaa; padding: 60px 0 30px; }
+    footer h6 { color: #fff; font-weight: 700; margin-bottom: 16px; font-size: .85rem; text-transform: uppercase; letter-spacing: .06em; }
+    footer a { color: #aaa; text-decoration: none; font-size: .85rem; display: block; margin-bottom: 8px; }
+    footer a:hover { color: #fff; }
+    .footer-brand { font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: -.02em; }
+    .footer-brand span { color: var(--red); }
+    .footer-bottom { border-top: 1px solid #222; margin-top: 40px; padding-top: 20px; font-size: .78rem; color: #555; }
+    .social-icons a {
+      width: 36px; height: 36px;
+      background: #222;
+      border-radius: 8px;
+      display: inline-flex; align-items: center; justify-content: center;
+      color: #aaa;
+      font-size: .95rem;
+      margin-right: 8px;
+      transition: background .2s, color .2s;
+      text-decoration: none;
+    }
+    .social-icons a:hover { background: var(--accent); color: #fff; }
+
+    /* ── TRUST BAR ── */
+    .trust-bar { background: #fff; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 24px 0; }
+    .trust-item { text-align: center; }
+    .trust-item .icon { font-size: 1.6rem; color: var(--accent); margin-bottom: 6px; }
+    .trust-item .label { font-weight: 700; font-size: .82rem; }
+    .trust-item .sub { color: var(--muted); font-size: .75rem; }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <span>⚡</span> Tesla Birthday Sale – <strong>UP TO 65% OFF</strong> – Limited time only! <span>⚡</span>
+</div>
+
+<!-- NAVBAR (transparent, overlays hero) -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="#">TESLAHUBS</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav mx-auto gap-1">
+        <li class="nav-item"><a class="nav-link sale" href="#">SALE</a></li>
+        <li class="nav-item mega-menu-wrapper" id="modelYNav">
+          <a class="nav-link nav-pill-active" href="#" id="modelYTrigger">Model Y</a>
+          <!-- MEGA MENU -->
+          <div class="mega-menu" id="modelYMega">
+            <!-- Best Sellers -->
+            <div class="mega-cat cat-bestsellers">
+              <div class="mega-cat-img">
+                <svg viewBox="0 0 200 180" width="200" height="180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Tesla rear silhouette -->
+                  <rect x="30" y="60" width="140" height="80" rx="8" fill="#1a0a0a"/>
+                  <rect x="20" y="110" width="160" height="30" rx="4" fill="#150808"/>
+                  <path d="M30 60 Q100 40 170 60" fill="#1a0a0a" stroke="#2a1010" stroke-width="2"/>
+                  <!-- red light bar -->
+                  <rect x="22" y="100" width="156" height="8" rx="4" fill="#cc1111"/>
+                  <rect x="22" y="100" width="156" height="8" rx="4" fill="url(#rearGlow)"/>
+                  <!-- wheels -->
+                  <circle cx="60" cy="148" r="18" fill="#0a0a0a" stroke="#2a1010" stroke-width="2"/>
+                  <circle cx="60" cy="148" r="10" fill="#111"/>
+                  <circle cx="140" cy="148" r="18" fill="#0a0a0a" stroke="#2a1010" stroke-width="2"/>
+                  <circle cx="140" cy="148" r="10" fill="#111"/>
+                  <!-- ground -->
+                  <ellipse cx="100" cy="168" rx="80" ry="7" fill="rgba(180,0,0,.25)"/>
+                  <defs>
+                    <linearGradient id="rearGlow" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#ff3333" stop-opacity=".8"/>
+                      <stop offset="100%" stop-color="#ff0000" stop-opacity=".2"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+              <div class="mega-cat-overlay"></div>
+              <span class="sale-pill">UP TO 70% OFF</span>
+              <div class="mega-cat-body">
+                <div class="mega-cat-title">Best Sellers <span class="arrow">→</span></div>
+              </div>
+            </div>
+
+            <!-- Noise Protection -->
+            <div class="mega-cat cat-noise">
+              <div class="mega-cat-img">
+                <svg viewBox="0 0 200 180" width="200" height="180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <!-- car body -->
+                  <path d="M20 110 Q22 85 50 75 Q90 62 100 60 Q110 62 150 75 Q178 85 180 110 Z" fill="#181c28"/>
+                  <path d="M60 75 Q80 48 100 44 Q120 48 140 75 Z" fill="#1a2030" opacity=".9"/>
+                  <circle cx="52" cy="128" r="16" fill="#111" stroke="#222" stroke-width="2"/>
+                  <circle cx="148" cy="128" r="16" fill="#111" stroke="#222" stroke-width="2"/>
+                  <!-- noise protection red outline -->
+                  <path d="M60 75 Q80 48 100 44 Q120 48 140 75 Z" fill="none" stroke="#e63946" stroke-width="2.5"/>
+                  <path d="M20 110 Q22 85 50 75 Q90 62 100 60 Q110 62 150 75 Q178 85 180 110" fill="none" stroke="#e63946" stroke-width="2"/>
+                  <!-- dots on outline -->
+                  <circle cx="100" cy="44" r="4" fill="#e63946"/>
+                  <circle cx="60" cy="75" r="4" fill="#e63946"/>
+                  <circle cx="140" cy="75" r="4" fill="#e63946"/>
+                  <ellipse cx="100" cy="148" rx="80" ry="6" fill="rgba(100,120,180,.15)"/>
+                </svg>
+              </div>
+              <div class="mega-cat-overlay"></div>
+              <div class="mega-cat-body">
+                <div class="mega-cat-title">Noise Protection <span class="arrow">→</span></div>
+              </div>
+            </div>
+
+            <!-- Tech Upgrades -->
+            <div class="mega-cat cat-tech">
+              <div class="mega-cat-img">
+                <svg viewBox="0 0 200 180" width="200" height="180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <!-- screen frame -->
+                  <rect x="35" y="30" width="130" height="110" rx="10" fill="#0d1220"/>
+                  <rect x="38" y="33" width="124" height="104" rx="8" fill="#0a1628"/>
+                  <!-- map UI -->
+                  <rect x="42" y="37" width="116" height="92" rx="6" fill="#0f2040"/>
+                  <!-- map roads -->
+                  <line x1="60" y1="60" x2="140" y2="60" stroke="#1a4080" stroke-width="3"/>
+                  <line x1="60" y1="80" x2="140" y2="80" stroke="#1a4080" stroke-width="3"/>
+                  <line x1="60" y1="100" x2="140" y2="100" stroke="#1a4080" stroke-width="3"/>
+                  <line x1="80" y1="42" x2="80" y2="125" stroke="#1a4080" stroke-width="3"/>
+                  <line x1="100" y1="42" x2="100" y2="125" stroke="#1a4080" stroke-width="3"/>
+                  <line x1="120" y1="42" x2="120" y2="125" stroke="#1a4080" stroke-width="3"/>
+                  <!-- route highlight -->
+                  <path d="M70 42 L70 70 L110 70 L110 125" stroke="#3b82f6" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                  <!-- location pin -->
+                  <circle cx="110" cy="70" r="8" fill="#3b82f6"/>
+                  <circle cx="110" cy="70" r="4" fill="#fff"/>
+                  <!-- distance info -->
+                  <rect x="55" y="45" width="55" height="16" rx="4" fill="rgba(0,0,0,.6)"/>
+                  <rect x="57" y="48" width="20" height="4" rx="2" fill="#6b7280"/>
+                  <rect x="80" y="48" width="28" height="4" rx="2" fill="#3b82f6"/>
+                  <!-- bottom bar -->
+                  <rect x="42" y="133" width="116" height="4" rx="2" fill="#1a2040"/>
+                  <!-- stand -->
+                  <rect x="93" y="140" width="14" height="8" rx="2" fill="#1a1a2e"/>
+                  <rect x="80" y="148" width="40" height="4" rx="2" fill="#1a1a2e"/>
+                </svg>
+              </div>
+              <div class="mega-cat-overlay"></div>
+              <div class="mega-cat-body">
+                <div class="mega-cat-title">Tech Upgrades <span class="arrow">→</span></div>
+              </div>
+            </div>
+
+            <!-- Wheels Protection -->
+            <div class="mega-cat cat-wheels">
+              <div class="mega-cat-img">
+                <svg viewBox="0 0 200 180" width="200" height="180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <!-- tire outer -->
+                  <circle cx="100" cy="95" r="75" fill="#0d0d0d"/>
+                  <circle cx="100" cy="95" r="68" fill="#111" stroke="#1a1a1a" stroke-width="2"/>
+                  <!-- rim -->
+                  <circle cx="100" cy="95" r="50" fill="#1a1a1a"/>
+                  <circle cx="100" cy="95" r="46" fill="#1e1e1e" stroke="#2a2a2a" stroke-width="1"/>
+                  <!-- spokes -->
+                  <path d="M100 49 L100 141 M56 71 L144 119 M56 119 L144 71" stroke="#2a2a2a" stroke-width="10" stroke-linecap="round"/>
+                  <path d="M100 49 L100 141 M56 71 L144 119 M56 119 L144 71" stroke="#333" stroke-width="7" stroke-linecap="round"/>
+                  <!-- center cap -->
+                  <circle cx="100" cy="95" r="16" fill="#222"/>
+                  <circle cx="100" cy="95" r="11" fill="#2a2a2a"/>
+                  <!-- red caliper -->
+                  <path d="M148 78 Q165 88 165 95 Q165 110 148 118 L142 112 Q154 105 154 95 Q154 84 142 79 Z" fill="#cc1111"/>
+                  <!-- lug nuts -->
+                  <circle cx="100" cy="56" r="4" fill="#333"/>
+                  <circle cx="124" cy="63" r="4" fill="#333"/>
+                  <circle cx="135" cy="87" r="4" fill="#333"/>
+                  <circle cx="76" cy="63" r="4" fill="#333"/>
+                  <circle cx="65" cy="87" r="4" fill="#333"/>
+                </svg>
+              </div>
+              <div class="mega-cat-overlay"></div>
+              <div class="mega-cat-body">
+                <div class="mega-cat-title">Wheels Protection <span class="arrow">→</span></div>
+              </div>
+            </div>
+
+            <!-- Lights -->
+            <div class="mega-cat cat-lights">
+              <div class="mega-cat-img">
+                <svg viewBox="0 0 200 180" width="200" height="180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <!-- interior door panel -->
+                  <rect x="20" y="20" width="160" height="140" rx="12" fill="#1a1208"/>
+                  <rect x="24" y="24" width="152" height="132" rx="10" fill="#1e1610"/>
+                  <!-- wood grain trim -->
+                  <rect x="30" y="90" width="140" height="28" rx="6" fill="#2a1c08"/>
+                  <rect x="30" y="90" width="140" height="28" rx="6" fill="url(#woodGrain)"/>
+                  <!-- ambient light strip -->
+                  <rect x="30" y="85" width="140" height="5" rx="2.5" fill="url(#ambientLight)"/>
+                  <!-- door handle -->
+                  <rect x="65" y="105" width="70" height="8" rx="4" fill="#2a2a2a"/>
+                  <!-- speaker grille -->
+                  <circle cx="60" cy="145" r="14" fill="#151208"/>
+                  <circle cx="60" cy="145" r="10" fill="#111"/>
+                  <circle cx="57" cy="142" r="2" fill="#1e1e1e"/>
+                  <circle cx="63" cy="142" r="2" fill="#1e1e1e"/>
+                  <circle cx="57" cy="148" r="2" fill="#1e1e1e"/>
+                  <circle cx="63" cy="148" r="2" fill="#1e1e1e"/>
+                  <!-- window -->
+                  <rect x="30" y="28" width="140" height="52" rx="8" fill="#0a1020" opacity=".85"/>
+                  <defs>
+                    <linearGradient id="ambientLight" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stop-color="#ff8c00" stop-opacity=".1"/>
+                      <stop offset="30%" stop-color="#ff8c00" stop-opacity=".8"/>
+                      <stop offset="70%" stop-color="#3b82f6" stop-opacity=".8"/>
+                      <stop offset="100%" stop-color="#3b82f6" stop-opacity=".1"/>
+                    </linearGradient>
+                    <linearGradient id="woodGrain" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stop-color="#3d2c10"/>
+                      <stop offset="50%" stop-color="#2a1c08"/>
+                      <stop offset="100%" stop-color="#3d2c10"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+              <div class="mega-cat-overlay"></div>
+              <div class="mega-cat-body">
+                <div class="mega-cat-title">Lights <span class="arrow">→</span></div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item" id="model3Nav">
+          <a class="nav-link" href="#" id="model3Trigger">Model 3</a>
+
+          <!-- MODEL 3 MEGA MENU -->
+          <div id="model3Mega">
+            <!-- Left sidebar -->
+            <div class="m3-sidebar">
+              <div class="collections-label">Collections</div>
+              <ul class="m3-cat-list">
+                <li><a href="#" class="active" data-cat="noise">Noise Protection</a></li>
+                <li><a href="#" data-cat="wheels">Wheels</a></li>
+                <li><a href="#" data-cat="tech">Tech Upgrades</a></li>
+                <li><a href="#" data-cat="interior">Interior</a></li>
+                <li><a href="#" data-cat="exterior">Exterior</a></li>
+              </ul>
+              <a href="#" class="m3-view-all">View all products <span>→</span></a>
+            </div>
+
+            <!-- Products grid -->
+            <div class="m3-products">
+              <div class="m3-products-header">
+                <span class="m3-most-popular">Most Popular</span>
+                <a href="#" class="m3-view-cat">All Noise Protection (6) →</a>
+              </div>
+              <div class="m3-grid">
+
+                <!-- Card 1: ProGuard Standard -->
+                <a href="#" class="m3-product-card">
+                  <div class="m3-img-area">
+                    <svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <!-- dark road BG -->
+                      <rect width="300" height="200" fill="#141414"/>
+                      <rect y="130" width="300" height="70" fill="#0d0d0d"/>
+                      <!-- road lines -->
+                      <line x1="0" y1="145" x2="300" y2="155" stroke="#1a1a1a" stroke-width="2"/>
+                      <!-- car body -->
+                      <path d="M30 110 Q32 80 65 68 Q120 52 150 50 Q180 52 235 68 Q268 80 270 110 Z" fill="#c8c8c8"/>
+                      <path d="M30 110 Q32 80 65 68 Q120 52 150 50 Q180 52 235 68 Q268 80 270 110" fill="none" stroke="#bbb" stroke-width="1"/>
+                      <!-- cabin -->
+                      <path d="M85 68 Q105 38 150 32 Q195 38 215 68 Z" fill="#1a2030"/>
+                      <!-- red noise outline -->
+                      <path d="M85 68 Q105 38 150 32 Q195 38 215 68 Z" fill="none" stroke="#e63946" stroke-width="2.5"/>
+                      <path d="M30 110 Q32 80 65 68 Q120 52 150 50 Q180 52 235 68 Q268 80 270 110" fill="none" stroke="#e63946" stroke-width="2.5"/>
+                      <!-- vertical lines -->
+                      <line x1="100" y1="50" x2="98" y2="110" stroke="#e63946" stroke-width="2"/>
+                      <line x1="200" y1="50" x2="202" y2="110" stroke="#e63946" stroke-width="2"/>
+                      <!-- wheels -->
+                      <circle cx="80" cy="120" r="22" fill="#111" stroke="#333" stroke-width="2"/>
+                      <circle cx="80" cy="120" r="12" fill="#1a1a1a"/>
+                      <circle cx="220" cy="120" r="22" fill="#111" stroke="#333" stroke-width="2"/>
+                      <circle cx="220" cy="120" r="12" fill="#1a1a1a"/>
+                      <!-- headline ProGuard text -->
+                      <text x="35" y="30" font-family="Arial" font-weight="900" font-size="22" fill="#fff">ProGuard</text>
+                      <text x="35" y="44" font-family="Arial" font-size="7" fill="#aaa">Advanced Noise Reduction &amp;</text>
+                      <text x="35" y="53" font-family="Arial" font-size="7" fill="#aaa">Weatherproofing Kit</text>
+                      <!-- 3M badge -->
+                      <rect x="28" y="150" width="22" height="14" rx="3" fill="#e63946"/>
+                      <text x="30" y="161" font-family="Arial" font-weight="900" font-size="9" fill="#fff">3M</text>
+                      <text x="55" y="158" font-family="Arial" font-size="6" fill="#666">Made by us for Model 3/Y/S/X</text>
+                    </svg>
+                  </div>
+                  <div class="m3-card-body">
+                    <div class="prod-name">TeslaHubs™ ProGuard: Advanced Noise Reduction &amp; Weatherproofing Kit</div>
+                    <div class="m3-card-footer">
+                      <span class="m3-price">From ₺139.00</span>
+                      <span class="m3-save">SAVE ₺174</span>
+                    </div>
+                  </div>
+                </a>
+
+                <!-- Card 2: ProGuard PLUS -->
+                <a href="#" class="m3-product-card">
+                  <div class="m3-img-area">
+                    <svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect width="300" height="200" fill="#141414"/>
+                      <rect y="130" width="300" height="70" fill="#0d0d0d"/>
+                      <line x1="0" y1="145" x2="300" y2="155" stroke="#1a1a1a" stroke-width="2"/>
+                      <path d="M30 110 Q32 80 65 68 Q120 52 150 50 Q180 52 235 68 Q268 80 270 110 Z" fill="#c0c0c0"/>
+                      <path d="M85 68 Q105 38 150 32 Q195 38 215 68 Z" fill="#1a2030"/>
+                      <path d="M85 68 Q105 38 150 32 Q195 38 215 68 Z" fill="none" stroke="#e63946" stroke-width="2.5"/>
+                      <path d="M30 110 Q32 80 65 68 Q120 52 150 50 Q180 52 235 68 Q268 80 270 110" fill="none" stroke="#e63946" stroke-width="2.5"/>
+                      <line x1="100" y1="50" x2="98" y2="110" stroke="#e63946" stroke-width="2"/>
+                      <line x1="200" y1="50" x2="202" y2="110" stroke="#e63946" stroke-width="2"/>
+                      <circle cx="80" cy="120" r="22" fill="#111" stroke="#333" stroke-width="2"/>
+                      <circle cx="80" cy="120" r="12" fill="#1a1a1a"/>
+                      <circle cx="220" cy="120" r="22" fill="#111" stroke="#333" stroke-width="2"/>
+                      <circle cx="220" cy="120" r="12" fill="#1a1a1a"/>
+                      <text x="35" y="30" font-family="Arial" font-weight="900" font-size="22" fill="#fff">ProGuard</text>
+                      <text x="35" y="44" font-family="Arial" font-size="7" fill="#aaa">Advanced Noise Reduction &amp;</text>
+                      <text x="35" y="53" font-family="Arial" font-size="7" fill="#aaa">Weatherproofing Kit</text>
+                      <!-- PLUS badge -->
+                      <rect x="35" y="58" width="34" height="13" rx="6" fill="#22c55e"/>
+                      <text x="39" y="68" font-family="Arial" font-weight="700" font-size="8" fill="#fff">PLUS</text>
+                      <rect x="28" y="150" width="22" height="14" rx="3" fill="#e63946"/>
+                      <text x="30" y="161" font-family="Arial" font-weight="900" font-size="9" fill="#fff">3M</text>
+                      <text x="55" y="158" font-family="Arial" font-size="6" fill="#666">Made by us for Model 3/Y/S/X</text>
+                    </svg>
+                  </div>
+                  <div class="m3-card-body">
+                    <div class="prod-name">TeslaHubs™ ProGuard: Advanced Noise Reduction &amp; Weatherproofing Kit PLUS Version</div>
+                    <div class="m3-card-footer">
+                      <span class="m3-price">From ₺139.00</span>
+                      <span class="m3-save">SAVE ₺208</span>
+                    </div>
+                  </div>
+                </a>
+
+                <!-- Card 3: ProGuard Blue Edition -->
+                <a href="#" class="m3-product-card">
+                  <div class="m3-img-area">
+                    <svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <!-- blue-dark BG -->
+                      <rect width="300" height="200" fill="#0d1220"/>
+                      <rect y="130" width="300" height="70" fill="#080e1a"/>
+                      <!-- car body silver/white -->
+                      <path d="M30 115 Q32 82 65 70 Q120 54 150 52 Q180 54 235 70 Q268 82 270 115 Z" fill="#dde4ee"/>
+                      <path d="M85 70 Q105 40 150 34 Q195 40 215 70 Z" fill="#1a2535"/>
+                      <!-- red outline -->
+                      <path d="M85 70 Q105 40 150 34 Q195 40 215 70 Z" fill="none" stroke="#e63946" stroke-width="2.5"/>
+                      <path d="M30 115 Q32 82 65 70 Q120 54 150 52 Q180 54 235 70 Q268 82 270 115" fill="none" stroke="#e63946" stroke-width="2"/>
+                      <!-- rear glow -->
+                      <ellipse cx="268" cy="95" rx="10" ry="5" fill="rgba(255,80,80,.3)"/>
+                      <rect x="261" y="90" width="6" height="15" rx="3" fill="#ff4444" opacity=".8"/>
+                      <circle cx="80" cy="125" r="22" fill="#111" stroke="#2a3a55" stroke-width="2"/>
+                      <circle cx="80" cy="125" r="12" fill="#1a2535"/>
+                      <circle cx="220" cy="125" r="22" fill="#111" stroke="#2a3a55" stroke-width="2"/>
+                      <circle cx="220" cy="125" r="12" fill="#1a2535"/>
+                      <!-- ProGuard text -->
+                      <text x="28" y="30" font-family="Arial" font-weight="900" font-size="20" fill="#fff">ProGuard®</text>
+                      <text x="28" y="43" font-family="Arial" font-size="7" fill="#aaa">Advanced Noise Reduction &amp;</text>
+                      <text x="28" y="52" font-family="Arial" font-size="7" fill="#aaa">Weatherproofing Kit</text>
+                      <!-- Blue Edition badge -->
+                      <rect x="28" y="57" width="60" height="13" rx="6" fill="#3b82f6"/>
+                      <text x="32" y="67" font-family="Arial" font-weight="700" font-size="8" fill="#fff">Blue Edition</text>
+                      <!-- Pro-grade glue -->
+                      <text x="28" y="148" font-family="Arial" font-weight="700" font-size="9" fill="#3b82f6">Pro-Grade Glue</text>
+                      <text x="28" y="158" font-family="Arial" font-size="7" fill="#666">for maximum adhesion</text>
+                    </svg>
+                  </div>
+                  <div class="m3-card-body">
+                    <div class="prod-name">TeslaHubs™ ProGuard: Advanced Noise Reduction &amp; Weatherproofing Kit Blue Edition</div>
+                    <div class="m3-card-footer">
+                      <span class="m3-price">From ₺165.00</span>
+                      <span class="m3-save">SAVE ₺122</span>
+                    </div>
+                  </div>
+                </a>
+
+                <!-- Card 4: Sunroof Seal (light bg) -->
+                <a href="#" class="m3-product-card light-bg">
+                  <div class="m3-img-area" style="background:#f0f0ee;">
+                    <svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect width="300" height="200" fill="#f0f0ee"/>
+                      <!-- top-down car view -->
+                      <rect x="90" y="20" width="120" height="160" rx="30" fill="#d0d0cc"/>
+                      <!-- windshield -->
+                      <rect x="100" y="28" width="100" height="42" rx="10" fill="#9ab0c8" opacity=".7"/>
+                      <!-- rear window -->
+                      <rect x="100" y="130" width="100" height="38" rx="10" fill="#9ab0c8" opacity=".7"/>
+                      <!-- sunroof -->
+                      <rect x="108" y="78" width="84" height="44" rx="8" fill="#7a9ab8" opacity=".8"/>
+                      <!-- seal highlight (orange) -->
+                      <rect x="105" y="75" width="90" height="50" rx="10" fill="none" stroke="#f97316" stroke-width="3.5"/>
+                      <!-- door lines -->
+                      <line x1="90" y1="90" x2="90" y2="115" stroke="#bbb" stroke-width="2"/>
+                      <line x1="210" y1="90" x2="210" y2="115" stroke="#bbb" stroke-width="2"/>
+                      <!-- wheels -->
+                      <rect x="72" y="50" width="20" height="36" rx="8" fill="#888"/>
+                      <rect x="208" y="50" width="20" height="36" rx="8" fill="#888"/>
+                      <rect x="72" y="114" width="20" height="36" rx="8" fill="#888"/>
+                      <rect x="208" y="114" width="20" height="36" rx="8" fill="#888"/>
+                      <!-- seal product circle -->
+                      <circle cx="68" cy="105" r="38" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+                      <circle cx="68" cy="105" r="32" fill="none" stroke="#222" stroke-width="14"/>
+                      <circle cx="68" cy="105" r="18" fill="#f0f0ee"/>
+                      <!-- Teslahubs brand -->
+                      <rect x="155" y="174" width="80" height="14" rx="3" fill="#e63946" opacity=".9"/>
+                      <text x="158" y="184" font-family="Arial" font-weight="700" font-size="7" fill="#fff">Teslahubs</text>
+                    </svg>
+                  </div>
+                  <div class="m3-card-body">
+                    <div class="prod-name dark" style="color:#333;">TeslaHubs™ Sunroof Seal Model 3/Y</div>
+                    <div class="m3-card-footer">
+                      <span class="m3-price dark">From ₺89.00</span>
+                    </div>
+                  </div>
+                </a>
+
+              </div><!-- /.m3-grid -->
+            </div><!-- /.m3-products -->
+          </div><!-- /#model3Mega -->
+        </li>
+        <li class="nav-item" id="allModelsNav">
+          <a class="nav-link" href="#" id="allModelsTrigger">All Models</a>
+
+          <div id="allModelsMega">
+            <!-- Model X -->
+            <a href="#" class="am-card">
+              <svg viewBox="0 0 420 300" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                <!-- mountain landscape BG -->
+                <rect width="420" height="300" fill="#1a2030"/>
+                <path d="M0 200 Q60 120 120 150 Q160 100 200 130 Q240 80 280 120 Q320 70 370 110 L420 95 L420 300 L0 300Z" fill="#1e3a28"/>
+                <path d="M0 220 Q80 170 150 200 Q200 160 250 185 Q300 150 360 175 L420 160 L420 300 L0 300Z" fill="#253c2e"/>
+                <!-- lake/water -->
+                <path d="M0 240 L420 240 L420 300 L0 300Z" fill="#1a2535" opacity=".7"/>
+                <!-- sky gradient -->
+                <rect width="420" height="160" fill="url(#skyGrad)"/>
+                <!-- Model X car body -->
+                <path d="M55 195 Q57 165 90 150 Q140 132 210 128 Q280 132 330 150 Q363 165 365 195 Z" fill="#c8ccd6"/>
+                <!-- cabin/glass -->
+                <path d="M120 150 Q145 118 210 112 Q275 118 300 150 Z" fill="#1a2535"/>
+                <path d="M120 150 Q145 118 210 112 Q275 118 300 150 Z" fill="none" stroke="#8a9ab0" stroke-width="1.5"/>
+                <!-- falcon wing doors (open) -->
+                <path d="M210 148 Q230 110 280 90 Q310 82 320 105 Q290 125 265 148Z" fill="#b0b4be" stroke="#9a9eaa" stroke-width="1"/>
+                <path d="M210 148 Q190 108 148 88 Q118 80 108 103 Q138 123 165 148Z" fill="#b0b4be" stroke="#9a9eaa" stroke-width="1"/>
+                <!-- glass in wings -->
+                <path d="M215 145 Q232 112 275 95 Q295 90 305 107 Q280 120 255 145Z" fill="#1a2535" opacity=".6"/>
+                <path d="M205 145 Q188 110 152 93 Q132 88 122 105 Q148 118 175 145Z" fill="#1a2535" opacity=".6"/>
+                <!-- headlights -->
+                <ellipse cx="72" cy="185" rx="12" ry="5" fill="#e8f0ff" opacity=".5"/>
+                <!-- rear light -->
+                <rect x="352" y="178" width="10" height="14" rx="3" fill="#ff2222" opacity=".7"/>
+                <!-- wheels -->
+                <circle cx="120" cy="205" r="30" fill="#111" stroke="#2a2a2a" stroke-width="2"/>
+                <circle cx="120" cy="205" r="18" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+                <circle cx="120" cy="205" r="7" fill="#222"/>
+                <circle cx="300" cy="205" r="30" fill="#111" stroke="#2a2a2a" stroke-width="2"/>
+                <circle cx="300" cy="205" r="18" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1.5"/>
+                <circle cx="300" cy="205" r="7" fill="#222"/>
+                <!-- ground shadow -->
+                <ellipse cx="210" cy="235" rx="160" ry="10" fill="rgba(0,0,0,.4)"/>
+                <defs>
+                  <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#2a3a55"/>
+                    <stop offset="100%" stop-color="#1a2a40" stop-opacity=".6"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="am-overlay"></div>
+              <div class="am-label">Model X <span class="am-arrow">→</span></div>
+            </a>
+
+            <!-- Model S -->
+            <a href="#" class="am-card">
+              <svg viewBox="0 0 420 300" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                <!-- road/nature BG -->
+                <rect width="420" height="300" fill="#1c2a18"/>
+                <!-- trees -->
+                <path d="M0 0 L420 0 L420 180 Q340 120 280 150 Q220 100 160 130 Q100 90 40 120 L0 100Z" fill="#1e3a18"/>
+                <path d="M0 0 L420 0 L420 140 Q360 90 300 120 Q240 70 180 105 Q120 65 60 95 L0 70Z" fill="#243c1e"/>
+                <!-- road -->
+                <path d="M0 220 Q210 200 420 220 L420 300 L0 300Z" fill="#1a1a1a"/>
+                <path d="M0 230 Q210 210 420 230" stroke="#555" stroke-width="1.5" stroke-dasharray="20 12"/>
+                <!-- sky -->
+                <rect width="420" height="150" fill="url(#skyGrad2)" opacity=".8"/>
+                <!-- Model S body – sleek sedan -->
+                <path d="M45 192 Q48 158 85 144 Q140 124 210 120 Q280 124 335 144 Q372 158 375 192 Z" fill="#c0181a"/>
+                <!-- cabin -->
+                <path d="M115 145 Q145 108 210 102 Q275 108 305 145 Z" fill="#0d1520"/>
+                <path d="M115 145 Q145 108 210 102 Q275 108 305 145 Z" fill="none" stroke="#8a1010" stroke-width="1.5"/>
+                <!-- hood line -->
+                <path d="M45 192 Q55 175 85 168 Q140 155 180 150" stroke="#a01215" stroke-width="1.5" fill="none"/>
+                <!-- head/tail lights -->
+                <path d="M48 180 Q52 172 62 170 Q70 172 68 180Z" fill="#ffeeaa" opacity=".6"/>
+                <rect x="364" y="170" width="8" height="18" rx="3" fill="#ff1a1a" opacity=".8"/>
+                <!-- wheels -->
+                <circle cx="118" cy="204" r="30" fill="#111" stroke="#1a1a1a" stroke-width="2"/>
+                <circle cx="118" cy="204" r="19" fill="#1c1c1c"/>
+                <circle cx="118" cy="204" r="8" fill="#111"/>
+                <path d="M118 174 L118 234 M88 204 L148 204 M96 182 L140 226 M140 182 L96 226" stroke="#252525" stroke-width="5" stroke-linecap="round"/>
+                <circle cx="302" cy="204" r="30" fill="#111" stroke="#1a1a1a" stroke-width="2"/>
+                <circle cx="302" cy="204" r="19" fill="#1c1c1c"/>
+                <circle cx="302" cy="204" r="8" fill="#111"/>
+                <path d="M302 174 L302 234 M272 204 L332 204 M280 182 L324 226 M324 182 L280 226" stroke="#252525" stroke-width="5" stroke-linecap="round"/>
+                <!-- ground reflection -->
+                <ellipse cx="210" cy="234" rx="160" ry="8" fill="rgba(180,10,10,.15)"/>
+                <defs>
+                  <linearGradient id="skyGrad2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#1a2a10"/>
+                    <stop offset="100%" stop-color="#0d1a08"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="am-overlay"></div>
+              <div class="am-label">Model S <span class="am-arrow">→</span></div>
+            </a>
+
+            <!-- Cybertruck -->
+            <a href="#" class="am-card">
+              <svg viewBox="0 0 420 300" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                <!-- dark canyon/rocky BG -->
+                <rect width="420" height="300" fill="#0e1218"/>
+                <!-- rocky cliffs -->
+                <path d="M0 0 L420 0 L420 220 Q360 180 310 200 Q260 165 220 185 Q175 145 140 170 Q100 140 60 165 L0 145Z" fill="#1a1e24"/>
+                <path d="M0 0 L420 0 L420 180 Q380 155 340 168 Q295 138 255 158 Q210 120 170 145 Q130 110 90 135 L0 115Z" fill="#12161c"/>
+                <!-- dark sky -->
+                <rect width="420" height="140" fill="#0a0d12"/>
+                <!-- Cybertruck – angular stainless steel body -->
+                <!-- main body polygon -->
+                <path d="M40 200 L50 165 L100 148 L160 138 L210 135 L270 138 L340 148 L390 168 L400 200Z" fill="#9aa0a8"/>
+                <!-- cab roof – flat angular -->
+                <path d="M130 148 L160 118 L260 115 L300 148Z" fill="#8a9098"/>
+                <!-- windshield -->
+                <path d="M135 148 L163 120 L255 117 L295 148Z" fill="#0d1520" opacity=".85"/>
+                <!-- hood – angled flat -->
+                <path d="M40 200 L50 165 L100 148 L130 148 L115 168 L65 185Z" fill="#8a9098"/>
+                <!-- bed -->
+                <path d="M300 148 L340 148 L390 168 L400 200 L300 200Z" fill="#929aa2"/>
+                <!-- bed wall -->
+                <rect x="298" y="138" width="6" height="60" rx="1" fill="#7a8088"/>
+                <!-- sharp body line -->
+                <path d="M40 200 L130 178 L210 175 L300 178 L400 200" stroke="#c0c8d0" stroke-width="1.5" fill="none"/>
+                <!-- headlight bar -->
+                <rect x="42" y="178" width="28" height="6" rx="2" fill="#e8f0ff" opacity=".7"/>
+                <!-- rear light bar -->
+                <rect x="352" y="168" width="42" height="5" rx="2" fill="#ff2222" opacity=".65"/>
+                <!-- wheels – angular covers -->
+                <ellipse cx="115" cy="210" rx="34" ry="28" fill="#0a0a0a" stroke="#1e1e1e" stroke-width="2"/>
+                <ellipse cx="115" cy="210" rx="20" ry="17" fill="#141414"/>
+                <ellipse cx="305" cy="210" rx="34" ry="28" fill="#0a0a0a" stroke="#1e1e1e" stroke-width="2"/>
+                <ellipse cx="305" cy="210" rx="20" ry="17" fill="#141414"/>
+                <!-- metallic sheen -->
+                <path d="M50 165 Q130 155 210 153 Q290 155 390 168" stroke="rgba(255,255,255,.12)" stroke-width="3" fill="none"/>
+                <!-- ground glow -->
+                <ellipse cx="210" cy="238" rx="170" ry="8" fill="rgba(150,160,175,.08)"/>
+              </svg>
+              <div class="am-overlay" style="background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.3) 50%,transparent 100%)"></div>
+              <div class="am-label">Cybertruck <span class="am-arrow">→</span></div>
+            </a>
+          </div>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="#">Shop All</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Order Status</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Support</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Digest</a></li>
+      </ul>
+      <div class="nav-icons d-flex align-items-center">
+        <a href="#"><i class="bi bi-search"></i></a>
+        <a href="#"><i class="bi bi-person"></i></a>
+        <a href="#" class="cart-badge">
+          <i class="bi bi-bag"></i>
+          <span class="badge">3</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <!-- Tesla Model 3 side-view SVG silhouette -->
+  <div class="hero-car-wrap">
+    <svg viewBox="0 0 900 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- ground reflection glow -->
+      <ellipse cx="450" cy="298" rx="380" ry="18" fill="rgba(160,20,20,.35)"/>
+      <!-- body -->
+      <path d="M80 210 Q82 170 130 155 Q200 130 310 118 Q390 108 430 106 Q490 104 540 118 Q620 138 680 155 Q740 168 780 180 Q820 192 830 210 Z"
+            fill="#1a0808"/>
+      <!-- cabin glass -->
+      <path d="M280 118 Q310 78 390 62 Q460 50 530 62 Q590 74 630 118 Z"
+            fill="#0d1a2e" opacity=".9"/>
+      <!-- cabin frame -->
+      <path d="M280 118 Q310 78 390 62 Q460 50 530 62 Q590 74 630 118"
+            stroke="#3a1010" stroke-width="3" fill="none"/>
+      <!-- body outline -->
+      <path d="M80 210 Q82 170 130 155 Q200 130 310 118 Q390 108 430 106 Q490 104 540 118 Q620 138 680 155 Q740 168 780 180 Q820 192 830 210"
+            stroke="#5a1010" stroke-width="2" fill="none"/>
+      <!-- front bumper -->
+      <path d="M80 210 Q75 215 78 225 Q82 235 110 238 L130 238 L130 210 Z"
+            fill="#1a0808" stroke="#3a1010" stroke-width="1.5"/>
+      <!-- rear bumper -->
+      <path d="M830 210 Q840 215 838 228 Q834 238 800 240 L780 240 L780 210 Z"
+            fill="#1a0808" stroke="#3a1010" stroke-width="1.5"/>
+      <!-- front headlight glow -->
+      <ellipse cx="95" cy="205" rx="22" ry="8" fill="rgba(255,255,255,.07)"/>
+      <path d="M82 200 Q92 196 110 198 Q120 200 115 210 Q95 214 82 210 Z" fill="#2a0808" stroke="#ff4444" stroke-width="1"/>
+      <path d="M86 204 Q98 200 112 203" stroke="#ff6666" stroke-width="2" opacity=".7"/>
+      <!-- rear light bar -->
+      <rect x="815" y="192" width="16" height="28" rx="3" fill="#1a0808" stroke="#cc2222" stroke-width="1.5"/>
+      <rect x="817" y="195" width="12" height="22" rx="2" fill="#ff1a1a" opacity=".7"/>
+      <!-- front wheel -->
+      <circle cx="200" cy="248" r="42" fill="#0d0d0d" stroke="#2a1010" stroke-width="3"/>
+      <circle cx="200" cy="248" r="28" fill="#1a0808" stroke="#3a1010" stroke-width="2"/>
+      <circle cx="200" cy="248" r="10" fill="#2a1010"/>
+      <line x1="200" y1="220" x2="200" y2="276" stroke="#3a1010" stroke-width="3"/>
+      <line x1="172" y1="248" x2="228" y2="248" stroke="#3a1010" stroke-width="3"/>
+      <line x1="180" y1="228" x2="220" y2="268" stroke="#2a1010" stroke-width="2"/>
+      <line x1="220" y1="228" x2="180" y2="268" stroke="#2a1010" stroke-width="2"/>
+      <!-- rear wheel -->
+      <circle cx="690" cy="248" r="42" fill="#0d0d0d" stroke="#2a1010" stroke-width="3"/>
+      <circle cx="690" cy="248" r="28" fill="#1a0808" stroke="#3a1010" stroke-width="2"/>
+      <circle cx="690" cy="248" r="10" fill="#2a1010"/>
+      <line x1="690" y1="220" x2="690" y2="276" stroke="#3a1010" stroke-width="3"/>
+      <line x1="662" y1="248" x2="718" y2="248" stroke="#3a1010" stroke-width="3"/>
+      <line x1="670" y1="228" x2="710" y2="268" stroke="#2a1010" stroke-width="2"/>
+      <line x1="710" y1="228" x2="670" y2="268" stroke="#2a1010" stroke-width="2"/>
+      <!-- door lines -->
+      <path d="M300 118 L295 240" stroke="#2a1010" stroke-width="1.5"/>
+      <path d="M500 112 L498 240" stroke="#2a1010" stroke-width="1.5"/>
+      <!-- chrome trim -->
+      <path d="M130 215 Q450 208 780 215" stroke="#3a0a0a" stroke-width="2" fill="none"/>
+      <!-- left neon pillar -->
+      <rect x="28" y="60" width="6" height="200" rx="3" fill="url(#leftPillar)" opacity=".75"/>
+      <!-- right neon pillar -->
+      <rect x="866" y="60" width="6" height="200" rx="3" fill="url(#rightPillar)" opacity=".75"/>
+      <defs>
+        <linearGradient id="leftPillar" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ff2222" stop-opacity="0"/>
+          <stop offset="40%" stop-color="#ff2222" stop-opacity="1"/>
+          <stop offset="100%" stop-color="#ff2222" stop-opacity=".3"/>
+        </linearGradient>
+        <linearGradient id="rightPillar" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ff2222" stop-opacity="0"/>
+          <stop offset="40%" stop-color="#ff2222" stop-opacity="1"/>
+          <stop offset="100%" stop-color="#ff2222" stop-opacity=".3"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+
+  <!-- Centered hero content -->
+  <div class="hero-content">
+    <p class="hero-subtitle">Tesla Birthday Sale</p>
+
+    <div class="hero-discount-wrap">
+      <!-- red oval SVG outline -->
+      <svg class="hero-oval" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="50" rx="48" ry="46"
+          fill="none"
+          stroke="#cc1111"
+          stroke-width="3.5"
+          stroke-dasharray="0"
+          vector-effect="non-scaling-stroke"
+        />
+      </svg>
+      <div class="hero-discount">UP TO 65% OFF</div>
+    </div>
+
+    <div class="hero-btns">
+      <a href="#" class="btn-hero-primary">Claim 65% Off</a>
+      <a href="#bestsellers" class="btn-hero-secondary">See More</a>
+    </div>
+
+    <div class="hero-rating">
+      <span class="stars">★★★★★</span> Rated 4.9/5 by <strong style="color:#fff">500,000+</strong> customers
+    </div>
+  </div>
+</section>
+
+<!-- MODELS BAR -->
+<div class="models-bar">
+  <div class="container text-center">
+    <span style="color:#aaa;font-size:.8rem;margin-right:12px;">SHOP BY MODEL:</span>
+    <a href="#" class="model-btn active">Model Y</a>
+    <a href="#" class="model-btn">Model 3</a>
+    <a href="#" class="model-btn">Model S</a>
+    <a href="#" class="model-btn">Model X</a>
+    <a href="#" class="model-btn">Cybertruck</a>
+  </div>
+</div>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="container">
+    <div class="row g-3">
+      <div class="col-6 col-md-3 trust-item">
+        <div class="icon"><i class="bi bi-shield-check"></i></div>
+        <div class="label">Quality Guaranteed</div>
+        <div class="sub">Highest standards only</div>
+      </div>
+      <div class="col-6 col-md-3 trust-item">
+        <div class="icon"><i class="bi bi-truck"></i></div>
+        <div class="label">Fast Delivery</div>
+        <div class="sub">Worldwide shipping</div>
+      </div>
+      <div class="col-6 col-md-3 trust-item">
+        <div class="icon"><i class="bi bi-arrow-repeat"></i></div>
+        <div class="label">Easy Returns</div>
+        <div class="sub">30-day return policy</div>
+      </div>
+      <div class="col-6 col-md-3 trust-item">
+        <div class="icon"><i class="bi bi-headset"></i></div>
+        <div class="label">24/7 Support</div>
+        <div class="sub">Always here to help</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BEST SELLERS -->
+<section class="py-5" id="bestsellers">
+  <div class="container">
+    <div class="text-center mb-2">
+      <span class="hero-badge" style="background:#f1f5f9;color:var(--accent);">Best Sellers</span>
+    </div>
+    <h2 class="section-title text-center">Top Products</h2>
+    <p class="section-sub text-center">Handpicked favorites trusted by 500,000+ Tesla owners worldwide.</p>
+    <div class="row g-4">
+
+      <!-- Product 1 -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card">
+          <div class="img-wrap">☀️</div>
+          <div class="card-body">
+            <div class="name">Solar Shield® Roof Sunshade Pro Kit</div>
+            <div class="mb-1">
+              <span class="stars">★★★★★</span>
+              <span class="review-count">(2,341)</span>
+            </div>
+            <div>
+              <span class="price">$139.99</span>
+              <span class="old-price">$184.99</span>
+              <span class="save-badge">-$45</span>
+            </div>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 2 -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card">
+          <div class="img-wrap">🔵</div>
+          <div class="card-body">
+            <div class="name">Aluminum Caliper Covers</div>
+            <div class="mb-1">
+              <span class="stars">★★★★★</span>
+              <span class="review-count">(1,872)</span>
+            </div>
+            <div>
+              <span class="price">from $149.99</span>
+              <span class="old-price">$299.99</span>
+              <span class="save-badge">-$150</span>
+            </div>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 3 -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card">
+          <div class="img-wrap">📷</div>
+          <div class="card-body">
+            <div class="name">DashGlow 360° Vision System</div>
+            <div class="mb-1">
+              <span class="stars">★★★★★</span>
+              <span class="review-count">(986)</span>
+            </div>
+            <div>
+              <span class="price">$149.99</span>
+              <span class="old-price">$199.99</span>
+              <span class="save-badge">-$50</span>
+            </div>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 4 -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card">
+          <div class="img-wrap">📱</div>
+          <div class="card-body">
+            <div class="name">Dash Screen PRO, CarPlay Ultra</div>
+            <div class="mb-1">
+              <span class="stars">★★★★★</span>
+              <span class="review-count">(3,104)</span>
+            </div>
+            <div>
+              <span class="price">from $239.99</span>
+              <span class="old-price">$389.99</span>
+              <span class="save-badge">-$150</span>
+            </div>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 5 -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card">
+          <div class="img-wrap">🖥️</div>
+          <div class="card-body">
+            <div class="name">Rear Display Screen ULTRA</div>
+            <div class="mb-1">
+              <span class="stars">★★★★★</span>
+              <span class="review-count">(741)</span>
+            </div>
+            <div>
+              <span class="price">$249.99</span>
+              <span class="old-price">$399.99</span>
+              <span class="save-badge">-$150</span>
+            </div>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 6 -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card">
+          <div class="img-wrap">🧲</div>
+          <div class="card-body">
+            <div class="name">MagSafe Phone Holder</div>
+            <div class="mb-1">
+              <span class="stars">★★★★★</span>
+              <span class="review-count">(5,210)</span>
+            </div>
+            <div>
+              <span class="price">from $49.99</span>
+              <span class="old-price">$59.99</span>
+              <span class="save-badge">-$10</span>
+            </div>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 7 -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card">
+          <div class="img-wrap">💡</div>
+          <div class="card-body">
+            <div class="name">Projector Door Lights</div>
+            <div class="mb-1">
+              <span class="stars">★★★★☆</span>
+              <span class="review-count">(2,890)</span>
+            </div>
+            <div>
+              <span class="price">from $29.99</span>
+              <span class="old-price">$39.99</span>
+              <span class="save-badge">-$10</span>
+            </div>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 8 -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card">
+          <div class="img-wrap">🔇</div>
+          <div class="card-body">
+            <div class="name">ProGuard Noise Reduction Kit</div>
+            <div class="mb-1">
+              <span class="stars">★★★★★</span>
+              <span class="review-count">(1,025)</span>
+            </div>
+            <div>
+              <span class="price">from $79.99</span>
+              <span class="old-price">$179.99</span>
+              <span class="save-badge">-$100</span>
+            </div>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="text-center mt-5">
+      <a href="#" class="btn btn-outline-dark rounded-pill px-5 py-2 fw-bold">View All Products</a>
+    </div>
+  </div>
+</section>
+
+<!-- WHY CHOOSE -->
+<section class="py-5" style="background:#f8f8f8;">
+  <div class="container">
+    <div class="text-center mb-2">
+      <span class="hero-badge" style="background:#e0e7ff;color:var(--accent);">Why Teslahubs</span>
+    </div>
+    <h2 class="section-title text-center">Why Choose Our Accessories?</h2>
+    <p class="section-sub text-center">Four years of dedicated service to Tesla enthusiasts worldwide.</p>
+    <div class="row g-4">
+      <div class="col-sm-6 col-lg-3">
+        <div class="why-card">
+          <div class="icon"><i class="bi bi-gem"></i></div>
+          <h5>Quality</h5>
+          <p>Highest quality standards ensuring reliability, durability, and long-lasting performance for every product.</p>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="why-card">
+          <div class="icon"><i class="bi bi-puzzle"></i></div>
+          <h5>Perfect Fit</h5>
+          <p>Products engineered specifically for your Tesla model — seamless integration, no modifications needed.</p>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="why-card">
+          <div class="icon"><i class="bi bi-tools"></i></div>
+          <h5>Easy Installation</h5>
+          <p>Simple setup processes so you spend less time installing and more time enjoying the upgrade.</p>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="why-card">
+          <div class="icon"><i class="bi bi-tag"></i></div>
+          <h5>Best Prices</h5>
+          <p>Competitive pricing makes premium Tesla accessories accessible to every owner without compromise.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonial-section py-5">
+  <div class="container">
+    <div class="text-center mb-2">
+      <span class="hero-badge" style="background:#f0fdf4;color:#16a34a;">Customer Reviews</span>
+    </div>
+    <h2 class="section-title text-center">Loved by 100,000+ Customers</h2>
+    <p class="section-sub text-center">Real reviews from real Tesla owners.</p>
+    <div class="row g-4">
+
+      <div class="col-md-6 col-lg-4">
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p>"Product arrived as described — better material by far than the cheap kits sold online. Fits perfectly on my Model Y."</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="author">Michael T.</div>
+              <div class="date">Verified buyer · June 2026</div>
+            </div>
+            <span class="verified"><i class="bi bi-patch-check-fill"></i> Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p>"The noise reduction kit is absolutely worth it. My Model 3 is so much quieter on the highway now. Installation was a breeze."</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="author">Sarah K.</div>
+              <div class="date">Verified buyer · May 2026</div>
+            </div>
+            <span class="verified"><i class="bi bi-patch-check-fill"></i> Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p>"Fastest shipping I've experienced. Ordered Tuesday, arrived Thursday. The caliper covers look amazing in red on my Cybertruck."</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="author">James R.</div>
+              <div class="date">Verified buyer · June 2026</div>
+            </div>
+            <span class="verified"><i class="bi bi-patch-check-fill"></i> Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p>"The CarPlay screen is a game-changer. Worth every penny. Customer support helped me through setup in minutes."</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="author">Emma L.</div>
+              <div class="date">Verified buyer · April 2026</div>
+            </div>
+            <span class="verified"><i class="bi bi-patch-check-fill"></i> Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p>"Sunshade makes a huge difference in summer. Keeps the interior cool and the quality is exceptional. Will definitely order again."</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="author">David M.</div>
+              <div class="date">Verified buyer · June 2026</div>
+            </div>
+            <span class="verified"><i class="bi bi-patch-check-fill"></i> Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p>"Teslahubs is my go-to for all Model S accessories. Trusted them for 3 years — never disappointed. The fit is always spot on."</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="author">Anna P.</div>
+              <div class="date">Verified buyer · May 2026</div>
+            </div>
+            <span class="verified"><i class="bi bi-patch-check-fill"></i> Verified</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- DIGEST / BLOG -->
+<section class="digest-section py-5">
+  <div class="container">
+    <div class="text-center mb-2">
+      <span class="hero-badge">Tesla Digest</span>
+    </div>
+    <h2 class="section-title text-center text-white">Tesla World This Week</h2>
+    <p class="section-sub text-center">Everything that happened in the Tesla world this week — in 5 minutes.</p>
+    <div class="row g-4">
+
+      <div class="col-md-6 col-lg-4">
+        <div class="digest-card">
+          <div class="digest-img">🚗</div>
+          <div class="digest-body">
+            <span class="tag">FSD</span>
+            <h6>Is Tesla's FSD Worth It In 2026? The Real Story</h6>
+            <div class="meta"><i class="bi bi-clock me-1"></i>5 min read · July 2026</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="digest-card">
+          <div class="digest-img">⚡</div>
+          <div class="digest-body">
+            <span class="tag">News</span>
+            <h6>Model Y Juniper: Every Upgrade Explained</h6>
+            <div class="meta"><i class="bi bi-clock me-1"></i>4 min read · June 2026</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="digest-card">
+          <div class="digest-img">🔋</div>
+          <div class="digest-body">
+            <span class="tag">Tips</span>
+            <h6>Top 10 Accessories Every Tesla Owner Needs in 2026</h6>
+            <div class="meta"><i class="bi bi-clock me-1"></i>6 min read · June 2026</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="text-center mt-4">
+      <a href="#" class="btn btn-outline-light rounded-pill px-5 py-2 fw-bold">Read More Articles</a>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="py-5" style="background:linear-gradient(135deg,#1e3a8a,#2563eb);">
+  <div class="container text-center text-white">
+    <h2 class="section-title" style="color:#fff;">Stay in the Loop</h2>
+    <p style="color:rgba(255,255,255,.8);max-width:460px;margin:0 auto 28px;">Get exclusive deals, new product alerts and Tesla tips delivered to your inbox.</p>
+    <form class="d-flex justify-content-center gap-2 flex-wrap">
+      <input type="email" class="form-control rounded-pill" placeholder="Your email address" style="max-width:320px;" />
+      <button type="submit" class="btn btn-warning fw-bold rounded-pill px-4">Subscribe</button>
+    </form>
+    <p style="color:rgba(255,255,255,.5);font-size:.75rem;margin-top:12px;">No spam. Unsubscribe anytime.</p>
+  </div>
+</section>
+
+<!-- PAYMENT STRIP -->
+<div class="payment-strip">
+  <div class="container text-center">
+    <small class="text-muted me-2">Secure payments via:</small>
+    <span class="pay-icon">Visa</span>
+    <span class="pay-icon">Mastercard</span>
+    <span class="pay-icon">Amex</span>
+    <span class="pay-icon">PayPal</span>
+    <span class="pay-icon">Apple Pay</span>
+    <span class="pay-icon">Google Pay</span>
+    <span class="pay-icon">Shop Pay</span>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4">
+        <div class="footer-brand">Tesla<span>Hubs</span></div>
+        <p style="font-size:.85rem;margin-top:14px;line-height:1.7;">
+          Four years of dedicated commitment to Tesla enthusiasts. A trusted name in the community for premium aftermarket accessories.
+        </p>
+        <div class="social-icons mt-3">
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-instagram"></i></a>
+          <a href="#"><i class="bi bi-tiktok"></i></a>
+          <a href="#"><i class="bi bi-pinterest"></i></a>
+        </div>
+        <p style="font-size:.8rem;margin-top:20px;">
+          <i class="bi bi-headset me-1"></i> Our support is available <strong style="color:#fff;">24/7 ❤️</strong><br />
+          <i class="bi bi-envelope me-1"></i> <a href="mailto:hello@teslahubs.com" style="color:#aaa;">hello@teslahubs.com</a>
+        </p>
+      </div>
+
+      <div class="col-6 col-md-3 col-lg-2">
+        <h6>Quick Links</h6>
+        <a href="#">Digest</a>
+        <a href="#">Track Order</a>
+        <a href="#">FAQ</a>
+        <a href="#">Contact Us</a>
+        <a href="#">About Us</a>
+      </div>
+
+      <div class="col-6 col-md-3 col-lg-2">
+        <h6>Policies</h6>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Refund Policy</a>
+        <a href="#">Shipping Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <h6>Our Locations</h6>
+        <p style="font-size:.83rem;line-height:1.7;">
+          <i class="bi bi-geo-alt me-1"></i> <strong style="color:#ccc;">UK:</strong><br />
+          71-75 Shelton Street, Covent Garden,<br />London, WC2H 9JQ
+        </p>
+        <p style="font-size:.83rem;line-height:1.7;">
+          <i class="bi bi-geo-alt me-1"></i> <strong style="color:#ccc;">USA:</strong><br />
+          3500 W Hallandale Beach Blvd,<br />Hollywood, FL 33023
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <p class="mb-0">
+            &copy; 2026 TeslaHubs. All rights reserved. Products are aftermarket items not affiliated with or endorsed by Tesla Motors, Inc.
+          </p>
+        </div>
+        <div class="col-md-4 text-md-end mt-2 mt-md-0">
+          <span class="pay-icon" style="font-size:.68rem;padding:4px 10px;">Visa</span>
+          <span class="pay-icon" style="font-size:.68rem;padding:4px 10px;">Mastercard</span>
+          <span class="pay-icon" style="font-size:.68rem;padding:4px 10px;">PayPal</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ─── helpers ─── */
+function openMenu(menuEl, triggerEl) {
+  menuEl.classList.add('show');
+  triggerEl.classList.add('nav-pill-active');
+}
+function closeMenu(menuEl, triggerEl) {
+  menuEl.classList.remove('show');
+  triggerEl.classList.remove('nav-pill-active');
+}
+function hoverMenu(navEl, menuEl, triggerEl) {
+  let timer;
+  const open  = () => { clearTimeout(timer); openMenu(menuEl, triggerEl); };
+  const close = () => { timer = setTimeout(() => closeMenu(menuEl, triggerEl), 80); };
+  navEl.addEventListener('mouseenter',  open);
+  navEl.addEventListener('mouseleave',  close);
+  menuEl.addEventListener('mouseenter', open);
+  menuEl.addEventListener('mouseleave', close);
+}
+
+/* ─── Model Y – hover ─── */
+hoverMenu(
+  document.getElementById('modelYNav'),
+  document.getElementById('modelYMega'),
+  document.getElementById('modelYTrigger')
+);
+document.getElementById('modelYMega').querySelectorAll('.mega-cat').forEach(cat => {
+  cat.addEventListener('click', () =>
+    closeMenu(document.getElementById('modelYMega'), document.getElementById('modelYTrigger'))
+  );
+});
+
+/* ─── Model 3 category data ─── */
+const m3Data = {
+  noise: {
+    label: 'Noise Protection',
+    count: 6,
+    products: [
+      {
+        bg: '#141414', name: 'ProGuard: Advanced Noise Reduction &amp; Weatherproofing Kit',
+        price: 'From ₺139.00', save: 'SAVE ₺174', badge: '',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#141414"/>
+          <path d="M30 110 Q32 80 65 68 Q120 52 150 50 Q180 52 235 68 Q268 80 270 110 Z" fill="#c8c8c8"/>
+          <path d="M85 68 Q105 38 150 32 Q195 38 215 68 Z" fill="#1a2030"/>
+          <path d="M85 68 Q105 38 150 32 Q195 38 215 68 Z" fill="none" stroke="#e63946" stroke-width="2.5"/>
+          <path d="M30 110 Q32 80 65 68 Q120 52 150 50 Q180 52 235 68 Q268 80 270 110" fill="none" stroke="#e63946" stroke-width="2.5"/>
+          <line x1="100" y1="50" x2="98" y2="110" stroke="#e63946" stroke-width="2"/>
+          <line x1="200" y1="50" x2="202" y2="110" stroke="#e63946" stroke-width="2"/>
+          <circle cx="80" cy="120" r="22" fill="#111" stroke="#333" stroke-width="2"/><circle cx="80" cy="120" r="12" fill="#1a1a1a"/>
+          <circle cx="220" cy="120" r="22" fill="#111" stroke="#333" stroke-width="2"/><circle cx="220" cy="120" r="12" fill="#1a1a1a"/>
+          <text x="35" y="30" font-family="Arial" font-weight="900" font-size="22" fill="#fff">ProGuard</text>
+          <text x="35" y="44" font-family="Arial" font-size="7" fill="#aaa">Advanced Noise Reduction &amp; Weatherproofing Kit</text>
+          <rect x="28" y="150" width="22" height="14" rx="3" fill="#e63946"/><text x="30" y="161" font-family="Arial" font-weight="900" font-size="9" fill="#fff">3M</text>
+          <text x="55" y="158" font-family="Arial" font-size="6" fill="#666">Made by us for Model 3/Y/S/X</text></svg>`
+      },
+      {
+        bg: '#141414', name: 'ProGuard: Noise Reduction Kit PLUS Version',
+        price: 'From ₺139.00', save: 'SAVE ₺208', badge: '<span class="m3-edition-badge green">PLUS</span>',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#141414"/>
+          <path d="M30 110 Q32 80 65 68 Q120 52 150 50 Q180 52 235 68 Q268 80 270 110 Z" fill="#c0c0c0"/>
+          <path d="M85 68 Q105 38 150 32 Q195 38 215 68 Z" fill="#1a2030"/>
+          <path d="M85 68 Q105 38 150 32 Q195 38 215 68 Z" fill="none" stroke="#e63946" stroke-width="2.5"/>
+          <path d="M30 110 Q32 80 65 68 Q120 52 150 50 Q180 52 235 68 Q268 80 270 110" fill="none" stroke="#e63946" stroke-width="2.5"/>
+          <line x1="100" y1="50" x2="98" y2="110" stroke="#e63946" stroke-width="2"/>
+          <line x1="200" y1="50" x2="202" y2="110" stroke="#e63946" stroke-width="2"/>
+          <circle cx="80" cy="120" r="22" fill="#111" stroke="#333" stroke-width="2"/><circle cx="80" cy="120" r="12" fill="#1a1a1a"/>
+          <circle cx="220" cy="120" r="22" fill="#111" stroke="#333" stroke-width="2"/><circle cx="220" cy="120" r="12" fill="#1a1a1a"/>
+          <text x="35" y="30" font-family="Arial" font-weight="900" font-size="22" fill="#fff">ProGuard</text>
+          <text x="35" y="44" font-family="Arial" font-size="7" fill="#aaa">Advanced Noise Reduction &amp; Weatherproofing Kit</text>
+          <rect x="28" y="150" width="22" height="14" rx="3" fill="#e63946"/><text x="30" y="161" font-family="Arial" font-weight="900" font-size="9" fill="#fff">3M</text></svg>`
+      },
+      {
+        bg: '#0d1220', name: 'ProGuard: Noise Reduction Kit Blue Edition',
+        price: 'From ₺165.00', save: 'SAVE ₺122', badge: '<span class="m3-edition-badge blue">Blue Edition</span>',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#0d1220"/>
+          <path d="M30 115 Q32 82 65 70 Q120 54 150 52 Q180 54 235 70 Q268 82 270 115 Z" fill="#dde4ee"/>
+          <path d="M85 70 Q105 40 150 34 Q195 40 215 70 Z" fill="#1a2535"/>
+          <path d="M85 70 Q105 40 150 34 Q195 40 215 70 Z" fill="none" stroke="#e63946" stroke-width="2.5"/>
+          <path d="M30 115 Q32 82 65 70 Q120 54 150 52 Q180 54 235 70 Q268 82 270 115" fill="none" stroke="#e63946" stroke-width="2"/>
+          <rect x="261" y="90" width="6" height="15" rx="3" fill="#ff4444" opacity=".8"/>
+          <circle cx="80" cy="125" r="22" fill="#111" stroke="#2a3a55" stroke-width="2"/><circle cx="80" cy="125" r="12" fill="#1a2535"/>
+          <circle cx="220" cy="125" r="22" fill="#111" stroke="#2a3a55" stroke-width="2"/><circle cx="220" cy="125" r="12" fill="#1a2535"/>
+          <text x="28" y="30" font-family="Arial" font-weight="900" font-size="20" fill="#fff">ProGuard®</text>
+          <text x="28" y="43" font-family="Arial" font-size="7" fill="#aaa">Advanced Noise Reduction &amp; Weatherproofing Kit</text>
+          <text x="28" y="148" font-family="Arial" font-weight="700" font-size="9" fill="#3b82f6">Pro-Grade Glue</text></svg>`
+      },
+      {
+        bg: '#f0f0ee', lightBg: true, name: 'TeslaHubs™ Sunroof Seal Model 3/Y',
+        price: 'From ₺89.00', save: '', badge: '',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#f0f0ee"/>
+          <rect x="90" y="20" width="120" height="160" rx="30" fill="#d0d0cc"/>
+          <rect x="100" y="28" width="100" height="42" rx="10" fill="#9ab0c8" opacity=".7"/>
+          <rect x="100" y="130" width="100" height="38" rx="10" fill="#9ab0c8" opacity=".7"/>
+          <rect x="108" y="78" width="84" height="44" rx="8" fill="#7a9ab8" opacity=".8"/>
+          <rect x="105" y="75" width="90" height="50" rx="10" fill="none" stroke="#f97316" stroke-width="3.5"/>
+          <rect x="72" y="50" width="20" height="36" rx="8" fill="#888"/>
+          <rect x="208" y="50" width="20" height="36" rx="8" fill="#888"/>
+          <rect x="72" y="114" width="20" height="36" rx="8" fill="#888"/>
+          <rect x="208" y="114" width="20" height="36" rx="8" fill="#888"/>
+          <circle cx="68" cy="105" r="38" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+          <circle cx="68" cy="105" r="32" fill="none" stroke="#222" stroke-width="14"/>
+          <circle cx="68" cy="105" r="18" fill="#f0f0ee"/></svg>`
+      }
+    ]
+  },
+  wheels: {
+    label: 'Wheels',
+    count: 8,
+    products: [
+      {
+        bg: '#111', name: 'Aluminum Caliper Covers – Red',
+        price: 'From ₺149.99', save: 'SAVE ₺150', badge: '',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#111"/>
+          <circle cx="150" cy="105" r="80" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="3"/>
+          <circle cx="150" cy="105" r="60" fill="#1a1a1a"/>
+          <path d="M150 45 L150 165 M90 75 L210 135 M90 135 L210 75" stroke="#252525" stroke-width="12" stroke-linecap="round"/>
+          <path d="M150 45 L150 165 M90 75 L210 135 M90 135 L210 75" stroke="#2e2e2e" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="150" cy="105" r="18" fill="#1f1f1f"/>
+          <path d="M195 78 Q215 90 215 105 Q215 122 195 133 L188 126 Q202 117 202 105 Q202 93 188 84 Z" fill="#cc1111"/>
+          <text x="50" y="30" font-family="Arial" font-weight="700" font-size="12" fill="#fff">Caliper Covers</text>
+          <text x="50" y="44" font-family="Arial" font-size="8" fill="#e63946">Red Edition</text></svg>`
+      },
+      {
+        bg: '#141414', name: 'AeroShield Wheel Rim Protectors',
+        price: 'From ₺69.99', save: 'SAVE ₺40', badge: '',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#141414"/>
+          <circle cx="150" cy="105" r="75" fill="#0d0d0d" stroke="#222" stroke-width="2"/>
+          <circle cx="150" cy="105" r="64" fill="#141414" stroke="#2a2a2a" stroke-width="2"/>
+          <circle cx="150" cy="105" r="50" fill="#1a1a1a"/>
+          <path d="M150 55 L163 85 L195 85 L171 103 L181 135 L150 117 L119 135 L129 103 L105 85 L137 85 Z" fill="#222" stroke="#333" stroke-width="1.5"/>
+          <circle cx="150" cy="105" r="15" fill="#111"/>
+          <!-- rim protector highlight -->
+          <circle cx="150" cy="105" r="63" fill="none" stroke="#4ade80" stroke-width="3" stroke-dasharray="8 4"/>
+          <text x="40" y="28" font-family="Arial" font-weight="700" font-size="12" fill="#fff">Rim Protectors</text>
+          <text x="40" y="42" font-family="Arial" font-size="8" fill="#4ade80">AeroShield Series</text></svg>`
+      },
+      {
+        bg: '#0f0f0f', name: 'Hub Center Cap Set – Chrome',
+        price: 'From ₺39.99', save: 'SAVE ₺20', badge: '',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#0f0f0f"/>
+          <!-- 4 center caps in grid -->
+          <circle cx="90" cy="75" r="48" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="2"/>
+          <circle cx="90" cy="75" r="34" fill="#222"/><circle cx="90" cy="75" r="20" fill="#333" stroke="#444" stroke-width="2"/>
+          <circle cx="90" cy="75" r="8" fill="#555"/>
+          <circle cx="210" cy="75" r="48" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="2"/>
+          <circle cx="210" cy="75" r="34" fill="#222"/><circle cx="210" cy="75" r="20" fill="#333" stroke="#444" stroke-width="2"/>
+          <circle cx="210" cy="75" r="8" fill="#555"/>
+          <circle cx="90" cy="150" r="48" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="2"/>
+          <circle cx="90" cy="150" r="34" fill="#222"/><circle cx="90" cy="150" r="20" fill="#c0c0c0" stroke="#ddd" stroke-width="2"/>
+          <circle cx="90" cy="150" r="8" fill="#eee"/>
+          <circle cx="210" cy="150" r="48" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="2"/>
+          <circle cx="210" cy="150" r="34" fill="#222"/><circle cx="210" cy="150" r="20" fill="#c0c0c0" stroke="#ddd" stroke-width="2"/>
+          <circle cx="210" cy="150" r="8" fill="#eee"/>
+          <text x="105" y="105" font-family="Arial" font-size="8" fill="#777" text-anchor="middle">CHROME</text></svg>`
+      },
+      {
+        bg: '#181818', name: 'Lug Nut Cover Set (20pcs)',
+        price: 'From ₺29.99', save: 'SAVE ₺15', badge: '',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#181818"/>
+          <circle cx="150" cy="100" r="72" fill="#111" stroke="#1e1e1e" stroke-width="2"/>
+          <circle cx="150" cy="100" r="55" fill="#191919"/>
+          <circle cx="150" cy="100" r="18" fill="#222"/>
+          <!-- lug nuts -->
+          <circle cx="150" cy="45" r="8" fill="#888" stroke="#aaa" stroke-width="1.5"/>
+          <circle cx="193" cy="68" r="8" fill="#888" stroke="#aaa" stroke-width="1.5"/>
+          <circle cx="178" cy="118" r="8" fill="#888" stroke="#aaa" stroke-width="1.5"/>
+          <circle cx="122" cy="118" r="8" fill="#888" stroke="#aaa" stroke-width="1.5"/>
+          <circle cx="107" cy="68" r="8" fill="#888" stroke="#aaa" stroke-width="1.5"/>
+          <text x="150" y="170" font-family="Arial" font-weight="700" font-size="11" fill="#fff" text-anchor="middle">Lug Nut Covers</text>
+          <text x="150" y="183" font-family="Arial" font-size="8" fill="#666" text-anchor="middle">20pcs – All Models</text></svg>`
+      }
+    ]
+  },
+  tech: {
+    label: 'Tech Upgrades',
+    count: 12,
+    products: [
+      {
+        bg: '#0a1220', name: 'Dash Screen PRO – CarPlay Ultra',
+        price: 'From ₺239.99', save: 'SAVE ₺150', badge: '',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#0a1220"/>
+          <rect x="40" y="25" width="180" height="130" rx="10" fill="#0d1525"/>
+          <rect x="44" y="29" width="172" height="122" rx="8" fill="#0f2040"/>
+          <!-- map -->
+          <line x1="70" y1="55" x2="200" y2="55" stroke="#1a4080" stroke-width="3"/>
+          <line x1="70" y1="80" x2="200" y2="80" stroke="#1a4080" stroke-width="3"/>
+          <line x1="70" y1="105" x2="200" y2="105" stroke="#1a4080" stroke-width="3"/>
+          <line x1="95" y1="33" x2="95" y2="147" stroke="#1a4080" stroke-width="3"/>
+          <line x1="130" y1="33" x2="130" y2="147" stroke="#1a4080" stroke-width="3"/>
+          <line x1="165" y1="33" x2="165" y2="147" stroke="#1a4080" stroke-width="3"/>
+          <path d="M95 33 L95 80 L145 80 L145 147" stroke="#3b82f6" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <circle cx="145" cy="80" r="9" fill="#3b82f6"/><circle cx="145" cy="80" r="5" fill="#fff"/>
+          <rect x="44" y="155" width="172" height="5" rx="2" fill="#1a2040"/>
+          <rect x="118" y="160" width="24" height="10" rx="2" fill="#1a1a2e"/>
+          <rect x="100" y="170" width="60" height="6" rx="2" fill="#1a1a2e"/>
+          <text x="55" y="188" font-family="Arial" font-weight="700" font-size="10" fill="#fff">Dash Screen PRO</text>
+          <text x="55" y="198" font-family="Arial" font-size="7" fill="#3b82f6">CarPlay Ultra Edition</text></svg>`
+      },
+      {
+        bg: '#0f0f0f', name: 'DashGlow 360° Vision System',
+        price: '₺149.99', save: 'SAVE ₺50', badge: '',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#0f0f0f"/>
+          <!-- camera unit -->
+          <rect x="110" y="60" width="80" height="55" rx="10" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="2"/>
+          <circle cx="150" cy="87" r="22" fill="#111" stroke="#333" stroke-width="2"/>
+          <circle cx="150" cy="87" r="16" fill="#0a0a0a"/>
+          <circle cx="150" cy="87" r="10" fill="#1a1a2e"/>
+          <circle cx="150" cy="87" r="5" fill="#3b82f6" opacity=".6"/>
+          <!-- 360 lines -->
+          <path d="M150 20 Q220 50 230 87 Q220 125 150 155 Q80 125 70 87 Q80 50 150 20" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="6 4" opacity=".4"/>
+          <!-- cable -->
+          <path d="M150 115 Q150 140 180 150 L180 165" stroke="#333" stroke-width="3" fill="none"/>
+          <text x="100" y="180" font-family="Arial" font-weight="700" font-size="11" fill="#fff" text-anchor="middle">DashGlow 360°</text>
+          <text x="100" y="193" font-family="Arial" font-size="7" fill="#aaa" text-anchor="middle">Vision System</text></svg>`
+      },
+      {
+        bg: '#0d0d0d', name: 'Rear Display Screen ULTRA',
+        price: '₺249.99', save: 'SAVE ₺150', badge: '<span class="m3-edition-badge blue">ULTRA</span>',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#0d0d0d"/>
+          <rect x="30" y="35" width="240" height="130" rx="12" fill="#111" stroke="#1e1e1e" stroke-width="2"/>
+          <rect x="36" y="41" width="228" height="118" rx="9" fill="#0a1528"/>
+          <!-- content icons -->
+          <rect x="50" y="60" width="60" height="40" rx="6" fill="#0f2040"/>
+          <rect x="120" y="60" width="60" height="40" rx="6" fill="#0f2040"/>
+          <rect x="190" y="60" width="60" height="40" rx="6" fill="#0f2040"/>
+          <rect x="50" y="108" width="200" height="30" rx="6" fill="#0f2040"/>
+          <!-- play button -->
+          <polygon points="72,73 86,80 72,87" fill="#3b82f6"/>
+          <rect x="128" y="65" width="40" height="4" rx="2" fill="#3b82f6" opacity=".6"/>
+          <rect x="128" y="73" width="30" height="4" rx="2" fill="#555"/>
+          <rect x="128" y="81" width="35" height="4" rx="2" fill="#555"/>
+          <rect x="118" y="170" width="64" height="8" rx="2" fill="#1a1a2e"/>
+          <text x="150" y="195" font-family="Arial" font-weight="700" font-size="9" fill="#fff" text-anchor="middle">Rear Display ULTRA</text></svg>`
+      },
+      {
+        bg: '#111', name: 'MagSafe Phone Holder Pro',
+        price: 'From ₺49.99', save: 'SAVE ₺10', badge: '',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#111"/>
+          <!-- holder arm -->
+          <rect x="140" y="130" width="20" height="50" rx="4" fill="#222"/>
+          <rect x="125" y="175" width="50" height="12" rx="4" fill="#1a1a1a"/>
+          <!-- magnetic ring -->
+          <circle cx="150" cy="95" r="50" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="2"/>
+          <circle cx="150" cy="95" r="40" fill="#111"/>
+          <circle cx="150" cy="95" r="34" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
+          <!-- phone -->
+          <rect x="128" y="62" width="44" height="74" rx="8" fill="#0d0d0d" stroke="#333" stroke-width="1.5"/>
+          <rect x="131" y="68" width="38" height="58" rx="5" fill="#0a1528"/>
+          <circle cx="150" cy="131" r="4" fill="#222"/>
+          <!-- magsafe glow -->
+          <circle cx="150" cy="95" r="35" fill="none" stroke="#3b82f6" stroke-width="2" opacity=".5" stroke-dasharray="5 3"/>
+          <text x="150" y="188" font-family="Arial" font-weight="700" font-size="10" fill="#fff" text-anchor="middle">MagSafe Holder Pro</text></svg>`
+      }
+    ]
+  },
+  interior: {
+    label: 'Interior',
+    count: 15,
+    products: [
+      {
+        bg: '#141414', name: 'Premium Floor Mats – All-Weather',
+        price: 'From ₺99.99', save: 'SAVE ₺60', badge: '',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#141414"/>
+          <!-- front mat -->
+          <rect x="30" y="30" width="110" height="140" rx="14" fill="#1e1e1e" stroke="#2a2a2a" stroke-width="2"/>
+          <rect x="38" y="38" width="94" height="124" rx="10" fill="#222"/>
+          <!-- mat pattern -->
+          <line x1="38" y1="55" x2="132" y2="55" stroke="#1a1a1a" stroke-width="4"/>
+          <line x1="38" y1="70" x2="132" y2="70" stroke="#1a1a1a" stroke-width="4"/>
+          <line x1="38" y1="85" x2="132" y2="85" stroke="#1a1a1a" stroke-width="4"/>
+          <line x1="38" y1="100" x2="132" y2="100" stroke="#1a1a1a" stroke-width="4"/>
+          <line x1="38" y1="115" x2="132" y2="115" stroke="#1a1a1a" stroke-width="4"/>
+          <line x1="38" y1="130" x2="132" y2="130" stroke="#1a1a1a" stroke-width="4"/>
+          <line x1="38" y1="145" x2="132" y2="145" stroke="#1a1a1a" stroke-width="4"/>
+          <!-- rear mat -->
+          <rect x="155" y="30" width="115" height="140" rx="14" fill="#1e1e1e" stroke="#2a2a2a" stroke-width="2"/>
+          <rect x="163" y="38" width="99" height="124" rx="10" fill="#222"/>
+          <line x1="163" y1="55" x2="262" y2="55" stroke="#1a1a1a" stroke-width="4"/>
+          <line x1="163" y1="70" x2="262" y2="70" stroke="#1a1a1a" stroke-width="4"/>
+          <line x1="163" y1="85" x2="262" y2="85" stroke="#1a1a1a" stroke-width="4"/>
+          <line x1="163" y1="100" x2="262" y2="100" stroke="#1a1a1a" stroke-width="4"/>
+          <line x1="163" y1="115" x2="262" y2="115" stroke="#1a1a1a" stroke-width="4"/>
+          <line x1="163" y1="130" x2="262" y2="130" stroke="#1a1a1a" stroke-width="4"/>
+          <line x1="163" y1="145" x2="262" y2="145" stroke="#1a1a1a" stroke-width="4"/>
+          <text x="150" y="185" font-family="Arial" font-weight="700" font-size="10" fill="#fff" text-anchor="middle">All-Weather Floor Mats</text></svg>`
+      },
+      {
+        bg: '#0e0e0e', name: 'Center Console Organizer Tray',
+        price: 'From ₺49.99', save: 'SAVE ₺30', badge: '',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#0e0e0e"/>
+          <!-- organizer tray -->
+          <rect x="70" y="40" width="160" height="120" rx="10" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="2"/>
+          <!-- compartments -->
+          <rect x="78" y="48" width="68" height="50" rx="6" fill="#111" stroke="#222" stroke-width="1.5"/>
+          <rect x="154" y="48" width="68" height="50" rx="6" fill="#111" stroke="#222" stroke-width="1.5"/>
+          <rect x="78" y="105" width="144" height="48" rx="6" fill="#111" stroke="#222" stroke-width="1.5"/>
+          <!-- items in compartments -->
+          <rect x="85" y="55" width="28" height="18" rx="3" fill="#1e1e1e"/>
+          <circle cx="125" cy="66" r="10" fill="#1e1e1e"/>
+          <rect x="161" y="57" width="52" height="6" rx="2" fill="#1e1e1e"/>
+          <rect x="161" y="67" width="40" height="6" rx="2" fill="#1e1e1e"/>
+          <rect x="161" y="77" width="45" height="6" rx="2" fill="#1e1e1e"/>
+          <text x="150" y="172" font-family="Arial" font-weight="700" font-size="10" fill="#fff" text-anchor="middle">Console Organizer</text></svg>`
+      },
+      {
+        bg: '#111', name: 'Seat Back Kick Protectors',
+        price: 'From ₺34.99', save: 'SAVE ₺20', badge: '',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#111"/>
+          <!-- seat back -->
+          <rect x="60" y="20" width="180" height="150" rx="12" fill="#1c1c1c" stroke="#2a2a2a" stroke-width="2"/>
+          <rect x="68" y="28" width="164" height="134" rx="9" fill="#181818"/>
+          <!-- protector panel -->
+          <rect x="75" y="35" width="150" height="120" rx="7" fill="#222" stroke="#3a3a3a" stroke-width="1.5"/>
+          <!-- texture lines -->
+          <line x1="75" y1="65" x2="225" y2="65" stroke="#2a2a2a" stroke-width="2"/>
+          <line x1="75" y1="95" x2="225" y2="95" stroke="#2a2a2a" stroke-width="2"/>
+          <line x1="75" y1="125" x2="225" y2="125" stroke="#2a2a2a" stroke-width="2"/>
+          <!-- logo area -->
+          <rect x="115" y="148" width="70" height="18" rx="4" fill="#1a1a1a"/>
+          <text x="150" y="160" font-family="Arial" font-size="8" fill="#555" text-anchor="middle">TESLAHUBS</text>
+          <text x="150" y="185" font-family="Arial" font-weight="700" font-size="10" fill="#fff" text-anchor="middle">Seat Back Protectors</text></svg>`
+      },
+      {
+        bg: '#f5f5f3', lightBg: true, name: 'Cargo Area Protector Mat',
+        price: 'From ₺59.99', save: 'SAVE ₺35', badge: '',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#f5f5f3"/>
+          <!-- mat shape -->
+          <path d="M40 50 Q40 40 50 40 L250 40 Q260 40 260 50 L260 155 Q260 165 250 165 L50 165 Q40 165 40 155 Z" fill="#e0e0dd" stroke="#ccc" stroke-width="2"/>
+          <!-- ribbed texture -->
+          <line x1="40" y1="70" x2="260" y2="70" stroke="#d0d0ce" stroke-width="3"/>
+          <line x1="40" y1="90" x2="260" y2="90" stroke="#d0d0ce" stroke-width="3"/>
+          <line x1="40" y1="110" x2="260" y2="110" stroke="#d0d0ce" stroke-width="3"/>
+          <line x1="40" y1="130" x2="260" y2="130" stroke="#d0d0ce" stroke-width="3"/>
+          <line x1="40" y1="150" x2="260" y2="150" stroke="#d0d0ce" stroke-width="3"/>
+          <!-- lip -->
+          <path d="M40 50 L260 50" stroke="#bbb" stroke-width="4"/>
+          <!-- logo -->
+          <rect x="110" y="175" width="80" height="14" rx="3" fill="#e63946" opacity=".9"/>
+          <text x="150" y="185" font-family="Arial" font-weight="700" font-size="7" fill="#fff" text-anchor="middle">Teslahubs</text></svg>`
+      }
+    ]
+  },
+  exterior: {
+    label: 'Exterior',
+    count: 10,
+    products: [
+      {
+        bg: '#141414', name: 'Solar Shield® Roof Sunshade Pro Kit',
+        price: '₺139.99', save: 'SAVE ₺45', badge: '',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#141414"/>
+          <!-- sun rays -->
+          <circle cx="150" cy="60" r="28" fill="#facc15" opacity=".15"/>
+          <circle cx="150" cy="60" r="18" fill="#facc15" opacity=".25"/>
+          <circle cx="150" cy="60" r="10" fill="#facc15" opacity=".5"/>
+          <!-- rays -->
+          <line x1="150" y1="20" x2="150" y2="32" stroke="#facc15" stroke-width="3" opacity=".4"/>
+          <line x1="180" y1="30" x2="173" y2="40" stroke="#facc15" stroke-width="3" opacity=".4"/>
+          <line x1="190" y1="60" x2="178" y2="60" stroke="#facc15" stroke-width="3" opacity=".4"/>
+          <line x1="120" y1="30" x2="127" y2="40" stroke="#facc15" stroke-width="3" opacity=".4"/>
+          <line x1="110" y1="60" x2="122" y2="60" stroke="#facc15" stroke-width="3" opacity=".4"/>
+          <!-- car top view with sunshade -->
+          <rect x="90" y="90" width="120" height="80" rx="20" fill="#1e1e1e" stroke="#2a2a2a" stroke-width="2"/>
+          <rect x="100" y="98" width="100" height="30" rx="8" fill="#0a1528"/>
+          <!-- sunshade on roof -->
+          <rect x="100" y="98" width="100" height="30" rx="8" fill="#1a2a1a" opacity=".8"/>
+          <line x1="100" y1="108" x2="200" y2="108" stroke="#2a3a2a" stroke-width="2"/>
+          <line x1="100" y1="118" x2="200" y2="118" stroke="#2a3a2a" stroke-width="2"/>
+          <rect x="90" y="130" width="120" height="32" rx="8" fill="#0f1f0f" opacity=".6"/>
+          <text x="150" y="185" font-family="Arial" font-weight="700" font-size="10" fill="#fff" text-anchor="middle">Solar Shield® Sunshade</text></svg>`
+      },
+      {
+        bg: '#111', name: 'AeroShield Window Visors',
+        price: '₺169.99', save: '', badge: '',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#111"/>
+          <!-- car side windows with visor -->
+          <rect x="30" y="50" width="240" height="100" rx="10" fill="#1a1a1a" stroke="#222" stroke-width="2"/>
+          <!-- front window -->
+          <path d="M50 80 Q60 55 100 52 L150 52 L150 100 L50 100 Z" fill="#0a1528" opacity=".8"/>
+          <!-- front visor strip -->
+          <path d="M50 78 Q60 53 100 50 L150 50 L150 56 Q100 58 62 82 Z" fill="#2a3a2a"/>
+          <!-- rear window -->
+          <path d="M155 52 L205 52 Q235 55 240 80 L240 100 L155 100 Z" fill="#0a1528" opacity=".8"/>
+          <!-- rear visor strip -->
+          <path d="M155 50 L205 50 Q235 53 240 76 L236 78 Q230 55 205 54 L155 56 Z" fill="#2a3a2a"/>
+          <!-- door line -->
+          <line x1="152" y1="50" x2="152" y2="150" stroke="#222" stroke-width="2"/>
+          <!-- wheels -->
+          <circle cx="80" cy="155" r="28" fill="#111" stroke="#222" stroke-width="2"/>
+          <circle cx="80" cy="155" r="16" fill="#1a1a1a"/>
+          <circle cx="220" cy="155" r="28" fill="#111" stroke="#222" stroke-width="2"/>
+          <circle cx="220" cy="155" r="16" fill="#1a1a1a"/>
+          <text x="150" y="195" font-family="Arial" font-weight="700" font-size="10" fill="#fff" text-anchor="middle">AeroShield Window Visors</text></svg>`
+      },
+      {
+        bg: '#0f0f12', name: 'Door Handle Protector Film',
+        price: 'From ₺24.99', save: 'SAVE ₺15', badge: '',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#0f0f12"/>
+          <!-- door panel -->
+          <rect x="40" y="30" width="220" height="140" rx="12" fill="#181818" stroke="#222" stroke-width="2"/>
+          <!-- door handle -->
+          <rect x="80" y="95" width="90" height="18" rx="9" fill="#1e1e1e" stroke="#333" stroke-width="2"/>
+          <!-- protection film glow -->
+          <rect x="78" y="93" width="94" height="22" rx="10" fill="none" stroke="#facc15" stroke-width="2" opacity=".7"/>
+          <rect x="78" y="93" width="94" height="22" rx="10" fill="#facc15" opacity=".05"/>
+          <!-- film label -->
+          <path d="M175 93 L190 75 L220 75" stroke="#facc15" stroke-width="1.5" fill="none" opacity=".6"/>
+          <text x="195" y="72" font-family="Arial" font-size="7" fill="#facc15" opacity=".8">PPF Film</text>
+          <!-- window -->
+          <rect x="50" y="38" width="200" height="48" rx="8" fill="#0a1020" opacity=".7"/>
+          <text x="150" y="185" font-family="Arial" font-weight="700" font-size="10" fill="#fff" text-anchor="middle">Door Handle Protectors</text></svg>`
+      },
+      {
+        bg: '#f0f0ee', lightBg: true, name: 'Mud Flaps Splash Guards Set',
+        price: 'From ₺44.99', save: 'SAVE ₺25', badge: '',
+        svg: `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="200" fill="#f0f0ee"/>
+          <!-- 4 mud flaps in grid -->
+          <!-- front left -->
+          <path d="M40 30 Q45 25 70 25 L70 100 Q70 110 60 115 L35 115 Q28 110 28 100 L28 40 Q28 32 40 30 Z" fill="#1a1a1a" stroke="#333" stroke-width="1.5"/>
+          <path d="M32 55 L66 55 M32 75 L66 75 M32 95 L62 95" stroke="#2a2a2a" stroke-width="1.5"/>
+          <!-- front right -->
+          <path d="M160 30 Q165 25 190 25 L190 115 L165 115 Q155 110 150 100 L150 40 Q152 32 160 30 Z" fill="#1a1a1a" stroke="#333" stroke-width="1.5"/>
+          <path d="M154 55 L188 55 M154 75 L188 75 M154 95 L186 95" stroke="#2a2a2a" stroke-width="1.5"/>
+          <!-- rear left -->
+          <path d="M40 130 Q45 125 70 125 L70 200 L28 200 L28 140 Q28 132 40 130 Z" fill="#222" stroke="#333" stroke-width="1.5"/>
+          <!-- rear right -->
+          <path d="M160 130 Q165 125 190 125 L190 200 L150 200 L150 140 Q152 132 160 130 Z" fill="#222" stroke="#333" stroke-width="1.5"/>
+          <!-- logo -->
+          <rect x="200" y="80" width="80" height="40" rx="6" fill="#e63946" opacity=".15" stroke="#e63946" stroke-width="1"/>
+          <text x="240" y="97" font-family="Arial" font-weight="700" font-size="8" fill="#e63946" text-anchor="middle">TESLA</text>
+          <text x="240" y="109" font-family="Arial" font-size="6" fill="#e63946" text-anchor="middle">HUBS</text></svg>`
+      }
+    ]
+  }
+};
+
+function buildM3Grid(cat) {
+  const data = m3Data[cat];
+  if (!data) return;
+  const grid = document.querySelector('.m3-grid');
+  const viewCat = document.querySelector('.m3-view-cat');
+  if (viewCat) viewCat.textContent = `All ${data.label} (${data.count}) →`;
+
+  grid.classList.add('fading');
+  setTimeout(() => {
+    grid.innerHTML = data.products.map(p => `
+      <a href="#" class="m3-product-card${p.lightBg ? ' light-bg' : ''}">
+        <div class="m3-img-area" style="background:${p.bg}">
+          ${p.svg}
+          ${p.badge}
+          ${!p.lightBg ? `<div class="m3-brand-tag">TeslaHubs®</div>` : ''}
+        </div>
+        <div class="m3-card-body">
+          <div class="prod-name${p.lightBg ? ' dark' : ''}">${p.name}</div>
+          <div class="m3-card-footer">
+            <span class="m3-price${p.lightBg ? ' dark' : ''}">${p.price}</span>
+            ${p.save ? `<span class="m3-save">${p.save}</span>` : ''}
+          </div>
+        </div>
+      </a>`).join('');
+    grid.classList.remove('fading');
+  }, 140);
+}
+
+/* ─── Model 3 – hover ─── */
+hoverMenu(
+  document.getElementById('model3Nav'),
+  document.getElementById('model3Mega'),
+  document.getElementById('model3Trigger')
+);
+
+/* ─── All Models – hover ─── */
+hoverMenu(
+  document.getElementById('allModelsNav'),
+  document.getElementById('allModelsMega'),
+  document.getElementById('allModelsTrigger')
+);
+
+/* ─── Model 3 sidebar category switch ─── */
+document.querySelectorAll('.m3-cat-list a').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelectorAll('.m3-cat-list a').forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+    buildM3Grid(link.dataset.cat);
+  });
+});
+
+  // Model filter buttons
+  document.querySelectorAll('.model-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // Add to cart feedback
+  document.querySelectorAll('.btn-add').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ Added!';
+      btn.style.background = '#22c55e';
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.style.background = '';
+      }, 1500);
+    });
+  });
+</script>
+</body>
+</html>

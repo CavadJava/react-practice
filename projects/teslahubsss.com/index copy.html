@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teslahubs Store – Tesla Accessories</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #e63946;
+      --dark: #0d0d0d;
+      --dark2: #1a1a1a;
+      --dark3: #242424;
+      --muted: #999;
+      --accent: #2563eb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fff;
+      color: #111;
+      margin: 0;
+    }
+
+    /* ── TOP BAR ── */
+    .top-bar {
+      background: var(--dark);
+      color: #fff;
+      font-size: .78rem;
+      letter-spacing: .03em;
+      text-align: center;
+      padding: 8px 0;
+    }
+    .top-bar span { color: #facc15; margin: 0 4px; }
+
+    /* ── NAV ── */
+    .navbar { background: #fff; border-bottom: 1px solid #eee; }
+    .navbar-brand { font-weight: 900; font-size: 1.4rem; color: var(--dark) !important; letter-spacing: -.02em; }
+    .navbar-brand span { color: var(--red); }
+    .nav-link {
+      font-size: .82rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--dark) !important;
+    }
+    .nav-link.sale { color: var(--red) !important; }
+    .nav-link:hover { color: var(--accent) !important; }
+    .nav-icons a { font-size: 1.15rem; color: var(--dark); margin-left: 14px; }
+    .nav-icons a:hover { color: var(--accent); }
+    .cart-badge { position: relative; }
+    .cart-badge .badge {
+      position: absolute; top: -6px; right: -8px;
+      font-size: .6rem; padding: 2px 5px;
+      background: var(--red); border-radius: 99px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #0d0d0d 0%, #1c1c2e 60%, #0f0c29 100%);
+      color: #fff;
+      min-height: 540px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(37,99,235,.25) 0%, transparent 65%);
+    }
+    .hero-badge {
+      display: inline-block;
+      background: var(--red);
+      color: #fff;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 99px;
+      margin-bottom: 18px;
+    }
+    .hero h1 {
+      font-size: clamp(2.4rem, 6vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -.03em;
+    }
+    .hero h1 .highlight { color: #facc15; }
+    .hero .sub { font-size: 1.05rem; color: #ccc; margin: 16px 0 32px; max-width: 440px; }
+    .btn-hero {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      font-size: .95rem;
+      padding: 14px 34px;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-block;
+      transition: background .2s;
+    }
+    .btn-hero:hover { background: #1d4ed8; color: #fff; }
+    .hero-rating { font-size: .82rem; color: #aaa; margin-top: 20px; }
+    .hero-rating .stars { color: #facc15; letter-spacing: 2px; }
+    .hero-img {
+      position: absolute;
+      right: -40px; bottom: 0;
+      width: min(55%, 600px);
+      opacity: .18;
+    }
+
+    /* ── MODELS BAR ── */
+    .models-bar {
+      background: var(--dark);
+      padding: 14px 0;
+    }
+    .models-bar .model-btn {
+      background: var(--dark3);
+      color: #ccc;
+      border: 1px solid #333;
+      font-size: .8rem;
+      font-weight: 600;
+      padding: 8px 20px;
+      border-radius: 6px;
+      margin: 4px;
+      cursor: pointer;
+      transition: all .2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .models-bar .model-btn:hover,
+    .models-bar .model-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* ── SECTION TITLES ── */
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -.02em;
+      margin-bottom: 6px;
+    }
+    .section-sub { color: var(--muted); font-size: .92rem; margin-bottom: 36px; }
+
+    /* ── PRODUCT CARD ── */
+    .product-card {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 14px;
+      overflow: hidden;
+      transition: box-shadow .2s, transform .2s;
+      height: 100%;
+    }
+    .product-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,.12); transform: translateY(-3px); }
+    .product-card .img-wrap {
+      background: #f5f5f5;
+      aspect-ratio: 1/1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+    }
+    .product-card .card-body { padding: 16px; }
+    .product-card .name { font-weight: 700; font-size: .9rem; margin-bottom: 6px; color: #111; }
+    .product-card .price { font-weight: 800; font-size: 1.05rem; color: var(--dark); }
+    .product-card .old-price { text-decoration: line-through; color: var(--muted); font-size: .82rem; margin-left: 6px; }
+    .product-card .save-badge {
+      background: #fee2e2; color: var(--red);
+      font-size: .72rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 99px;
+      display: inline-block; margin-left: 6px;
+    }
+    .product-card .stars { color: #facc15; font-size: .78rem; }
+    .product-card .review-count { color: var(--muted); font-size: .78rem; }
+    .btn-add {
+      background: var(--dark);
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 0;
+      width: 100%;
+      margin-top: 12px;
+      transition: background .2s;
+      cursor: pointer;
+    }
+    .btn-add:hover { background: var(--accent); }
+
+    /* ── WHY CHOOSE ── */
+    .why-card {
+      background: var(--dark2);
+      color: #fff;
+      border-radius: 14px;
+      padding: 32px 24px;
+      height: 100%;
+      transition: transform .2s;
+    }
+    .why-card:hover { transform: translateY(-4px); }
+    .why-card .icon { font-size: 2rem; color: var(--accent); margin-bottom: 14px; }
+    .why-card h5 { font-weight: 700; margin-bottom: 8px; }
+    .why-card p { color: #aaa; font-size: .88rem; margin: 0; line-height: 1.6; }
+
+    /* ── TESTIMONIALS ── */
+    .testimonial-section { background: #f8f8f8; }
+    .review-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 16px rgba(0,0,0,.06);
+      height: 100%;
+    }
+    .review-card .stars { color: #facc15; font-size: .9rem; margin-bottom: 8px; }
+    .review-card p { font-size: .88rem; color: #444; line-height: 1.6; margin-bottom: 14px; }
+    .review-card .author { font-weight: 700; font-size: .83rem; }
+    .review-card .date { color: var(--muted); font-size: .78rem; }
+    .verified { color: #22c55e; font-size: .72rem; font-weight: 700; }
+
+    /* ── DIGEST ── */
+    .digest-section { background: var(--dark); color: #fff; }
+    .digest-card {
+      background: var(--dark2);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: transform .2s;
+    }
+    .digest-card:hover { transform: translateY(-4px); }
+    .digest-card .digest-img {
+      background: var(--dark3);
+      height: 160px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3.5rem;
+    }
+    .digest-card .digest-body { padding: 20px; }
+    .digest-card .tag {
+      background: var(--accent);
+      color: #fff;
+      font-size: .7rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 99px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .digest-card h6 { font-weight: 700; margin: 10px 0 6px; font-size: .95rem; color: #fff; }
+    .digest-card .meta { color: #777; font-size: .78rem; }
+
+    /* ── PAYMENT STRIP ── */
+    .payment-strip { background: #f5f5f5; padding: 18px 0; }
+    .pay-icon {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: .75rem;
+      font-weight: 700;
+      color: #444;
+      margin: 4px;
+      display: inline-block;
+    }
+
+    /* ── FOOTER ── */
+    footer { background: var(--dark); color: #aaa; padding: 60px 0 30px; }
+    footer h6 { color: #fff; font-weight: 700; margin-bottom: 16px; font-size: .85rem; text-transform: uppercase; letter-spacing: .06em; }
+    footer a { color: #aaa; text-decoration: none; font-size: .85rem; display: block; margin-bottom: 8px; }
+    footer a:hover { color: #fff; }
+    .footer-brand { font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: -.02em; }
+    .footer-brand span { color: var(--red); }
+    .footer-bottom { border-top: 1px solid #222; margin-top: 40px; padding-top: 20px; font-size: .78rem; color: #555; }
+    .social-icons a {
+      width: 36px; height: 36px;
+      background: #222;
+      border-radius: 8px;
+      display: inline-flex; align-items: center; justify-content: center;
+      color: #aaa;
+      font-size: .95rem;
+      margin-right: 8px;
+      transition: background .2s, color .2s;
+      text-decoration: none;
+    }
+    .social-icons a:hover { background: var(--accent); color: #fff; }
+
+    /* ── TRUST BAR ── */
+    .trust-bar { background: #fff; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 24px 0; }
+    .trust-item { text-align: center; }
+    .trust-item .icon { font-size: 1.6rem; color: var(--accent); margin-bottom: 6px; }
+    .trust-item .label { font-weight: 700; font-size: .82rem; }
+    .trust-item .sub { color: var(--muted); font-size: .75rem; }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <span>⚡</span> Tesla Birthday Sale – <strong>UP TO 65% OFF</strong> – Limited time only! <span>⚡</span>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="#">Tesla<span>Hubs</span></a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav mx-auto gap-1">
+        <li class="nav-item"><a class="nav-link sale" href="#">SALE</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Model Y</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Exterior</a></li>
+            <li><a class="dropdown-item" href="#">Interior</a></li>
+            <li><a class="dropdown-item" href="#">Performance</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Model 3</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Exterior</a></li>
+            <li><a class="dropdown-item" href="#">Interior</a></li>
+            <li><a class="dropdown-item" href="#">Performance</a></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="#">All Models</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Shop All</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Order Status</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Support</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Digest</a></li>
+      </ul>
+      <div class="nav-icons d-flex align-items-center">
+        <a href="#"><i class="bi bi-person"></i></a>
+        <a href="#"><i class="bi bi-search"></i></a>
+        <a href="#" class="cart-badge">
+          <i class="bi bi-bag"></i>
+          <span class="badge">0</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container position-relative z-1">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <span class="hero-badge">Birthday Sale – Limited Time</span>
+        <h1>
+          Tesla Birthday<br />
+          <span class="highlight">Sale</span>
+        </h1>
+        <p class="sub">Premium Tesla accessories engineered for perfect fit and lasting performance. Up to 65% off sitewide.</p>
+        <a href="#" class="btn-hero">Claim 65% Off <i class="bi bi-arrow-right ms-1"></i></a>
+        <div class="hero-rating mt-3">
+          <span class="stars">★★★★★</span> Rated 4.9/5 by <strong style="color:#fff">500,000+</strong> customers
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- decorative car silhouette -->
+  <svg class="hero-img" viewBox="0 0 600 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="300" cy="200" rx="280" ry="30" fill="#fff"/>
+    <rect x="60" y="130" width="480" height="80" rx="12" fill="#fff"/>
+    <rect x="130" y="70" width="300" height="80" rx="20" fill="#fff"/>
+    <circle cx="155" cy="215" r="35" fill="#ccc"/>
+    <circle cx="155" cy="215" r="18" fill="#888"/>
+    <circle cx="445" cy="215" r="35" fill="#ccc"/>
+    <circle cx="445" cy="215" r="18" fill="#888"/>
+  </svg>
+</section>
+
+<!-- MODELS BAR -->
+<div class="models-bar">
+  <div class="container text-center">
+    <span style="color:#aaa;font-size:.8rem;margin-right:12px;">SHOP BY MODEL:</span>
+    <a href="#" class="model-btn active">Model Y</a>
+    <a href="#" class="model-btn">Model 3</a>
+    <a href="#" class="model-btn">Model S</a>
+    <a href="#" class="model-btn">Model X</a>
+    <a href="#" class="model-btn">Cybertruck</a>
+  </div>
+</div>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="container">
+    <div class="row g-3">
+      <div class="col-6 col-md-3 trust-item">
+        <div class="icon"><i class="bi bi-shield-check"></i></div>
+        <div class="label">Quality Guaranteed</div>
+        <div class="sub">Highest standards only</div>
+      </div>
+      <div class="col-6 col-md-3 trust-item">
+        <div class="icon"><i class="bi bi-truck"></i></div>
+        <div class="label">Fast Delivery</div>
+        <div class="sub">Worldwide shipping</div>
+      </div>
+      <div class="col-6 col-md-3 trust-item">
+        <div class="icon"><i class="bi bi-arrow-repeat"></i></div>
+        <div class="label">Easy Returns</div>
+        <div class="sub">30-day return policy</div>
+      </div>
+      <div class="col-6 col-md-3 trust-item">
+        <div class="icon"><i class="bi bi-headset"></i></div>
+        <div class="label">24/7 Support</div>
+        <div class="sub">Always here to help</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BEST SELLERS -->
+<section class="py-5" id="bestsellers">
+  <div class="container">
+    <div class="text-center mb-2">
+      <span class="hero-badge" style="background:#f1f5f9;color:var(--accent);">Best Sellers</span>
+    </div>
+    <h2 class="section-title text-center">Top Products</h2>
+    <p class="section-sub text-center">Handpicked favorites trusted by 500,000+ Tesla owners worldwide.</p>
+    <div class="row g-4">
+
+      <!-- Product 1 -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card">
+          <div class="img-wrap">☀️</div>
+          <div class="card-body">
+            <div class="name">Solar Shield® Roof Sunshade Pro Kit</div>
+            <div class="mb-1">
+              <span class="stars">★★★★★</span>
+              <span class="review-count">(2,341)</span>
+            </div>
+            <div>
+              <span class="price">$139.99</span>
+              <span class="old-price">$184.99</span>
+              <span class="save-badge">-$45</span>
+            </div>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 2 -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card">
+          <div class="img-wrap">🔵</div>
+          <div class="card-body">
+            <div class="name">Aluminum Caliper Covers</div>
+            <div class="mb-1">
+              <span class="stars">★★★★★</span>
+              <span class="review-count">(1,872)</span>
+            </div>
+            <div>
+              <span class="price">from $149.99</span>
+              <span class="old-price">$299.99</span>
+              <span class="save-badge">-$150</span>
+            </div>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 3 -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card">
+          <div class="img-wrap">📷</div>
+          <div class="card-body">
+            <div class="name">DashGlow 360° Vision System</div>
+            <div class="mb-1">
+              <span class="stars">★★★★★</span>
+              <span class="review-count">(986)</span>
+            </div>
+            <div>
+              <span class="price">$149.99</span>
+              <span class="old-price">$199.99</span>
+              <span class="save-badge">-$50</span>
+            </div>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 4 -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card">
+          <div class="img-wrap">📱</div>
+          <div class="card-body">
+            <div class="name">Dash Screen PRO, CarPlay Ultra</div>
+            <div class="mb-1">
+              <span class="stars">★★★★★</span>
+              <span class="review-count">(3,104)</span>
+            </div>
+            <div>
+              <span class="price">from $239.99</span>
+              <span class="old-price">$389.99</span>
+              <span class="save-badge">-$150</span>
+            </div>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 5 -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card">
+          <div class="img-wrap">🖥️</div>
+          <div class="card-body">
+            <div class="name">Rear Display Screen ULTRA</div>
+            <div class="mb-1">
+              <span class="stars">★★★★★</span>
+              <span class="review-count">(741)</span>
+            </div>
+            <div>
+              <span class="price">$249.99</span>
+              <span class="old-price">$399.99</span>
+              <span class="save-badge">-$150</span>
+            </div>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 6 -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card">
+          <div class="img-wrap">🧲</div>
+          <div class="card-body">
+            <div class="name">MagSafe Phone Holder</div>
+            <div class="mb-1">
+              <span class="stars">★★★★★</span>
+              <span class="review-count">(5,210)</span>
+            </div>
+            <div>
+              <span class="price">from $49.99</span>
+              <span class="old-price">$59.99</span>
+              <span class="save-badge">-$10</span>
+            </div>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 7 -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card">
+          <div class="img-wrap">💡</div>
+          <div class="card-body">
+            <div class="name">Projector Door Lights</div>
+            <div class="mb-1">
+              <span class="stars">★★★★☆</span>
+              <span class="review-count">(2,890)</span>
+            </div>
+            <div>
+              <span class="price">from $29.99</span>
+              <span class="old-price">$39.99</span>
+              <span class="save-badge">-$10</span>
+            </div>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product 8 -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="product-card">
+          <div class="img-wrap">🔇</div>
+          <div class="card-body">
+            <div class="name">ProGuard Noise Reduction Kit</div>
+            <div class="mb-1">
+              <span class="stars">★★★★★</span>
+              <span class="review-count">(1,025)</span>
+            </div>
+            <div>
+              <span class="price">from $79.99</span>
+              <span class="old-price">$179.99</span>
+              <span class="save-badge">-$100</span>
+            </div>
+            <button class="btn-add">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="text-center mt-5">
+      <a href="#" class="btn btn-outline-dark rounded-pill px-5 py-2 fw-bold">View All Products</a>
+    </div>
+  </div>
+</section>
+
+<!-- WHY CHOOSE -->
+<section class="py-5" style="background:#f8f8f8;">
+  <div class="container">
+    <div class="text-center mb-2">
+      <span class="hero-badge" style="background:#e0e7ff;color:var(--accent);">Why Teslahubs</span>
+    </div>
+    <h2 class="section-title text-center">Why Choose Our Accessories?</h2>
+    <p class="section-sub text-center">Four years of dedicated service to Tesla enthusiasts worldwide.</p>
+    <div class="row g-4">
+      <div class="col-sm-6 col-lg-3">
+        <div class="why-card">
+          <div class="icon"><i class="bi bi-gem"></i></div>
+          <h5>Quality</h5>
+          <p>Highest quality standards ensuring reliability, durability, and long-lasting performance for every product.</p>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="why-card">
+          <div class="icon"><i class="bi bi-puzzle"></i></div>
+          <h5>Perfect Fit</h5>
+          <p>Products engineered specifically for your Tesla model — seamless integration, no modifications needed.</p>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="why-card">
+          <div class="icon"><i class="bi bi-tools"></i></div>
+          <h5>Easy Installation</h5>
+          <p>Simple setup processes so you spend less time installing and more time enjoying the upgrade.</p>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="why-card">
+          <div class="icon"><i class="bi bi-tag"></i></div>
+          <h5>Best Prices</h5>
+          <p>Competitive pricing makes premium Tesla accessories accessible to every owner without compromise.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonial-section py-5">
+  <div class="container">
+    <div class="text-center mb-2">
+      <span class="hero-badge" style="background:#f0fdf4;color:#16a34a;">Customer Reviews</span>
+    </div>
+    <h2 class="section-title text-center">Loved by 100,000+ Customers</h2>
+    <p class="section-sub text-center">Real reviews from real Tesla owners.</p>
+    <div class="row g-4">
+
+      <div class="col-md-6 col-lg-4">
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p>"Product arrived as described — better material by far than the cheap kits sold online. Fits perfectly on my Model Y."</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="author">Michael T.</div>
+              <div class="date">Verified buyer · June 2026</div>
+            </div>
+            <span class="verified"><i class="bi bi-patch-check-fill"></i> Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p>"The noise reduction kit is absolutely worth it. My Model 3 is so much quieter on the highway now. Installation was a breeze."</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="author">Sarah K.</div>
+              <div class="date">Verified buyer · May 2026</div>
+            </div>
+            <span class="verified"><i class="bi bi-patch-check-fill"></i> Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p>"Fastest shipping I've experienced. Ordered Tuesday, arrived Thursday. The caliper covers look amazing in red on my Cybertruck."</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="author">James R.</div>
+              <div class="date">Verified buyer · June 2026</div>
+            </div>
+            <span class="verified"><i class="bi bi-patch-check-fill"></i> Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p>"The CarPlay screen is a game-changer. Worth every penny. Customer support helped me through setup in minutes."</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="author">Emma L.</div>
+              <div class="date">Verified buyer · April 2026</div>
+            </div>
+            <span class="verified"><i class="bi bi-patch-check-fill"></i> Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p>"Sunshade makes a huge difference in summer. Keeps the interior cool and the quality is exceptional. Will definitely order again."</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="author">David M.</div>
+              <div class="date">Verified buyer · June 2026</div>
+            </div>
+            <span class="verified"><i class="bi bi-patch-check-fill"></i> Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p>"Teslahubs is my go-to for all Model S accessories. Trusted them for 3 years — never disappointed. The fit is always spot on."</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="author">Anna P.</div>
+              <div class="date">Verified buyer · May 2026</div>
+            </div>
+            <span class="verified"><i class="bi bi-patch-check-fill"></i> Verified</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- DIGEST / BLOG -->
+<section class="digest-section py-5">
+  <div class="container">
+    <div class="text-center mb-2">
+      <span class="hero-badge">Tesla Digest</span>
+    </div>
+    <h2 class="section-title text-center text-white">Tesla World This Week</h2>
+    <p class="section-sub text-center">Everything that happened in the Tesla world this week — in 5 minutes.</p>
+    <div class="row g-4">
+
+      <div class="col-md-6 col-lg-4">
+        <div class="digest-card">
+          <div class="digest-img">🚗</div>
+          <div class="digest-body">
+            <span class="tag">FSD</span>
+            <h6>Is Tesla's FSD Worth It In 2026? The Real Story</h6>
+            <div class="meta"><i class="bi bi-clock me-1"></i>5 min read · July 2026</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="digest-card">
+          <div class="digest-img">⚡</div>
+          <div class="digest-body">
+            <span class="tag">News</span>
+            <h6>Model Y Juniper: Every Upgrade Explained</h6>
+            <div class="meta"><i class="bi bi-clock me-1"></i>4 min read · June 2026</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="digest-card">
+          <div class="digest-img">🔋</div>
+          <div class="digest-body">
+            <span class="tag">Tips</span>
+            <h6>Top 10 Accessories Every Tesla Owner Needs in 2026</h6>
+            <div class="meta"><i class="bi bi-clock me-1"></i>6 min read · June 2026</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="text-center mt-4">
+      <a href="#" class="btn btn-outline-light rounded-pill px-5 py-2 fw-bold">Read More Articles</a>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="py-5" style="background:linear-gradient(135deg,#1e3a8a,#2563eb);">
+  <div class="container text-center text-white">
+    <h2 class="section-title" style="color:#fff;">Stay in the Loop</h2>
+    <p style="color:rgba(255,255,255,.8);max-width:460px;margin:0 auto 28px;">Get exclusive deals, new product alerts and Tesla tips delivered to your inbox.</p>
+    <form class="d-flex justify-content-center gap-2 flex-wrap">
+      <input type="email" class="form-control rounded-pill" placeholder="Your email address" style="max-width:320px;" />
+      <button type="submit" class="btn btn-warning fw-bold rounded-pill px-4">Subscribe</button>
+    </form>
+    <p style="color:rgba(255,255,255,.5);font-size:.75rem;margin-top:12px;">No spam. Unsubscribe anytime.</p>
+  </div>
+</section>
+
+<!-- PAYMENT STRIP -->
+<div class="payment-strip">
+  <div class="container text-center">
+    <small class="text-muted me-2">Secure payments via:</small>
+    <span class="pay-icon">Visa</span>
+    <span class="pay-icon">Mastercard</span>
+    <span class="pay-icon">Amex</span>
+    <span class="pay-icon">PayPal</span>
+    <span class="pay-icon">Apple Pay</span>
+    <span class="pay-icon">Google Pay</span>
+    <span class="pay-icon">Shop Pay</span>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4">
+        <div class="footer-brand">Tesla<span>Hubs</span></div>
+        <p style="font-size:.85rem;margin-top:14px;line-height:1.7;">
+          Four years of dedicated commitment to Tesla enthusiasts. A trusted name in the community for premium aftermarket accessories.
+        </p>
+        <div class="social-icons mt-3">
+          <a href="#"><i class="bi bi-facebook"></i></a>
+          <a href="#"><i class="bi bi-instagram"></i></a>
+          <a href="#"><i class="bi bi-tiktok"></i></a>
+          <a href="#"><i class="bi bi-pinterest"></i></a>
+        </div>
+        <p style="font-size:.8rem;margin-top:20px;">
+          <i class="bi bi-headset me-1"></i> Our support is available <strong style="color:#fff;">24/7 ❤️</strong><br />
+          <i class="bi bi-envelope me-1"></i> <a href="mailto:hello@teslahubs.com" style="color:#aaa;">hello@teslahubs.com</a>
+        </p>
+      </div>
+
+      <div class="col-6 col-md-3 col-lg-2">
+        <h6>Quick Links</h6>
+        <a href="#">Digest</a>
+        <a href="#">Track Order</a>
+        <a href="#">FAQ</a>
+        <a href="#">Contact Us</a>
+        <a href="#">About Us</a>
+      </div>
+
+      <div class="col-6 col-md-3 col-lg-2">
+        <h6>Policies</h6>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Refund Policy</a>
+        <a href="#">Shipping Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <h6>Our Locations</h6>
+        <p style="font-size:.83rem;line-height:1.7;">
+          <i class="bi bi-geo-alt me-1"></i> <strong style="color:#ccc;">UK:</strong><br />
+          71-75 Shelton Street, Covent Garden,<br />London, WC2H 9JQ
+        </p>
+        <p style="font-size:.83rem;line-height:1.7;">
+          <i class="bi bi-geo-alt me-1"></i> <strong style="color:#ccc;">USA:</strong><br />
+          3500 W Hallandale Beach Blvd,<br />Hollywood, FL 33023
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <p class="mb-0">
+            &copy; 2026 TeslaHubs. All rights reserved. Products are aftermarket items not affiliated with or endorsed by Tesla Motors, Inc.
+          </p>
+        </div>
+        <div class="col-md-4 text-md-end mt-2 mt-md-0">
+          <span class="pay-icon" style="font-size:.68rem;padding:4px 10px;">Visa</span>
+          <span class="pay-icon" style="font-size:.68rem;padding:4px 10px;">Mastercard</span>
+          <span class="pay-icon" style="font-size:.68rem;padding:4px 10px;">PayPal</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Model filter buttons
+  document.querySelectorAll('.model-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // Add to cart feedback
+  document.querySelectorAll('.btn-add').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ Added!';
+      btn.style.background = '#22c55e';
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.style.background = '';
+      }, 1500);
+    });
+  });
+</script>
+</body>
+</html>
