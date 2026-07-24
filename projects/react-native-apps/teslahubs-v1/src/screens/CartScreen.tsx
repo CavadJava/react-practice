@@ -7,6 +7,7 @@ import { CITIES, REGIONS, WHATSAPP_PHONE, getProductImage } from '../data/produc
 import { ThemeColors, radius, spacing, withAlpha } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
+import { useCurrency } from '../context/CurrencyContext';
 import { useCart } from '../context/CartContext';
 import HeaderBar from '../components/HeaderBar';
 import MapPickerModal from '../components/MapPickerModal';
@@ -31,6 +32,7 @@ export default function CartScreen({ navigation }: Props) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const { t } = useLocale();
+  const { format } = useCurrency();
   const { cartItems, cartCount, increment, decrement, orderTotal } = useCart();
 
   const [firstName, setFirstName] = useState('');
@@ -42,7 +44,6 @@ export default function CartScreen({ navigation }: Props) {
   const [showMap, setShowMap] = useState(false);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [locationConfirmed, setLocationConfirmed] = useState(false);
-  const [gpsError, setGpsError] = useState('');
 
   const isBaku = city === 'baku';
   const delivery = useMemo(() => computeDelivery(new Date()), []);
@@ -86,7 +87,7 @@ export default function CartScreen({ navigation }: Props) {
         `${ci.product.name} × ${ci.qty}`,
         '',
         `💰 Qiymət`,
-        `$${(ci.product.price * ci.qty).toFixed(2)}`,
+        format(ci.product.price * ci.qty),
         '',
       ]),
       `👤 Müştəri`,
@@ -111,7 +112,7 @@ export default function CartScreen({ navigation }: Props) {
       finalDeliveryTimeAz + (urgent ? ' (TƏCİLİ)' : ''),
       '',
       `💵 Ümumi`,
-      `$${orderTotal.toFixed(2)}`,
+      format(orderTotal),
       '━━━━━━━━━━━━━━',
       '',
       'Sifarişimin təsdiqlənməsini gözləyirəm. Təşəkkür edirəm!',
@@ -125,7 +126,7 @@ export default function CartScreen({ navigation }: Props) {
       phone,
       itemCount: cartCount,
       deliveryTime: `${finalDelivery.isToday ? t('cart.today') : t('cart.tomorrow')}, ${finalDelivery.time}`,
-      total: `$${orderTotal.toFixed(2)}`,
+      total: format(orderTotal),
     });
   };
 
@@ -145,7 +146,7 @@ export default function CartScreen({ navigation }: Props) {
                   <Text style={styles.cartItemName} numberOfLines={2}>
                     {ci.product.name}
                   </Text>
-                  <Text style={styles.cartItemPrice}>${(ci.product.price * ci.qty).toFixed(2)}</Text>
+                  <Text style={styles.cartItemPrice}>{format(ci.product.price * ci.qty)}</Text>
                 </View>
                 <View style={styles.stepper}>
                   <Pressable style={styles.stepperBtn} onPress={() => decrement(ci.product.id)}>
@@ -233,7 +234,7 @@ export default function CartScreen({ navigation }: Props) {
               <View style={styles.divider} />
               <View style={styles.totalRow}>
                 <Text style={styles.totalLabel}>{t('cart.total')}</Text>
-                <Text style={styles.totalValue}>${orderTotal.toFixed(2)}</Text>
+                <Text style={styles.totalValue}>{format(orderTotal)}</Text>
               </View>
             </View>
           )}
@@ -254,23 +255,10 @@ export default function CartScreen({ navigation }: Props) {
 
       <MapPickerModal
         visible={showMap}
-        coords={coords}
-        gpsError={gpsError}
+        initialCoords={coords}
         onClose={() => setShowMap(false)}
-        onUseGps={(c, err) => {
-          if (err) {
-            setGpsError(err);
-            return;
-          }
+        onConfirm={c => {
           setCoords(c);
-          setGpsError('');
-          setLocationConfirmed(true);
-        }}
-        onConfirm={() => {
-          if (!coords) {
-            setGpsError(t('map.pressGps'));
-            return;
-          }
           setLocationConfirmed(true);
           setShowMap(false);
         }}

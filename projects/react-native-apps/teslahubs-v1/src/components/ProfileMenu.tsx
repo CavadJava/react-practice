@@ -2,12 +2,15 @@ import React, { useMemo } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { ThemeColors, ThemeKey, THEMES, radius, spacing } from '../theme/theme';
 import { LOCALES } from '../i18n/translations';
+import { CURRENCIES } from '../currency/currency';
 import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 export default function ProfileMenu({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const { colors, themeKey, setThemeKey } = useTheme();
   const { t, locale, setLocale } = useLocale();
+  const { currency, setCurrency } = useCurrency();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   return (
@@ -33,6 +36,23 @@ export default function ProfileMenu({ visible, onClose }: { visible: boolean; on
                   onPress={() => setLocale(l.key)}
                   style={({ pressed }) => [styles.languageChip, active && styles.languageChipActive, pressed && styles.templateRowPressed]}>
                   <Text style={[styles.languageChipText, active && styles.languageChipTextActive]}>{l.key.toUpperCase()}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          <View style={styles.divider} />
+
+          <Text style={styles.sectionLabel}>{t('profile.currency')}</Text>
+          <View style={styles.languageRow}>
+            {CURRENCIES.map(c => {
+              const active = c.key === currency;
+              return (
+                <Pressable
+                  key={c.key}
+                  onPress={() => setCurrency(c.key)}
+                  style={({ pressed }) => [styles.languageChip, active && styles.languageChipActive, pressed && styles.templateRowPressed]}>
+                  <Text style={[styles.languageChipText, active && styles.languageChipTextActive]}>{c.symbol} {c.label}</Text>
                 </Pressable>
               );
             })}

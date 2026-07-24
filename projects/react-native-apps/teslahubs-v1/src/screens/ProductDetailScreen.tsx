@@ -7,6 +7,7 @@ import { PRODUCTS, getProductImage } from '../data/products';
 import { ThemeColors, radius, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
+import { useCurrency } from '../context/CurrencyContext';
 import { useCart } from '../context/CartContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetail'>;
@@ -15,6 +16,7 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const { t } = useLocale();
+  const { format } = useCurrency();
   const { addToCart } = useCart();
   const product = PRODUCTS.find(p => p.id === route.params.productId) ?? PRODUCTS[0];
   const [justAdded, setJustAdded] = useState(false);
@@ -47,8 +49,8 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
             <Text style={styles.fit}>{product.fit}</Text>
             <Text style={styles.name}>{product.name}</Text>
             <View style={styles.priceRow}>
-              <Text style={styles.price}>${product.price.toFixed(2)}</Text>
-              {product.wasPrice && <Text style={styles.wasPrice}>${product.wasPrice.toFixed(2)}</Text>}
+              <Text style={styles.price}>{format(product.price)}</Text>
+              {product.wasPrice && <Text style={styles.wasPrice}>{format(product.wasPrice)}</Text>}
             </View>
             <Text style={styles.rating}>
               ★★★★★ {product.rating} {t('product.reviews', { count: product.reviewCount })}
@@ -95,7 +97,7 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
           <Text style={styles.favIcon}>♡</Text>
         </Pressable>
         <Pressable style={styles.addBtn} onPress={handleAddToCart}>
-          <Text style={styles.addBtnText}>{justAdded ? t('product.added') : t('product.addToCartPrice', { price: `$${product.price.toFixed(2)}` })}</Text>
+          <Text style={styles.addBtnText}>{justAdded ? t('product.added') : t('product.addToCartPrice', { price: format(product.price) })}</Text>
         </Pressable>
       </View>
     </SafeAreaView>

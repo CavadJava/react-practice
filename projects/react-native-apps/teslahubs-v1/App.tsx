@@ -10,6 +10,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { CartProvider } from './src/context/CartContext';
 import { ThemeProvider } from './src/context/ThemeContext';
 import { LocaleProvider } from './src/context/LocaleContext';
+import { CurrencyProvider } from './src/context/CurrencyContext';
 import RootNavigator from './src/navigation/RootNavigator';
 import AppStatusBar from './src/components/AppStatusBar';
 
@@ -18,10 +19,12 @@ function App() {
     <SafeAreaProvider>
       <ThemeProvider>
         <LocaleProvider>
-          <AppStatusBar />
-          <CartProvider>
-            <RootNavigator />
-          </CartProvider>
+          <CurrencyProvider>
+            <AppStatusBar />
+            <CartProvider>
+              <RootNavigator />
+            </CartProvider>
+          </CurrencyProvider>
         </LocaleProvider>
       </ThemeProvider>
     </SafeAreaProvider>

@@ -4,6 +4,7 @@ import { Product, getProductImage } from '../data/products';
 import { ThemeColors, radius, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 type Props = {
   product: Product;
@@ -17,6 +18,7 @@ export default function ProductCard({ product, isInCart, onOpen, onAddToCart, on
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const { t } = useLocale();
+  const { format } = useCurrency();
 
   return (
     <Pressable style={({ pressed }) => [styles.card, pressed && styles.cardPressed]} onPress={onOpen}>
@@ -33,8 +35,8 @@ export default function ProductCard({ product, isInCart, onOpen, onAddToCart, on
           {product.name}
         </Text>
         <View style={styles.priceRow}>
-          <Text style={styles.price}>${product.price.toFixed(2)}</Text>
-          {product.wasPrice && <Text style={styles.wasPrice}>${product.wasPrice.toFixed(2)}</Text>}
+          <Text style={styles.price}>{format(product.price)}</Text>
+          {product.wasPrice && <Text style={styles.wasPrice}>{format(product.wasPrice)}</Text>}
         </View>
         {isInCart ? (
           <Pressable style={({ pressed }) => [styles.orderBtn, pressed && styles.btnPressed]} onPress={onGoToOrder}>

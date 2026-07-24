@@ -94,6 +94,7 @@ const en = {
     guest: 'Guest',
     appearance: 'Appearance',
     language: 'Language',
+    currency: 'Currency',
   },
   city: {
     baku: 'Baku',
@@ -121,6 +122,7 @@ const az: typeof en = {
     charging: 'Enerji dolumu',
     wheels: 'Təkərlər',
     all: 'Hamısı',
+    other: 'Digər',
     allProducts: 'Bütün Məhsullar',
   },
   badge: {
@@ -191,6 +193,7 @@ const az: typeof en = {
     guest: 'Qonaq',
     appearance: 'Görünüş',
     language: 'Dil',
+    currency: 'Valyuta',
   },
   city: {
     baku: 'Bakı',
