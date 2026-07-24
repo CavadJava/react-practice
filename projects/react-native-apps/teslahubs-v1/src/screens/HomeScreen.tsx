@@ -1,0 +1,203 @@
+import React, { useMemo, useState } from 'react';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../navigation/types';
+import { CATEGORIES, PRODUCTS } from '../data/products';
+import { ThemeColors, radius, spacing } from '../theme/theme';
+import { useTheme } from '../context/ThemeContext';
+import { useCart } from '../context/CartContext';
+import { useSaleCountdown } from '../hooks/useSaleCountdown';
+import ProductCard from '../components/ProductCard';
+import ProfileMenu from '../components/ProfileMenu';
+
+const modelImages = {
+  'model-y': require('../assets/images/model-y.png'),
+  'model-3': require('../assets/images/model-3.png'),
+} as const;
+
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+
+export default function HomeScreen({ navigation }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const { cartCount, isInCart, addToCart } = useCart();
+  const countdown = useSaleCountdown();
+  const featured = PRODUCTS.slice(0, 4);
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  return (
+    <SafeAreaView style={styles.screen} edges={['top']}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.topBar}>
+          <Text style={styles.logo}>TESLAHUBS</Text>
+          <View style={styles.topBarActions}>
+            <Pressable style={({ pressed }) => [styles.iconBtn, pressed && styles.iconBtnPressed]}>
+              <Text style={styles.iconText}>⌕</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => setProfileOpen(true)}
+              style={({ pressed }) => [styles.iconBtn, pressed && styles.iconBtnPressed]}>
+              <View style={styles.guestAvatar}>
+                <Text style={styles.guestAvatarText}>G</Text>
+              </View>
+            </Pressable>
+            <Pressable
+              onPress={() => navigation.navigate('Cart')}
+              style={({ pressed }) => [styles.iconBtn, styles.cartIcon, pressed && styles.iconBtnPressed]}>
+              <Text style={styles.iconText}>🛒</Text>
+              {cartCount > 0 && (
+                <View style={styles.cartBadge}>
+                  <Text style={styles.cartBadgeText}>{cartCount}</Text>
+                </View>
+              )}
+            </Pressable>
+          </View>
+        </View>
+
+        <ProfileMenu visible={profileOpen} onClose={() => setProfileOpen(false)} />
+
+        <View style={styles.section}>
+          <View style={styles.banner}>
+            <Text style={styles.bannerEyebrow}>TESLA BIRTHDAY SALE</Text>
+            <Text style={styles.bannerTitle}>UP TO 65% OFF</Text>
+            <Text style={styles.bannerSub}>
+              Ends in {countdown.days}d {countdown.hours}h {countdown.mins}m
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Shop by Model</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.modelRow}>
+            <Pressable
+              style={({ pressed }) => [styles.modelCard, pressed && styles.pressedCard]}
+              onPress={() => navigation.navigate('ProductList', { category: null })}>
+              <Image source={modelImages['model-y']} style={styles.modelImage} resizeMode="cover" />
+              <View style={styles.modelOverlay} />
+              <Text style={styles.modelLabel}>Model Y</Text>
+            </Pressable>
+            <Pressable
+              style={({ pressed }) => [styles.modelCard, pressed && styles.pressedCard]}
+              onPress={() => navigation.navigate('ProductList', { category: null })}>
+              <Image source={modelImages['model-3']} style={styles.modelImage} resizeMode="cover" />
+              <View style={styles.modelOverlay} />
+              <Text style={styles.modelLabel}>Model 3</Text>
+            </Pressable>
+          </ScrollView>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Categories</Text>
+          <View style={styles.categoryGrid}>
+            {CATEGORIES.map(c => (
+              <Pressable
+                key={c.key}
+                style={({ pressed }) => [styles.categoryItem, pressed && styles.pressedFaded]}
+                onPress={() => navigation.navigate('ProductList', { category: c.key })}>
+                <View style={[styles.categoryIcon, { backgroundColor: c.color }]} />
+                <Text style={styles.categoryLabel}>{c.name}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.bestSellersHeader}>
+          <Text style={styles.sectionTitle}>Best Sellers</Text>
+          <Text style={styles.seeAll} onPress={() => navigation.navigate('ProductList', { category: null })}>
+            See all
+          </Text>
+        </View>
+        <View style={styles.productGrid}>
+          {featured.map(p => (
+            <View key={p.id} style={styles.productGridItem}>
+              <ProductCard
+                product={p}
+                isInCart={isInCart(p.id)}
+                onOpen={() => navigation.navigate('ProductDetail', { productId: p.id })}
+                onAddToCart={() => addToCart(p.id)}
+                onGoToOrder={() => navigation.navigate('Cart')}
+              />
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const makeStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    screen: { flex: 1, backgroundColor: colors.bg },
+    scrollContent: { paddingBottom: 40 },
+    topBar: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: spacing.xl,
+      paddingTop: 10,
+      paddingBottom: 10,
+    },
+    logo: { fontWeight: '900', fontSize: 19, letterSpacing: 0.4, color: colors.text },
+    topBarActions: { flexDirection: 'row', gap: 4, alignItems: 'center' },
+    iconBtn: { width: 34, height: 34, alignItems: 'center', justifyContent: 'center', borderRadius: radius.pill },
+    iconBtnPressed: { backgroundColor: colors.cardAlt },
+    cartIcon: { position: 'relative' },
+    iconText: { fontSize: 17, color: colors.text },
+    guestAvatar: {
+      width: 22,
+      height: 22,
+      borderRadius: 11,
+      backgroundColor: colors.brandMuted,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    guestAvatarText: { color: colors.white, fontSize: 11, fontWeight: '800' },
+    cartBadge: {
+      position: 'absolute',
+      top: -6,
+      right: -8,
+      backgroundColor: colors.brand,
+      borderRadius: 999,
+      width: 15,
+      height: 15,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    cartBadgeText: { color: colors.white, fontSize: 9, fontWeight: '800' },
+    section: { paddingHorizontal: spacing.xl, paddingBottom: spacing.lg, gap: 10 },
+    banner: { backgroundColor: colors.brandMuted, borderRadius: radius.xl, padding: 16, gap: 4 },
+    bannerEyebrow: { fontSize: 11, fontWeight: '700', letterSpacing: 0.7, color: colors.white, opacity: 0.85 },
+    bannerTitle: { fontSize: 22, fontWeight: '800', color: colors.white },
+    bannerSub: { fontSize: 12, color: colors.white, opacity: 0.85, marginTop: 2 },
+    sectionTitle: { fontSize: 15, fontWeight: '700', color: colors.text },
+    modelRow: { gap: 10 },
+    modelCard: {
+      width: 150,
+      height: 120,
+      borderRadius: radius.lg,
+      overflow: 'hidden',
+      borderWidth: 1.5,
+      borderColor: 'transparent',
+      backgroundColor: colors.cardAlt,
+    },
+    modelImage: { position: 'absolute', width: '100%', height: '100%' },
+    modelOverlay: { position: 'absolute', left: 0, right: 0, bottom: 0, height: '55%', backgroundColor: 'rgba(20,10,10,0.55)' },
+    modelLabel: { position: 'absolute', left: 10, bottom: 8, fontSize: 13, fontWeight: '700', color: colors.white },
+    categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'space-between' },
+    categoryItem: { alignItems: 'center', gap: 6, width: '23%' },
+    categoryIcon: { width: 80, height: 80, borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' },
+    categoryLabel: { fontSize: 11, fontWeight: '500', textAlign: 'center', color: colors.text },
+    pressedCard: { opacity: 0.85 },
+    pressedFaded: { opacity: 0.6 },
+    bestSellersHeader: {
+      flexDirection: 'row',
+      alignItems: 'baseline',
+      justifyContent: 'space-between',
+      paddingHorizontal: spacing.xl,
+      paddingBottom: spacing.md,
+    },
+    seeAll: { fontSize: 12, fontWeight: '600', color: colors.brand },
+    productGrid: { paddingHorizontal: spacing.xl, flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+    productGridItem: { width: '47%' },
+  });

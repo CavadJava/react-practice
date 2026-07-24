@@ -167,7 +167,7 @@
                                     </td>
                                 </tr>
 
-                                <tr>
+                                <tr style="display: none;">
                                     <td class="ps-4">3</td>
                                     <td>
                                         <strong>Ödəniş API (Payment Gateway)</strong>
@@ -199,13 +199,10 @@
                                         
                                         <button class="btn btn-sm btn-danger me-1" 
                                                 onclick="handleServiceAction('STOP', 8765, '', '', this)">Stop</button>
-                                        
-                                        <button class="btn btn-sm btn-warning" 
-                                                onclick="handleServiceAction('RESTART', 8765, '', '', this)">Restart</button>
                                     </td>
                                 </tr>
 
-                                <tr>
+                                <tr style="display: none;">
                                     <td class="ps-4">3</td>
                                     <td>
                                         <strong>Admin Notification API</strong>
@@ -237,13 +234,10 @@
                                         
                                         <button class="btn btn-sm btn-danger me-1" 
                                                 onclick="handleServiceAction('STOP', 8383, '', '', this)">Stop</button>
-                                        
-                                        <button class="btn btn-sm btn-warning" 
-                                                onclick="handleServiceAction('RESTART', 8383, '', '', this)">Restart</button>
                                     </td>
                                 </tr>
 
-                                <tr>
+                                <tr style="display: none;">
                                     <td class="ps-4">3</td>
                                     <td>
                                         <strong>Ms Notification API</strong>
@@ -275,9 +269,6 @@
                                         
                                         <button class="btn btn-sm btn-danger me-1" 
                                                 onclick="handleServiceAction('STOP', 9191, '', '', this)">Stop</button>
-                                        
-                                        <button class="btn btn-sm btn-warning" 
-                                                onclick="handleServiceAction('RESTART', 9191, '', '', this)">Restart</button>
                                     </td>
                                 </tr>
                                 <tr>
@@ -353,7 +344,35 @@
 
             } else if (action === 'STOP') {
                 // STOP üçün API hazır olanda buranı yeniləyəcəyik
+
+                let findResponse = await fetch(`${baseUrl}/find-port?port=${port}`, {
+                    method: "GET",
+                    headers: commonHeaders
+                });
+                if(findResponse.ok) {
+                    const data = await findResponse.json();
+                    if(Array.isArray(data) && data.length > 0 && data[0].startsWith("PID:")) {
+                        const pid = data[0].split(":")[1].trim();
+                        const killUrl = `${baseUrl}/kill-pid/v1?pid=${pid}`;
+                        
+                        response = await fetch(killUrl, {
+                            method: "POST",
+                            headers: commonHeaders
+                        });
+                        alert(`Port ${port} üçün STOP əmri icra olundu!`);
+
+                        return;
+                    }
+                }
+
+
                 alert(`Port ${port} üçün STOP əmri hələ qoşulmayıb!`);
+                const url = `${baseUrl}/api/remote-ops/kill-pid/v1?pid=${port}`;
+                
+                response = await fetch(url, {
+                    method: "POST",
+                    headers: commonHeaders
+                });
                 return;
 
             } else if (action === 'RESTART') {

@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<template id="__bundler_thumbnail" data-bg-color="#241414">
+  <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <rect width="200" height="200" fill="#241414"/>
+    <rect x="60" y="30" width="80" height="140" rx="14" fill="#150c0c" stroke="#d84343" stroke-width="3"/>
+    <circle cx="100" cy="150" r="6" fill="#d84343"/>
+    <text x="100" y="90" font-family="Arial" font-size="14" fill="#ffffff" text-anchor="middle" font-weight="bold">TESLAHUBS</text>
+  </svg>
+</template>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+<style id="__om-edit-overrides"></style>
+<style>
+  body{margin:0;background:oklch(0.94 0.005 90);}
+  * { box-sizing: border-box; font-family: 'Inter', Helvetica, Arial, sans-serif; }
+  a{color:oklch(0.55 0.19 25);text-decoration:none;}
+  a:hover{color:oklch(0.6 0.19 25);}
+</style>
+<script src="./image-slot.js"></script>
+</helmet>
+
+<div style="display:flex;justify-content:center;padding:40px;background:oklch(0.94 0.005 90);min-height:100vh;">
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="390,844">
+  <div style="width:100%;height:100%;background:oklch(0.14 0.012 40);color:oklch(0.96 0.006 90);overflow-y:auto;display:flex;flex-direction:column;">
+
+    <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+      <div data-screen-label="mobile-home" style="display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:54px 18px 10px;">
+          <div style="font-weight:900;font-size:19px;letter-spacing:0.02em;">TESLAHUBS</div>
+          <div style="display:flex;gap:16px;font-size:17px;align-items:center;">
+            <span>⌕</span>
+            <button onClick="{{ goToOrder }}" style="position:relative;background:none;border:none;color:inherit;font-size:17px;padding:0;cursor:pointer;">🛒<sc-if value="{{ cartCount }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-6px;right:-8px;background:oklch(0.55 0.19 25);color:white;font-size:9px;font-weight:800;border-radius:50%;width:15px;height:15px;display:flex;align-items:center;justify-content:center;">{{ cartCount }}</span></sc-if></button>
+          </div>
+        </div>
+
+        <div style="padding:0 18px 14px;">
+          <div style="background:oklch(0.5 0.19 25);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:4px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;opacity:0.85;">TESLA BIRTHDAY SALE</div>
+            <div style="font-size:22px;font-weight:800;">UP TO 65% OFF</div>
+            <div style="font-size:12px;opacity:0.85;margin-top:2px;">Ends in {{ countdown.days }}d {{ countdown.hours }}h {{ countdown.mins }}m</div>
+          </div>
+        </div>
+
+        <div style="padding:0 18px 16px;display:flex;flex-direction:column;gap:10px;">
+          <div style="font-size:15px;font-weight:700;">Shop by Model</div>
+          <div style="display:flex;gap:10px;overflow-x:auto;">
+            <sc-for list="{{ models }}" as="m" hint-placeholder-count="2">
+              <button onClick="{{ m.select }}" style="flex-shrink:0;width:150px;height:120px;border-radius:12px;overflow:hidden;position:relative;border:1.5px solid {{ m.border }};background:oklch(0.2 0.01 40);padding:0;cursor:pointer;">
+                <image-slot id="{{ m.slotId }}" shape="rect" placeholder="{{ m.placeholder }}" style="position:absolute;inset:0;width:100%;height:100%;"></image-slot>
+                <div style="position:absolute;inset:0;background:linear-gradient(0deg, oklch(0.1 0.01 40 / 0.8), transparent 55%);"></div>
+                <div style="position:absolute;left:10px;bottom:8px;font-size:13px;font-weight:700;color:white;">{{ m.name }}</div>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="padding:0 18px 16px;display:flex;flex-direction:column;gap:10px;">
+          <div style="font-size:15px;font-weight:700;">Categories</div>
+          <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:8px;">
+            <sc-for list="{{ categories }}" as="c" hint-placeholder-count="4">
+              <button onClick="{{ c.select }}" style="display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;padding:0;cursor:pointer;color:inherit;">
+                <div style="width:80px;height:80px;border-radius:16px;overflow:hidden;position:relative;background:oklch(0.22 0.01 40);">
+                  <image-slot id="{{ c.slotId }}" shape="rect" placeholder="{{ c.placeholder }}" style="position:absolute;inset:0;width:100%;height:100%;"></image-slot>
+                </div>
+                <div style="font-size:11px;font-weight:500;text-align:center;line-height:1.2;">{{ c.name }}</div>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 18px 12px;">
+          <div style="font-size:15px;font-weight:700;">Best Sellers</div>
+          <a href="#" style="font-size:12px;font-weight:600;">See all</a>
+        </div>
+        <div style="padding:0 18px 100px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <sc-for list="{{ products }}" as="p" hint-placeholder-count="4">
+            <div onClick="{{ p.open }}" style="background:oklch(0.19 0.01 40);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;text-align:left;cursor:pointer;color:inherit;">
+              <div style="position:relative;width:100%;height:130px;">
+                <image-slot id="{{ p.slotId }}" shape="rect" placeholder="{{ p.placeholder }}" style="position:absolute;inset:0;width:100%;height:100%;"></image-slot>
+                <sc-if value="{{ p.badge }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;top:8px;left:8px;background:oklch(0.5 0.19 25);color:white;font-size:10px;font-weight:800;padding:3px 7px;border-radius:6px;">{{ p.badge }}</div>
+                </sc-if>
+              </div>
+              <div style="padding:10px;display:flex;flex-direction:column;gap:8px;">
+                <div style="font-size:12.5px;font-weight:600;line-height:1.3;">{{ p.name }}</div>
+                <div style="display:flex;align-items:baseline;gap:6px;">
+                  <span style="font-size:14px;font-weight:800;">{{ p.price }}</span>
+                  <sc-if value="{{ p.wasPrice }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size:11px;color:oklch(0.55 0.006 90);text-decoration:line-through;">{{ p.wasPrice }}</span>
+                  </sc-if>
+                </div>
+                <sc-if value="{{ p.isInCart }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ p.goToOrder }}" style="background:oklch(0.24 0.01 40);color:white;border:1px solid oklch(0.4 0.01 40);border-radius:8px;font-size:12px;font-weight:700;padding:7px;cursor:pointer;">Go to Order →</button>
+                </sc-if>
+                <sc-if value="{{ !p.isInCart }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ p.addQuick }}" style="background:oklch(0.55 0.19 25);color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;padding:7px;cursor:pointer;flex-shrink:0;">Add to Cart</button>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isList }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="mobile-list" style="display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;gap:12px;padding:54px 18px 10px;position:sticky;top:0;background:oklch(0.14 0.012 40);z-index:5;">
+          <button onClick="{{ goHome }}" style="background:none;border:none;color:white;font-size:20px;padding:0;cursor:pointer;">←</button>
+          <div style="font-weight:800;font-size:17px;">{{ listTitle }}</div>
+        </div>
+        <div style="padding:6px 18px 14px;display:flex;gap:8px;overflow-x:auto;">
+          <sc-for list="{{ filters }}" as="f" hint-placeholder-count="4">
+            <button onClick="{{ f.select }}" style="flex-shrink:0;background:{{ f.bg }};color:{{ f.color }};border:1px solid {{ f.border }};padding:8px 14px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;">{{ f.label }}</button>
+          </sc-for>
+        </div>
+        <div style="padding:0 18px 100px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <sc-for list="{{ filteredProducts }}" as="p" hint-placeholder-count="6">
+            <div onClick="{{ p.open }}" style="background:oklch(0.19 0.01 40);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;text-align:left;cursor:pointer;color:inherit;">
+              <div style="position:relative;width:100%;height:130px;">
+                <image-slot id="{{ p.slotId }}" shape="rect" placeholder="{{ p.placeholder }}" style="position:absolute;inset:0;width:100%;height:100%;"></image-slot>
+                <sc-if value="{{ p.badge }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;top:8px;left:8px;background:oklch(0.5 0.19 25);color:white;font-size:10px;font-weight:800;padding:3px 7px;border-radius:6px;">{{ p.badge }}</div>
+                </sc-if>
+              </div>
+              <div style="padding:10px;display:flex;flex-direction:column;gap:8px;">
+                <div style="font-size:12.5px;font-weight:600;line-height:1.3;">{{ p.name }}</div>
+                <div style="display:flex;align-items:baseline;gap:6px;">
+                  <span style="font-size:14px;font-weight:800;">{{ p.price }}</span>
+                  <sc-if value="{{ p.wasPrice }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size:11px;color:oklch(0.55 0.006 90);text-decoration:line-through;">{{ p.wasPrice }}</span>
+                  </sc-if>
+                </div>
+                <sc-if value="{{ p.isInCart }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ p.goToOrder }}" style="background:oklch(0.24 0.01 40);color:white;border:1px solid oklch(0.4 0.01 40);border-radius:8px;font-size:12px;font-weight:700;padding:7px;cursor:pointer;">Go to Order →</button>
+                </sc-if>
+                <sc-if value="{{ !p.isInCart }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ p.addQuick }}" style="background:oklch(0.55 0.19 25);color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;padding:7px;cursor:pointer;flex-shrink:0;">Add to Cart</button>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isCart }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="mobile-cart" style="display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;gap:12px;padding:54px 18px 10px;">
+          <button onClick="{{ goHome }}" style="background:none;border:none;color:white;font-size:20px;padding:0;cursor:pointer;">←</button>
+          <div style="font-weight:800;font-size:17px;">Your Order</div>
+        </div>
+        <div style="padding:10px 18px 24px;display:flex;flex-direction:column;gap:10px;">
+          <sc-for list="{{ cartItems }}" as="ci" hint-placeholder-count="2">
+            <div style="display:flex;gap:12px;background:oklch(0.19 0.01 40);border-radius:12px;padding:10px;align-items:center;">
+              <div style="position:relative;width:56px;height:56px;border-radius:10px;overflow:hidden;flex-shrink:0;">
+                <image-slot id="{{ ci.slotId }}-cart" shape="rect" placeholder="{{ ci.placeholder }}" style="position:absolute;inset:0;width:100%;height:100%;"></image-slot>
+              </div>
+              <div style="flex:1;font-size:13px;font-weight:600;line-height:1.3;">{{ ci.name }}</div>
+              <div style="font-size:14px;font-weight:800;flex-shrink:0;">{{ ci.price }}</div>
+              <button onClick="{{ ci.remove }}" style="width:28px;height:28px;border-radius:8px;background:oklch(0.22 0.01 40);color:oklch(0.75 0.006 90);border:none;font-size:15px;cursor:pointer;flex-shrink:0;">✕</button>
+            </div>
+          </sc-for>
+          <sc-if value="{{ !cartItems.length }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align:center;padding:40px 0;color:oklch(0.6 0.006 90);font-size:14px;">Your cart is empty</div>
+          </sc-if>
+        </div>
+
+        <sc-if value="{{ cartItems.length }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:6px 18px 130px;display:flex;flex-direction:column;gap:16px;">
+            <div style="height:1px;background:oklch(0.26 0.01 40);"></div>
+            <div style="font-size:15px;font-weight:700;">Delivery Details</div>
+
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <label style="font-size:12.5px;color:oklch(0.65 0.006 90);font-weight:600;">First Name</label>
+              <input type="text" value="{{ orderForm.firstName }}" onChange="{{ orderForm.setFirstName }}" placeholder="Ali" style="background:oklch(0.19 0.01 40);border:1px solid oklch(0.3 0.01 40);border-radius:10px;padding:12px 14px;color:white;font-size:14px;font-family:inherit;">
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <label style="font-size:12.5px;color:oklch(0.65 0.006 90);font-weight:600;">Last Name</label>
+              <input type="text" value="{{ orderForm.lastName }}" onChange="{{ orderForm.setLastName }}" placeholder="Valiyev" style="background:oklch(0.19 0.01 40);border:1px solid oklch(0.3 0.01 40);border-radius:10px;padding:12px 14px;color:white;font-size:14px;font-family:inherit;">
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <label style="font-size:12.5px;color:oklch(0.65 0.006 90);font-weight:600;">Phone Number</label>
+              <input type="tel" value="{{ orderForm.phone }}" onChange="{{ orderForm.setPhone }}" style="background:oklch(0.19 0.01 40);border:1px solid oklch(0.3 0.01 40);border-radius:10px;padding:12px 14px;color:white;font-size:14px;font-family:inherit;" placeholder="Your Number">
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <label style="font-size:12.5px;color:oklch(0.65 0.006 90);font-weight:600;">Şəhər</label>
+              <select value="{{ orderForm.city }}" onChange="{{ orderForm.setCity }}" style="background:oklch(0.19 0.01 40);border:1px solid oklch(0.3 0.01 40);border-radius:10px;padding:12px 14px;color:white;font-size:14px;font-family:inherit;">
+                <sc-for list="{{ orderForm.cities }}" as="cty" hint-placeholder-count="5">
+                  <option value="{{ cty.value }}">{{ cty.label }}</option>
+                </sc-for>
+              </select>
+            </div>
+
+            <sc-if value="{{ orderForm.city }}" hint-placeholder-val="{{ true }}">
+              <sc-if value="{{ orderForm.isBaku }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <label style="font-size:12.5px;color:oklch(0.65 0.006 90);font-weight:600;">Rayon / Qəsəbə</label>
+                  <select value="{{ orderForm.region }}" onChange="{{ orderForm.setRegion }}" style="background:oklch(0.19 0.01 40);border:1px solid oklch(0.3 0.01 40);border-radius:10px;padding:12px 14px;color:white;font-size:14px;font-family:inherit;">
+                    <sc-for list="{{ orderForm.regions }}" as="rg" hint-placeholder-count="6">
+                      <option value="{{ rg }}">{{ rg }}</option>
+                    </sc-for>
+                  </select>
+                </div>
+
+                <button onClick="{{ orderForm.openMap }}" style="display:flex;align-items:center;justify-content:space-between;background:oklch(0.19 0.01 40);border:1px solid oklch(0.3 0.01 40);border-radius:10px;padding:12px 14px;color:white;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;">
+                  <span>📍 {{ orderForm.locationLabel }}</span>
+                  <span style="color:oklch(0.7 0.16 25);font-weight:700;">Xəritədən seç (könüllü)</span>
+                </button>
+
+                <label style="display:flex;align-items:center;gap:10px;background:oklch(0.19 0.01 40);border-radius:10px;padding:12px 14px;cursor:pointer;">
+                  <input type="checkbox" checked="{{ orderForm.urgent }}" onChange="{{ orderForm.toggleUrgent }}" style="width:18px;height:18px;accent-color:oklch(0.55 0.19 25);flex-shrink:0;">
+                  <span style="font-size:13.5px;font-weight:600;">Təcili çatdırılma (könüllü)</span>
+                </label>
+
+                <div style="background:oklch(0.55 0.19 25 / 0.12);border:1px solid oklch(0.55 0.19 25 / 0.4);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;">
+                  <div style="font-size:12px;color:oklch(0.7 0.16 25);font-weight:600;">Çatdırılma vaxtı</div>
+                  <div style="font-size:15px;font-weight:800;">{{ orderForm.deliveryTime }}</div>
+                  <div style="font-size:11.5px;color:oklch(0.75 0.006 90);line-height:1.5;margin-top:2px;">Saat 21:00-dək verilən sifarişlər eyni gün, daha sonra verilənlər isə növbəti gün çatdırılır.</div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ !orderForm.isBaku }}" hint-placeholder-val="{{ false }}">
+                <div style="background:oklch(0.3 0.01 40 / 0.4);border:1px solid oklch(0.35 0.01 40);border-radius:10px;padding:12px 14px;font-size:13px;color:oklch(0.75 0.006 90);line-height:1.5;">Hazırda yalnız Bakı daxilində çatdırılma mövcuddur.</div>
+              </sc-if>
+            </sc-if>
+
+            <div style="height:1px;background:oklch(0.26 0.01 40);"></div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;">
+              <span style="font-size:15px;font-weight:700;">Total</span>
+              <span style="font-size:20px;font-weight:800;">{{ orderTotal }}</span>
+            </div>
+          </div>
+
+          <div style="position:absolute;left:0;right:0;bottom:0;background:oklch(0.14 0.012 40);border-top:1px solid oklch(0.26 0.01 40);padding:14px 18px 26px;display:flex;flex-direction:column;gap:8px;">
+            <sc-if value="{{ !orderForm.canSend }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:12px;color:oklch(0.65 0.16 25);text-align:center;">{{ orderForm.missingHint }}</div>
+            </sc-if>
+            <button onClick="{{ orderForm.send }}" style="width:100%;background:{{ orderForm.canSend ? 'oklch(0.55 0.19 25)' : 'oklch(0.3 0.01 40)' }};color:{{ orderForm.canSend ? 'white' : 'oklch(0.6 0.006 90)' }};border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:700;cursor:{{ orderForm.canSend ? 'pointer' : 'not-allowed' }};opacity:{{ orderForm.canSend ? 1 : 0.9 }};transition:background 0.15s ease;">{{ orderForm.sendLabel }}</button>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isConfirm }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="mobile-order-confirm" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:110px 28px 40px;min-height:100%;">
+        <div style="width:72px;height:72px;border-radius:50%;background:oklch(0.55 0.19 25);display:flex;align-items:center;justify-content:center;font-size:34px;color:white;margin-bottom:22px;">✓</div>
+        <div style="font-size:20px;font-weight:800;margin-bottom:8px;">Sifarişiniz qəbul edildi</div>
+        <div style="font-size:13.5px;color:oklch(0.7 0.006 90);line-height:1.6;margin-bottom:28px;">Təşəkkürlər, {{ confirmOrder.firstName }}! Sifarişiniz hazırlanır və Bakı daxilində çatdırılacaq.</div>
+
+        <div style="width:100%;background:oklch(0.19 0.01 40);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px;text-align:left;margin-bottom:24px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;">
+            <span style="color:oklch(0.65 0.006 90);">Alıcı</span>
+            <span style="font-weight:700;">{{ confirmOrder.fullName }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;">
+            <span style="color:oklch(0.65 0.006 90);">Müştəri Nömrəsi</span>
+            <span style="font-weight:700;">{{ confirmOrder.phone }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;">
+            <span style="color:oklch(0.65 0.006 90);">Məhsul sayı</span>
+            <span style="font-weight:700;">{{ confirmOrder.itemCount }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;">
+            <span style="color:oklch(0.65 0.006 90);">Çatdırılma vaxtı</span>
+            <span style="font-weight:700;color:oklch(0.7 0.16 25);">{{ confirmOrder.deliveryTime }}</span>
+          </div>
+          <div style="height:1px;background:oklch(0.28 0.01 40);"></div>
+          <div style="display:flex;justify-content:space-between;font-size:15px;">
+            <span style="font-weight:700;">Total</span>
+            <span style="font-weight:800;">{{ confirmOrder.total }}</span>
+          </div>
+        </div>
+
+        <button onClick="{{ backToHomeAfterOrder }}" style="width:100%;background:oklch(0.55 0.19 25);color:white;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;">Ana səhifəyə qayıt</button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="mobile-detail" style="display:flex;flex-direction:column;">
+        <button onClick="{{ goBackFromDetail }}" style="position:sticky;top:54px;left:16px;margin-left:16px;width:34px;height:34px;border-radius:50%;background:oklch(0.14 0.012 40 / 0.7);color:white;border:none;font-size:18px;cursor:pointer;z-index:10;">←</button>
+        <div style="position:relative;width:100%;height:320px;margin-top:-88px;">
+          <image-slot id="{{ detail.slotId }}" shape="rect" placeholder="{{ detail.placeholder }}" style="position:absolute;inset:0;width:100%;height:100%;"></image-slot>
+          <div style="position:absolute;bottom:12px;right:14px;display:flex;gap:6px;">
+            <sc-for list="{{ detail.thumbs }}" as="t" hint-placeholder-count="3">
+              <div style="width:6px;height:6px;border-radius:50%;background:{{ t.dot }};"></div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="padding:20px 18px 120px;display:flex;flex-direction:column;gap:16px;">
+          <div>
+            <div style="font-size:12px;font-weight:700;letter-spacing:0.05em;color:oklch(0.65 0.16 25);text-transform:uppercase;margin-bottom:6px;">{{ detail.fit }}</div>
+            <div style="font-size:20px;font-weight:800;line-height:1.3;margin-bottom:8px;">{{ detail.name }}</div>
+            <div style="display:flex;align-items:baseline;gap:10px;">
+              <span style="font-size:22px;font-weight:800;">{{ detail.price }}</span>
+              <sc-if value="{{ detail.wasPrice }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:15px;color:oklch(0.55 0.006 90);text-decoration:line-through;">{{ detail.wasPrice }}</span>
+              </sc-if>
+            </div>
+            <div style="font-size:13px;color:oklch(0.65 0.16 25);margin-top:4px;">★★★★★ {{ detail.rating }} ({{ detail.reviewCount }} reviews)</div>
+          </div>
+
+          <div style="height:1px;background:oklch(0.26 0.01 40);"></div>
+
+          <div>
+            <div style="font-size:14px;font-weight:700;margin-bottom:8px;">Description</div>
+            <div style="font-size:13.5px;line-height:1.65;color:oklch(0.78 0.006 90);">{{ detail.description }}</div>
+          </div>
+
+          <div>
+            <div style="font-size:14px;font-weight:700;margin-bottom:8px;">Fits</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <sc-for list="{{ detail.fitTags }}" as="tag" hint-placeholder-count="2">
+                <div style="background:oklch(0.22 0.01 40);padding:6px 14px;border-radius:999px;font-size:12.5px;font-weight:600;">{{ tag }}</div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size:14px;font-weight:700;margin-bottom:10px;">What owners say</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <sc-for list="{{ detail.reviews }}" as="r" hint-placeholder-count="2">
+                <div style="background:oklch(0.19 0.01 40);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:4px;">
+                  <div style="color:oklch(0.65 0.16 25);font-size:12px;">★★★★★</div>
+                  <div style="font-size:13px;line-height:1.5;color:oklch(0.88 0.006 90);">"{{ r.quote }}"</div>
+                  <div style="font-size:11.5px;color:oklch(0.6 0.006 90);">{{ r.name }} · {{ r.model }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <div style="position:absolute;left:0;right:0;bottom:0;background:oklch(0.14 0.012 40);border-top:1px solid oklch(0.26 0.01 40);padding:14px 18px 26px;display:flex;gap:10px;">
+          <button style="width:48px;height:48px;border-radius:12px;background:oklch(0.22 0.01 40);border:none;color:white;font-size:18px;cursor:pointer;">♡</button>
+          <button onClick="{{ addToCart }}" style="flex:1;background:oklch(0.55 0.19 25);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">{{ addToCartLabel }}</button>
+        </div>
+      </div>
+    </sc-if>
+
+  </div>
+
+  <sc-if value="{{ mapModal.show }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background:oklch(0.1 0.01 40);z-index:50;display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:54px 18px 12px;">
+        <div style="font-weight:800;font-size:16px;">Xəritədən yer seçin</div>
+        <button onClick="{{ mapModal.close }}" style="background:oklch(0.22 0.01 40);color:white;border:none;width:30px;height:30px;border-radius:50%;font-size:15px;cursor:pointer;">✕</button>
+      </div>
+      <div style="position:relative;flex:1;margin:0 18px;border-radius:14px;overflow:hidden;">
+        <iframe src="https://www.google.com/maps?q=Baku,Azerbaijan&z=13&output=embed" style="position:absolute;inset:0;width:100%;height:100%;border:0;" loading="lazy"></iframe>
+        <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-100%);font-size:36px;pointer-events:none;filter:drop-shadow(0 3px 4px oklch(0 0 0 / 0.5));">📍</div>
+      </div>
+      <div style="padding:16px 18px 26px;display:flex;flex-direction:column;gap:10px;">
+        <div style="font-size:12.5px;color:oklch(0.65 0.006 90);text-align:center;">Xəritəni sürüşdürüb, yaxınlaşdıraraq öz məkanınızı tapın</div>
+        <div style="font-size:12px;color:oklch(0.75 0.006 90);text-align:center;">📌 {{ mapModal.coordsLabel }}</div>
+        <button onClick="{{ mapModal.useGps }}" style="background:oklch(0.22 0.01 40);color:white;border:none;border-radius:12px;padding:12px;font-size:13.5px;font-weight:600;cursor:pointer;">📡 Cari məkanımı istifadə et (dəqiq)</button>
+        <button onClick="{{ mapModal.confirm }}" style="background:oklch(0.55 0.19 25);color:white;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;">Bu yeri təsdiqlə</button>
+      </div>
+    </div>
+  </sc-if>
+</x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const MODELS = [
+  { key: 'model-y', slotId: 'mob-my', placeholder: 'Model Y shot', name: 'Model Y' },
+  { key: 'model-3', slotId: 'mob-m3', placeholder: 'Model 3 shot', name: 'Model 3' },
+];
+
+const CATEGORIES = [
+  { key: 'interior', slotId: 'cat-int', placeholder: 'Interior icon', name: 'Interior' },
+  { key: 'exterior', slotId: 'cat-ext', placeholder: 'Exterior icon', name: 'Exterior' },
+  { key: 'charging', slotId: 'cat-chg', placeholder: 'Charging icon', name: 'Charging' },
+  { key: 'wheels', slotId: 'cat-whl', placeholder: 'Wheels icon', name: 'Wheels' },
+];
+
+const PRODUCTS = [
+  { id: 'p1', slotId: 'mob-p1', placeholder: 'Solar Shield sunshade', badge: 'BEST SELLER', name: 'Solar Shield® Roof Sunshade Pro Kit', category: 'interior', price: '$139.99', wasPrice: '$185.00',
+    fit: 'Model 3 & Model Y', rating: '4.9', reviewCount: 842, description: 'Precision-molded roof sunshade that blocks 99% of UV rays and keeps the cabin cool. Installs in minutes with no tools, fits flush against the glass roof with zero gaps.',
+    fitTags: ['Model 3', 'Model Y'], reviews: [
+      { quote: 'Cabin temp dropped noticeably within the first drive. Fits perfectly.', name: 'Daniela R.', model: 'Model Y owner' },
+      { quote: 'Easy install, no residue, looks factory.', name: 'Marcus T.', model: 'Model 3 owner' },
+    ] },
+  { id: 'p2', slotId: 'mob-p2', placeholder: 'ProGuard noise kit', badge: 'TOP RATED', name: 'ProGuard Noise Reduction & Weatherproofing Kit', category: 'exterior', price: '$79.99', wasPrice: '$179.99',
+    fit: 'Model 3 & Model Y', rating: '4.8', reviewCount: 613, description: 'OEM-grade rubber seals that cut wind and road noise while sealing out moisture and dust. A direct upgrade over stock seals with a noticeably quieter cabin.',
+    fitTags: ['Model 3', 'Model Y'], reviews: [
+      { quote: "Rubber feels and works just like OEM seals — noticeably quieter.", name: 'Robert', model: 'Model 3 owner' },
+    ] },
+  { id: 'p3', slotId: 'mob-p3', placeholder: 'Caliper covers', badge: 'BEST SELLER', name: 'Aluminium Caliper Covers', category: 'wheels', price: '$149.99', wasPrice: '$300.00',
+    fit: 'Model 3 & Model Y', rating: '4.9', reviewCount: 401, description: 'Lightweight aluminium caliper covers that bolt directly over factory calipers — no brake removal needed. Powder-coated finish resists brake dust and corrosion.',
+    fitTags: ['Model 3', 'Model Y'], reviews: [
+      { quote: 'Transformed the look of the wheels, install took 20 minutes.', name: 'Geoff N.', model: 'Model Y owner' },
+    ] },
+  { id: 'p4', slotId: 'mob-p4', placeholder: 'DashGlow BLIS', badge: 'NEW', name: 'DashGlow 360° Vision System (BLIS)', category: 'exterior', price: '$149.99', wasPrice: '$199.99',
+    fit: 'Model 3 & Model Y', rating: '4.7', reviewCount: 219, description: 'Blind-spot indicator system with subtle LED dash alerts. Plug-and-play install with no wiring cuts, integrates with factory sensors.',
+    fitTags: ['Model 3', 'Model Y'], reviews: [
+      { quote: 'Great peace of mind in traffic, install was plug and play.', name: 'Mark H.', model: 'Model Y owner' },
+    ] },
+  { id: 'p5', slotId: 'mob-p5', placeholder: 'Floor mat set', name: 'All-Weather Floor Mat Set', category: 'interior', price: '$89.00',
+    fit: 'Model 3 & Model Y', rating: '4.8', reviewCount: 355, description: 'Custom-molded all-weather floor mats that trap water, mud, and debris. Raised edges and a textured surface keep footing secure.',
+    fitTags: ['Model 3', 'Model Y'], reviews: [
+      { quote: 'Floor mats fit perfectly and installation took minutes.', name: 'Mark H.', model: 'Model Y owner' },
+    ] },
+  { id: 'p6', slotId: 'mob-p6', placeholder: 'Wireless charger', name: 'Dual Wireless Charging Pad', category: 'charging', price: '$59.00', wasPrice: '$79.00',
+    fit: 'Model 3 & Model Y', rating: '4.6', reviewCount: 188, description: 'Fits the factory center console cubby with dual 15W charging zones for driver and passenger phones simultaneously.',
+    fitTags: ['Model 3', 'Model Y'], reviews: [
+      { quote: 'Charges both phones fast and looks completely factory.', name: 'Priya S.', model: 'Model Y owner' },
+    ] },
+];
+
+class Component extends DCLogic {
+  state = { screen: 'home', listCategory: null, detailId: null, now: Date.now(), cart: [], justAdded: false,
+    firstName: '', lastName: '', phone: '994102344071', city: 'baku', region: 'Yasamal', sent: false,
+    showMap: false, pin: { x: 50, y: 50 }, coords: null, locationConfirmed: false, urgent: false, gpsError: '' };
+
+  componentDidMount() {
+    let end = Number(localStorage.getItem('teslahubs_sale_end'));
+    if (!end || end < Date.now()) { end = Date.now() + 7 * 86400000; localStorage.setItem('teslahubs_sale_end', String(end)); }
+    this.saleEnd = end;
+    this.timer = setInterval(() => this.setState({ now: Date.now() }), 30000);
+  }
+  componentWillUnmount() { clearInterval(this.timer); }
+
+  renderVals() {
+    const { screen, listCategory, detailId } = this.state;
+    const remaining = Math.max(0, (this.saleEnd || Date.now()) - this.state.now);
+    const pad = n => String(n).padStart(2, '0');
+    const countdown = {
+      days: pad(Math.floor(remaining / 86400000)),
+      hours: pad(Math.floor((remaining % 86400000) / 3600000)),
+      mins: pad(Math.floor((remaining % 3600000) / 60000)),
+    };
+
+    const openProduct = (id) => () => this.setState({ screen: 'detail', detailId: id });
+    const openList = (cat) => () => this.setState({ screen: 'list', listCategory: cat });
+
+    const inCart = (id) => this.state.cart.includes(id);
+    const addToCartQuick = (id) => (e) => {
+      e.stopPropagation();
+      this.setState(s => ({ cart: [...s.cart, id] }));
+    };
+    const goToOrder = (e) => { e.stopPropagation(); this.setState({ screen: 'cart' }); };
+    const withHandlers = (p) => ({
+      ...p,
+      open: openProduct(p.id),
+      addQuick: addToCartQuick(p.id),
+      goToOrder,
+      isInCart: inCart(p.id),
+    });
+
+    const filters = [{ key: null, label: 'All' }, ...CATEGORIES.map(c => ({ key: c.key, label: c.name }))]
+      .map(f => ({
+        label: f.label,
+        select: () => this.setState({ listCategory: f.key }),
+        bg: listCategory === f.key ? 'oklch(0.55 0.19 25)' : 'transparent',
+        color: listCategory === f.key ? 'white' : 'oklch(0.85 0.006 90)',
+        border: listCategory === f.key ? 'oklch(0.55 0.19 25)' : 'oklch(0.32 0.01 40)',
+      }));
+
+    const filteredProducts = (listCategory ? PRODUCTS.filter(p => p.category === listCategory) : PRODUCTS).map(withHandlers);
+
+    const detailSrc = PRODUCTS.find(p => p.id === detailId) || PRODUCTS[0];
+    const detail = { ...detailSrc, thumbs: [0, 1, 2].map(i => ({ dot: i === 0 ? 'white' : 'oklch(0.5 0.006 90)' })) };
+
+    return {
+      isHome: screen === 'home',
+      isList: screen === 'list',
+      isDetail: screen === 'detail',
+      isCart: screen === 'cart',
+      cartItems: this.state.cart.map((id, idx) => {
+        const p = PRODUCTS.find(pr => pr.id === id);
+        return p ? { ...p, remove: () => this.setState(s => ({ cart: s.cart.filter((_, i) => i !== idx) })) } : null;
+      }).filter(Boolean),
+      orderTotal: '$' + this.state.cart.reduce((sum, id) => {
+        const p = PRODUCTS.find(pr => pr.id === id);
+        return sum + (p ? parseFloat(p.price.replace('$', '')) : 0);
+      }, 0).toFixed(2),
+      orderForm: {
+        firstName: this.state.firstName,
+        lastName: this.state.lastName,
+        phone: this.state.phone,
+        city: this.state.city,
+        isBaku: this.state.city === 'baku',
+        cities: [
+          { value: 'baku', label: 'Bakı' },
+          { value: 'ganja', label: 'Gəncə' },
+          { value: 'sumgait', label: 'Sumqayıt' },
+          { value: 'mingachevir', label: 'Mingəçevir' },
+          { value: 'other', label: 'Digər' },
+        ],
+        region: this.state.region,
+        regions: ['Yasamal', 'Nərimanov', 'Nizami', 'Xətai', 'Səbail', 'Binəqədi', 'Nəsimi', 'Qaradağ'],
+        setFirstName: (e) => this.setState({ firstName: e.target.value }),
+        setLastName: (e) => this.setState({ lastName: e.target.value }),
+        setPhone: (e) => this.setState({ phone: e.target.value }),
+        setCity: (e) => this.setState({ city: e.target.value }),
+        setRegion: (e) => this.setState({ region: e.target.value }),
+        openMap: () => this.setState({ showMap: true }),
+        urgent: this.state.urgent,
+        toggleUrgent: () => this.setState(s => ({ urgent: !s.urgent })),
+        locationLabel: this.state.locationConfirmed && this.state.coords ? `Seçilmiş yer (${this.state.coords.lat.toFixed(5)}, ${this.state.coords.lng.toFixed(5)})` : 'Yer seçilməyib',
+        deliveryTime: (() => {
+          const now = new Date(this.state.now);
+          const eta = new Date(this.state.now + 3 * 3600000);
+          const day = eta.getDate() === now.getDate() ? 'bugün' : 'sabah';
+          return `${day}, ${eta.toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit' })}`;
+        })(),
+        canSend: !!(this.state.firstName.trim() && this.state.lastName.trim() && this.state.phone.trim() && this.state.cart.length && this.state.city === 'baku'),
+        missingHint: (() => {
+          const missing = [];
+          if (!this.state.firstName.trim()) missing.push('Ad');
+          if (!this.state.lastName.trim()) missing.push('Soyad');
+          if (!this.state.phone.trim()) missing.push('Nömrə');
+          if (this.state.city !== 'baku') missing.push('Bakı şəhəri seçin');
+          return missing.length ? `Zəhmət olmasa doldurun: ${missing.join(', ')}` : '';
+        })(),
+        sendLabel: this.state.sent ? 'Sifariş göndərildi ✓' : 'Sifarişi göndər',
+        send: () => {
+          if (!(this.state.firstName.trim() && this.state.lastName.trim() && this.state.phone.trim() && this.state.cart.length && this.state.city === 'baku')) return;
+          {
+
+            const items = this.state.cart.map(id => PRODUCTS.find(p => p.id === id)).filter(Boolean);
+            const total = '$' + items.reduce((s, p) => s + parseFloat(p.price.replace('$', '')), 0).toFixed(2);
+            const etaDate = new Date(this.state.now + 3 * 3600000);
+            const deliveryDay = etaDate.getDate() === new Date(this.state.now).getDate() ? 'bugün' : 'sabah';
+            const deliveryTime = `${deliveryDay}, ${etaDate.toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit' })}`;
+            const hasCoords = this.state.locationConfirmed && this.state.coords;
+            const mapsLink = hasCoords
+              ? `https://www.google.com/maps?q=${this.state.coords.lat.toFixed(6)},${this.state.coords.lng.toFixed(6)}`
+              : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Baku, ' + this.state.region + ', Azerbaijan')}`;
+            const coordsText = hasCoords ? `${this.state.coords.lat.toFixed(6)}, ${this.state.coords.lng.toFixed(6)}` : 'Qeyd edilməyib';
+            const lines = [
+              'Salam!', '', 'Yeni sifariş:', '', '━━━━━━━━━━━━━━',
+              ...items.flatMap(p => [`📦 Məhsul`, p.name, '', `💰 Qiymət`, p.price, '']),
+              `👤 Müştəri`, `${this.state.firstName} ${this.state.lastName}`, '',
+              `📞 Telefon`, `+${this.state.phone}`, '',
+              `🏙️ Şəhər`, 'Bakı', '',
+              `📍 Rayon`, this.state.region, '',
+              `🌐 Latitude, Longitude`, coordsText, '',
+              `🗺️ Google Location`, mapsLink, '',
+              `🕒 Çatdırılma vaxtı`, deliveryTime + (this.state.urgent ? ' (TƏCİLİ)' : ''), '',
+              `💵 Ümumi`, total, '━━━━━━━━━━━━━━', '',
+              'Sifarişimin təsdiqlənməsini gözləyirəm. Təşəkkür edirəm!',
+            ];
+            const text = encodeURIComponent(lines.join('\n'));
+            window.open(`https://api.whatsapp.com/send/?phone=994102344071&text=${text}&type=phone_number&app_absent=0`, '_blank');
+            this.setState({ sent: true, screen: 'confirm' });
+          }
+        },
+      },
+      isConfirm: screen === 'confirm',
+      confirmOrder: {
+        firstName: this.state.firstName,
+        fullName: `${this.state.firstName} ${this.state.lastName}`.trim(),
+        phone: this.state.phone,
+        itemCount: this.state.cart.length,
+        deliveryTime: (() => {
+          const now = new Date(this.state.now);
+          const eta = new Date(this.state.now + 3 * 3600000);
+          const day = eta.getDate() === now.getDate() ? 'bugün' : 'sabah';
+          return `${day}, ${eta.toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit' })}`;
+        })(),
+        total: '$' + this.state.cart.reduce((sum, id) => {
+          const p = PRODUCTS.find(pr => pr.id === id);
+          return sum + (p ? parseFloat(p.price.replace('$', '')) : 0);
+        }, 0).toFixed(2),
+      },
+      backToHomeAfterOrder: () => this.setState({ screen: 'home', cart: [], firstName: '', lastName: '', phone: '994102344071', sent: false, locationConfirmed: false, pin: { x: 50, y: 50 }, coords: null, urgent: false }),
+      mapModal: {
+        show: this.state.showMap,
+        pin: this.state.pin,
+        coordsLabel: this.state.coords ? `${this.state.coords.lat.toFixed(5)}, ${this.state.coords.lng.toFixed(5)}` : (this.state.gpsError || 'Məkan seçilməyib — GPS düyməsini basın'),
+        useGps: () => {
+          if (!navigator.geolocation) { this.setState({ gpsError: 'Cihazınız GPS-i dəstəkləmir' }); return; }
+          this.setState({ gpsError: 'Məkan alınır…' });
+          navigator.geolocation.getCurrentPosition(
+            (pos) => this.setState({ coords: { lat: pos.coords.latitude, lng: pos.coords.longitude }, pin: { x: 50, y: 50 }, gpsError: '', locationConfirmed: true }),
+            (err) => this.setState({ gpsError: err.code === 1 ? 'İcazə verilmədi — brauzer ayarlarından GPS-ə icazə verin' : 'Məkan alına bilmədi, yenidən cəhd edin' })
+          );
+        },
+        confirm: () => {
+          if (!this.state.coords || (!this.state.coords.lat && !this.state.coords.lng)) { this.setState({ gpsError: 'Zəhmət olmasa GPS düyməsini basın' }); return; }
+          this.setState({ showMap: false, locationConfirmed: true });
+        },
+        close: () => this.setState({ showMap: false }),
+      },
+      countdown,
+      models: MODELS.map(m => ({ ...m, select: openList(null), border: 'transparent' })),
+      categories: CATEGORIES.map(c => ({ ...c, select: openList(c.key) })),
+      products: PRODUCTS.slice(0, 4).map(withHandlers),
+      listTitle: listCategory ? (CATEGORIES.find(c => c.key === listCategory) || {}).name : 'All Products',
+      filters,
+      filteredProducts,
+      detail,
+      goHome: () => this.setState({ screen: 'home' }),
+      goToOrder: goToOrder,
+      goBackFromDetail: () => this.setState({ screen: listCategory ? 'list' : 'home' }),
+      cartCount: this.state.cart.length,
+      addToCartLabel: this.state.justAdded ? 'Added ✓' : `Add to Cart — ${detail.price}`,
+      addToCart: () => {
+        this.setState(s => ({ cart: [...s.cart, detail.id], justAdded: true }));
+        clearTimeout(this.addedTimer);
+        this.addedTimer = setTimeout(() => this.setState({ justAdded: false }), 1500);
+      },
+    };
+  }
+}
+
+</script>
+</body>
+</html>
