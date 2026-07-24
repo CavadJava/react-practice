@@ -25,6 +25,8 @@ export type Product = {
   placeholderLabel: string;
   /** Optional real photo URL. Falls back to the category default, then DEFAULT_PRODUCT_IMAGE. */
   image?: string;
+  /** Optional gallery of photo URLs, for products with more than one real photo. */
+  images?: string[];
 };
 
 export const CATEGORIES: { key: ProductCategory; name: string; color: string }[] = [
@@ -50,12 +52,17 @@ export function getProductImage(product: Product): string {
   return product.image ?? CATEGORY_DEFAULT_IMAGE[product.category] ?? DEFAULT_PRODUCT_IMAGE;
 }
 
+export function getProductImages(product: Product): string[] {
+  return product.images && product.images.length > 0 ? product.images : [getProductImage(product)];
+}
+
 export const PRODUCTS: Product[] = [
   {
   id: 'p1',
   name: 'Solar Shield® Roof Sunshade Pro Kit',
   category: ProductCategory.Interior,
   image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500&q=80',
+  images: ['https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500&q=80'],
   price: 139.99,
   wasPrice: 185.0,
   badge: 'BEST SELLER',
@@ -89,6 +96,7 @@ export const PRODUCTS: Product[] = [
   name: 'ProGuard Noise Reduction & Weatherproofing Kit',
   category: ProductCategory.Exterior,
   image: 'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=500&q=80',
+  images: ['https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=500&q=80'],
   price: 79.99,
   wasPrice: 179.99,
   badge: 'TOP RATED',
@@ -117,6 +125,7 @@ export const PRODUCTS: Product[] = [
   name: 'Aluminium Caliper Covers',
   category: ProductCategory.Wheels,
   image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80',
+  images: ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80'],
   price: 149.99,
   wasPrice: 300.0,
   badge: 'BEST SELLER',
@@ -145,6 +154,7 @@ export const PRODUCTS: Product[] = [
   name: 'DashGlow 360° Vision System (BLIS)',
   category: ProductCategory.Exterior,
   image: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?w=500&q=80',
+  images: ['https://images.unsplash.com/photo-1617788138017-80ad40651399?w=500&q=80'],
   price: 149.99,
   wasPrice: 199.99,
   badge: 'NEW',
@@ -223,7 +233,8 @@ export const PRODUCTS: Product[] = [
   id: 'p7',
   name: 'Tesla Wall Connector Gen 2',
   category: ProductCategory.Charging,
-  image: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80',
+  image: 'https://i.ebayimg.com/images/g/T-cAAOSw7KZnUKSN/s-l400.jpg',
+  images: ['https://i.ebayimg.com/images/g/T-cAAOSw7KZnUKSN/s-l400.jpg'],
   price: 299.99,
   wasPrice: 349.99,
   badge: 'BEST SELLER',
@@ -254,7 +265,8 @@ export const PRODUCTS: Product[] = [
   id: 'p8',
   name: 'CCS2 + Type 2 to NACS Fast Charging Adapter',
   category: ProductCategory.Charging,
-  image: 'https://images.unsplash.com/photo-1593941707882-a5bac6861d75?w=500&q=80',
+  image: 'https://s.alicdn.com/@sc04/kf/H26db433949144feeac32dd62529efcd43.jpg',
+  images: ['https://s.alicdn.com/@sc04/kf/H26db433949144feeac32dd62529efcd43.jpg'],
   price: 189.99,
   wasPrice: 229.99,
   badge: 'NEW',
@@ -286,6 +298,7 @@ export const PRODUCTS: Product[] = [
   name: 'Tesla NFC Key Card',
   category: ProductCategory.Charging,
   image: 'https://www.slashgear.com/img/gallery/the-20-dollar-device-that-can-break-into-a-tesla/intro-1659390855.jpg',
+  images: ['https://www.slashgear.com/img/gallery/the-20-dollar-device-that-can-break-into-a-tesla/intro-1659390855.jpg'],
   price: 24.99,
   fit: 'All Tesla Models',
   rating: '4.9',
@@ -314,7 +327,8 @@ export const PRODUCTS: Product[] = [
   id: 'p10',
   name: 'USB Flash Drive 128GB',
   category: ProductCategory.Charging,
-  image: 'https://images.unsplash.com/photo-1587033411391-5d9e51cce126?w=500&q=80',
+  image: 'https://teslaemblems.com/cdn/shop/files/1995188-10-A-01.jpg?v=1763448706',
+  images: ['https://teslaemblems.com/cdn/shop/files/1995188-10-A-01.jpg?v=1763448706','https://teslaemblems.com/cdn/shop/files/1995188-10-A-01.jpg?v=1763448706'],
   price: 34.99,
   wasPrice: 49.99,
   fit: 'Tesla Dashcam & Sentry Mode',

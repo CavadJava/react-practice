@@ -23,6 +23,7 @@ const en = {
     exterior: 'Exterior',
     charging: 'Charging',
     wheels: 'Wheels',
+    other: 'Other',
     all: 'All',
     allProducts: 'All Products',
   },

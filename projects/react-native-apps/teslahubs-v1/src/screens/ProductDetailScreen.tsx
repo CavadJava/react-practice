@@ -1,9 +1,9 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
-import { PRODUCTS, getProductImage } from '../data/products';
+import { PRODUCTS, getProductImages } from '../data/products';
 import { ThemeColors, radius, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
@@ -18,8 +18,11 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
   const { t } = useLocale();
   const { format } = useCurrency();
   const { addToCart } = useCart();
+  const { width } = useWindowDimensions();
   const product = PRODUCTS.find(p => p.id === route.params.productId) ?? PRODUCTS[0];
+  const images = useMemo(() => getProductImages(product), [product]);
   const [justAdded, setJustAdded] = useState(false);
+  const [activeImage, setActiveImage] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const handleAddToCart = () => {
@@ -33,15 +36,25 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
     <SafeAreaView style={styles.screen} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={[styles.hero, { backgroundColor: product.placeholderColor }]}>
-          <Image source={{ uri: getProductImage(product) }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+          <ScrollView
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onMomentumScrollEnd={e => setActiveImage(Math.round(e.nativeEvent.contentOffset.x / width))}>
+            {images.map((uri, i) => (
+              <Image key={i} source={{ uri }} style={[styles.heroImage, { width }]} resizeMode="cover" />
+            ))}
+          </ScrollView>
           <Pressable style={styles.backBtn} onPress={() => navigation.goBack()}>
             <Text style={styles.backText}>←</Text>
           </Pressable>
-          <View style={styles.dotsRow}>
-            {[0, 1, 2].map(i => (
-              <View key={i} style={[styles.dot, { backgroundColor: i === 0 ? colors.white : 'rgba(255,255,255,0.4)' }]} />
-            ))}
-          </View>
+          {images.length > 1 && (
+            <View style={styles.dotsRow}>
+              {images.map((_, i) => (
+                <View key={i} style={[styles.dot, { backgroundColor: i === activeImage ? colors.white : 'rgba(255,255,255,0.4)' }]} />
+              ))}
+            </View>
+          )}
         </View>
 
         <View style={styles.body}>
@@ -109,6 +122,7 @@ const makeStyles = (colors: ThemeColors) =>
     screen: { flex: 1, backgroundColor: colors.bg },
     scrollContent: { paddingBottom: 110 },
     hero: { width: '100%', height: 320, justifyContent: 'space-between', overflow: 'hidden' },
+    heroImage: { height: 320 },
     backBtn: {
       marginTop: spacing.md,
       marginLeft: spacing.lg,
