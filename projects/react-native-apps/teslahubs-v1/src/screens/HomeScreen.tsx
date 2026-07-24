@@ -6,6 +6,7 @@ import type { RootStackParamList } from '../navigation/types';
 import { CATEGORIES, PRODUCTS } from '../data/products';
 import { ThemeColors, radius, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
+import { useLocale } from '../context/LocaleContext';
 import { useCart } from '../context/CartContext';
 import { useSaleCountdown } from '../hooks/useSaleCountdown';
 import ProductCard from '../components/ProductCard';
@@ -21,6 +22,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 export default function HomeScreen({ navigation }: Props) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  const { t } = useLocale();
   const { cartCount, isInCart, addToCart } = useCart();
   const countdown = useSaleCountdown();
   const featured = PRODUCTS.slice(0, 4);
@@ -59,16 +61,16 @@ export default function HomeScreen({ navigation }: Props) {
 
         <View style={styles.section}>
           <View style={styles.banner}>
-            <Text style={styles.bannerEyebrow}>TESLA BIRTHDAY SALE</Text>
-            <Text style={styles.bannerTitle}>UP TO 65% OFF</Text>
+            <Text style={styles.bannerEyebrow}>{t('home.saleEyebrow')}</Text>
+            <Text style={styles.bannerTitle}>{t('home.saleTitle')}</Text>
             <Text style={styles.bannerSub}>
-              Ends in {countdown.days}d {countdown.hours}h {countdown.mins}m
+              {t('home.saleEnds', { d: countdown.days, h: countdown.hours, m: countdown.mins })}
             </Text>
           </View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Shop by Model</Text>
+          <Text style={styles.sectionTitle}>{t('home.shopByModel')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.modelRow}>
             <Pressable
               style={({ pressed }) => [styles.modelCard, pressed && styles.pressedCard]}
@@ -88,7 +90,7 @@ export default function HomeScreen({ navigation }: Props) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Categories</Text>
+          <Text style={styles.sectionTitle}>{t('home.categories')}</Text>
           <View style={styles.categoryGrid}>
             {CATEGORIES.map(c => (
               <Pressable
@@ -96,16 +98,16 @@ export default function HomeScreen({ navigation }: Props) {
                 style={({ pressed }) => [styles.categoryItem, pressed && styles.pressedFaded]}
                 onPress={() => navigation.navigate('ProductList', { category: c.key })}>
                 <View style={[styles.categoryIcon, { backgroundColor: c.color }]} />
-                <Text style={styles.categoryLabel}>{c.name}</Text>
+                <Text style={styles.categoryLabel}>{t(`category.${c.key}`)}</Text>
               </Pressable>
             ))}
           </View>
         </View>
 
         <View style={styles.bestSellersHeader}>
-          <Text style={styles.sectionTitle}>Best Sellers</Text>
+          <Text style={styles.sectionTitle}>{t('home.bestSellers')}</Text>
           <Text style={styles.seeAll} onPress={() => navigation.navigate('ProductList', { category: null })}>
-            See all
+            {t('home.seeAll')}
           </Text>
         </View>
         <View style={styles.productGrid}>

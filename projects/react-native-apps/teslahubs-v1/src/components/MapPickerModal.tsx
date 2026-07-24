@@ -4,6 +4,7 @@ import { WebView } from 'react-native-webview';
 import Geolocation from '@react-native-community/geolocation';
 import { ThemeColors, radius, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
+import { useLocale } from '../context/LocaleContext';
 
 type Coords = { lat: number; lng: number } | null;
 
@@ -19,6 +20,7 @@ type Props = {
 export default function MapPickerModal({ visible, coords, onClose, onConfirm, onUseGps, gpsError }: Props) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  const { t } = useLocale();
   const [requesting, setRequesting] = useState(false);
 
   const useGps = () => {
@@ -30,13 +32,13 @@ export default function MapPickerModal({ visible, coords, onClose, onConfirm, on
       },
       err => {
         setRequesting(false);
-        onUseGps({ lat: 0, lng: 0 }, err.code === 1 ? 'İcazə verilmədi — brauzer ayarlarından GPS-ə icazə verin' : 'Məkan alına bilmədi, yenidən cəhd edin');
+        onUseGps({ lat: 0, lng: 0 }, err.code === 1 ? t('map.permissionDenied') : t('map.failed'));
       },
       { enableHighAccuracy: true, timeout: 15000 },
     );
   };
 
-  const coordsLabel = coords ? `${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}` : gpsError || 'Məkan seçilməyib — GPS düyməsini basın';
+  const coordsLabel = coords ? `${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}` : gpsError || t('map.pressGps');
   const mapQuery = coords ? `${coords.lat},${coords.lng}` : 'Baku,Azerbaijan';
   const embedSrc = `https://www.google.com/maps?q=${mapQuery}&z=13&output=embed`;
   // Google's embed endpoint only serves content when the request genuinely
@@ -51,7 +53,7 @@ export default function MapPickerModal({ visible, coords, onClose, onConfirm, on
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Xəritədən yer seçin</Text>
+          <Text style={styles.headerTitle}>{t('map.title')}</Text>
           <Pressable onPress={onClose} style={styles.closeBtn}>
             <Text style={styles.closeText}>✕</Text>
           </Pressable>
@@ -65,13 +67,13 @@ export default function MapPickerModal({ visible, coords, onClose, onConfirm, on
         </View>
 
         <View style={styles.footer}>
-          <Text style={styles.hint}>Xəritəni sürüşdürüb, yaxınlaşdıraraq öz məkanınızı tapın</Text>
+          <Text style={styles.hint}>{t('map.hint')}</Text>
           <Text style={styles.coordsLabel}>📌 {coordsLabel}</Text>
           <Pressable style={styles.gpsBtn} onPress={useGps} disabled={requesting}>
-            <Text style={styles.gpsBtnText}>{requesting ? 'Məkan alınır…' : '📡 Cari məkanımı istifadə et (dəqiq)'}</Text>
+            <Text style={styles.gpsBtnText}>{requesting ? t('map.gettingLocation') : t('map.useGps')}</Text>
           </Pressable>
           <Pressable style={styles.confirmBtn} onPress={onConfirm}>
-            <Text style={styles.confirmBtnText}>Bu yeri təsdiqlə</Text>
+            <Text style={styles.confirmBtnText}>{t('map.confirm')}</Text>
           </Pressable>
         </View>
       </View>

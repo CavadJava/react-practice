@@ -5,6 +5,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
 import { ThemeColors, radius } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
+import { useLocale } from '../context/LocaleContext';
 import { useCart } from '../context/CartContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'OrderConfirm'>;
@@ -12,6 +13,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'OrderConfirm'>;
 export default function OrderConfirmScreen({ navigation, route }: Props) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  const { t } = useLocale();
   const { clearCart } = useCart();
   const { firstName, fullName, phone, itemCount, deliveryTime, total } = route.params;
 
@@ -26,37 +28,35 @@ export default function OrderConfirmScreen({ navigation, route }: Props) {
         <View style={styles.check}>
           <Text style={styles.checkText}>✓</Text>
         </View>
-        <Text style={styles.title}>Sifarişiniz qəbul edildi</Text>
-        <Text style={styles.subtitle}>
-          Təşəkkürlər, {firstName}! Sifarişiniz hazırlanır və Bakı daxilində çatdırılacaq.
-        </Text>
+        <Text style={styles.title}>{t('confirm.title')}</Text>
+        <Text style={styles.subtitle}>{t('confirm.subtitle', { name: firstName })}</Text>
 
         <View style={styles.summary}>
           <View style={styles.row}>
-            <Text style={styles.rowLabel}>Alıcı</Text>
+            <Text style={styles.rowLabel}>{t('confirm.recipient')}</Text>
             <Text style={styles.rowValue}>{fullName}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.rowLabel}>Müştəri Nömrəsi</Text>
+            <Text style={styles.rowLabel}>{t('confirm.phone')}</Text>
             <Text style={styles.rowValue}>{phone}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.rowLabel}>Məhsul sayı</Text>
+            <Text style={styles.rowLabel}>{t('confirm.itemCount')}</Text>
             <Text style={styles.rowValue}>{itemCount}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.rowLabel}>Çatdırılma vaxtı</Text>
+            <Text style={styles.rowLabel}>{t('confirm.deliveryTime')}</Text>
             <Text style={styles.rowValueAccent}>{deliveryTime}</Text>
           </View>
           <View style={styles.divider} />
           <View style={styles.row}>
-            <Text style={styles.totalLabel}>Total</Text>
+            <Text style={styles.totalLabel}>{t('confirm.total')}</Text>
             <Text style={styles.totalValue}>{total}</Text>
           </View>
         </View>
 
         <Pressable style={styles.homeBtn} onPress={backToHome}>
-          <Text style={styles.homeBtnText}>Ana səhifəyə qayıt</Text>
+          <Text style={styles.homeBtnText}>{t('confirm.backHome')}</Text>
         </Pressable>
       </View>
     </SafeAreaView>

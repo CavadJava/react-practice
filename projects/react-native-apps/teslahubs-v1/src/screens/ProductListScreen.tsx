@@ -6,6 +6,7 @@ import type { RootStackParamList } from '../navigation/types';
 import { CATEGORIES, PRODUCTS, Product } from '../data/products';
 import { ThemeColors, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
+import { useLocale } from '../context/LocaleContext';
 import { useCart } from '../context/CartContext';
 import ProductCard from '../components/ProductCard';
 import HeaderBar from '../components/HeaderBar';
@@ -15,16 +16,17 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ProductList'>;
 export default function ProductListScreen({ navigation, route }: Props) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  const { t } = useLocale();
   const { isInCart, addToCart } = useCart();
   const [activeCategory, setActiveCategory] = useState<Product['category'] | null>(route.params.category);
 
   const filters: { key: Product['category'] | null; label: string }[] = [
-    { key: null, label: 'All' },
-    ...CATEGORIES.map(c => ({ key: c.key, label: c.name })),
+    { key: null, label: t('category.all') },
+    ...CATEGORIES.map(c => ({ key: c.key, label: t(`category.${c.key}`) })),
   ];
 
   const filteredProducts = activeCategory ? PRODUCTS.filter(p => p.category === activeCategory) : PRODUCTS;
-  const listTitle = activeCategory ? CATEGORIES.find(c => c.key === activeCategory)?.name ?? 'All Products' : 'All Products';
+  const listTitle = activeCategory ? t(`category.${activeCategory}`) : t('category.allProducts');
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>

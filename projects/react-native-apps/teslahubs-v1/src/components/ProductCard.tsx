@@ -3,6 +3,7 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Product, getProductImage } from '../data/products';
 import { ThemeColors, radius, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
+import { useLocale } from '../context/LocaleContext';
 
 type Props = {
   product: Product;
@@ -15,6 +16,7 @@ type Props = {
 export default function ProductCard({ product, isInCart, onOpen, onAddToCart, onGoToOrder }: Props) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  const { t } = useLocale();
 
   return (
     <Pressable style={({ pressed }) => [styles.card, pressed && styles.cardPressed]} onPress={onOpen}>
@@ -22,7 +24,7 @@ export default function ProductCard({ product, isInCart, onOpen, onAddToCart, on
         <Image source={{ uri: getProductImage(product) }} style={StyleSheet.absoluteFill} resizeMode="cover" />
         {product.badge && (
           <View style={styles.badge}>
-            <Text style={styles.badgeText}>{product.badge}</Text>
+            <Text style={styles.badgeText}>{t(`badge.${product.badge}`)}</Text>
           </View>
         )}
       </View>
@@ -36,11 +38,11 @@ export default function ProductCard({ product, isInCart, onOpen, onAddToCart, on
         </View>
         {isInCart ? (
           <Pressable style={({ pressed }) => [styles.orderBtn, pressed && styles.btnPressed]} onPress={onGoToOrder}>
-            <Text style={styles.orderBtnText}>Go to Order →</Text>
+            <Text style={styles.orderBtnText}>{t('product.goToOrder')}</Text>
           </Pressable>
         ) : (
           <Pressable style={({ pressed }) => [styles.addBtn, pressed && styles.btnPressed]} onPress={onAddToCart}>
-            <Text style={styles.addBtnText}>Add to Cart</Text>
+            <Text style={styles.addBtnText}>{t('product.addToCart')}</Text>
           </Pressable>
         )}
       </View>

@@ -6,6 +6,7 @@ import type { RootStackParamList } from '../navigation/types';
 import { PRODUCTS, getProductImage } from '../data/products';
 import { ThemeColors, radius, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
+import { useLocale } from '../context/LocaleContext';
 import { useCart } from '../context/CartContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetail'>;
@@ -13,6 +14,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetail'>;
 export default function ProductDetailScreen({ navigation, route }: Props) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  const { t } = useLocale();
   const { addToCart } = useCart();
   const product = PRODUCTS.find(p => p.id === route.params.productId) ?? PRODUCTS[0];
   const [justAdded, setJustAdded] = useState(false);
@@ -49,19 +51,19 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
               {product.wasPrice && <Text style={styles.wasPrice}>${product.wasPrice.toFixed(2)}</Text>}
             </View>
             <Text style={styles.rating}>
-              ★★★★★ {product.rating} ({product.reviewCount} reviews)
+              ★★★★★ {product.rating} {t('product.reviews', { count: product.reviewCount })}
             </Text>
           </View>
 
           <View style={styles.divider} />
 
           <View>
-            <Text style={styles.blockTitle}>Description</Text>
+            <Text style={styles.blockTitle}>{t('product.description')}</Text>
             <Text style={styles.description}>{product.description}</Text>
           </View>
 
           <View>
-            <Text style={styles.blockTitle}>Fits</Text>
+            <Text style={styles.blockTitle}>{t('product.fits')}</Text>
             <View style={styles.tagRow}>
               {product.fitTags.map(tag => (
                 <View key={tag} style={styles.tag}>
@@ -72,7 +74,7 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
           </View>
 
           <View>
-            <Text style={styles.reviewsTitle}>What owners say</Text>
+            <Text style={styles.reviewsTitle}>{t('product.ownersSay')}</Text>
             <View style={styles.reviewsList}>
               {product.reviews.map((r, i) => (
                 <View key={i} style={styles.reviewCard}>
@@ -93,7 +95,7 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
           <Text style={styles.favIcon}>♡</Text>
         </Pressable>
         <Pressable style={styles.addBtn} onPress={handleAddToCart}>
-          <Text style={styles.addBtnText}>{justAdded ? 'Added ✓' : `Add to Cart — $${product.price.toFixed(2)}`}</Text>
+          <Text style={styles.addBtnText}>{justAdded ? t('product.added') : t('product.addToCartPrice', { price: `$${product.price.toFixed(2)}` })}</Text>
         </Pressable>
       </View>
     </SafeAreaView>

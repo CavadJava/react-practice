@@ -6,6 +6,7 @@ import type { RootStackParamList } from '../navigation/types';
 import { CITIES, REGIONS, WHATSAPP_PHONE, getProductImage } from '../data/products';
 import { ThemeColors, radius, spacing, withAlpha } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
+import { useLocale } from '../context/LocaleContext';
 import { useCart } from '../context/CartContext';
 import HeaderBar from '../components/HeaderBar';
 import MapPickerModal from '../components/MapPickerModal';
@@ -13,16 +14,23 @@ import SelectField from '../components/SelectField';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Cart'>;
 
-function computeDeliveryTime(now: Date) {
+function computeDelivery(now: Date) {
   const eta = new Date(now.getTime() + 3 * 3600000);
-  const day = eta.getDate() === now.getDate() ? 'bugün' : 'sabah';
+  const isToday = eta.getDate() === now.getDate();
   const time = eta.toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit' });
-  return `${day}, ${time}`;
+  return { isToday, time };
+}
+
+// The WhatsApp order message always uses Azerbaijani "bugün"/"sabah", regardless of
+// the UI language, since it's a business document read by the (Azerbaijani-speaking) shop owner.
+function formatDeliveryAz({ isToday, time }: { isToday: boolean; time: string }) {
+  return `${isToday ? 'bugün' : 'sabah'}, ${time}`;
 }
 
 export default function CartScreen({ navigation }: Props) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  const { t } = useLocale();
   const { cartItems, cartCount, increment, decrement, orderTotal } = useCart();
 
   const [firstName, setFirstName] = useState('');
@@ -37,24 +45,30 @@ export default function CartScreen({ navigation }: Props) {
   const [gpsError, setGpsError] = useState('');
 
   const isBaku = city === 'baku';
-  const deliveryTime = useMemo(() => computeDeliveryTime(new Date()), []);
+  const delivery = useMemo(() => computeDelivery(new Date()), []);
+  const deliveryTimeLabel = `${delivery.isToday ? t('cart.today') : t('cart.tomorrow')}, ${delivery.time}`;
+  const cities = useMemo(() => CITIES.map(c => ({ value: c.value, label: t(`city.${c.value}`) })), [t]);
 
   const canSend = !!(firstName.trim() && lastName.trim() && phone.trim() && cartItems.length && isBaku);
   const missingHint = useMemo(() => {
     const missing: string[] = [];
-    if (!firstName.trim()) missing.push('Ad');
-    if (!lastName.trim()) missing.push('Soyad');
-    if (!phone.trim()) missing.push('Nömrə');
-    if (!isBaku) missing.push('Bakı şəhəri seçin');
-    return missing.length ? `Zəhmət olmasa doldurun: ${missing.join(', ')}` : '';
-  }, [firstName, lastName, phone, isBaku]);
+    if (!firstName.trim()) missing.push(t('cart.missingFirstName'));
+    if (!lastName.trim()) missing.push(t('cart.missingLastName'));
+    if (!phone.trim()) missing.push(t('cart.missingPhone'));
+    if (!isBaku) missing.push(t('cart.missingCity'));
+    return missing.length ? `${t('cart.missingPrefix')}${missing.join(', ')}` : '';
+  }, [firstName, lastName, phone, isBaku, t]);
 
-  const locationLabel = locationConfirmed && coords ? `Seçilmiş yer (${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)})` : 'Yer seçilməyib';
+  const locationLabel =
+    locationConfirmed && coords
+      ? t('cart.selectedLocation', { lat: coords.lat.toFixed(5), lng: coords.lng.toFixed(5) })
+      : t('cart.noLocation');
 
   const handleSend = () => {
     if (!canSend) return;
     const now = new Date();
-    const finalDeliveryTime = computeDeliveryTime(now);
+    const finalDelivery = computeDelivery(now);
+    const finalDeliveryTimeAz = formatDeliveryAz(finalDelivery);
     const hasCoords = locationConfirmed && coords;
     const mapsLink = hasCoords
       ? `https://www.google.com/maps?q=${coords!.lat.toFixed(6)},${coords!.lng.toFixed(6)}`
@@ -94,7 +108,7 @@ export default function CartScreen({ navigation }: Props) {
       mapsLink,
       '',
       `🕒 Çatdırılma vaxtı`,
-      finalDeliveryTime + (urgent ? ' (TƏCİLİ)' : ''),
+      finalDeliveryTimeAz + (urgent ? ' (TƏCİLİ)' : ''),
       '',
       `💵 Ümumi`,
       `$${orderTotal.toFixed(2)}`,
@@ -110,14 +124,14 @@ export default function CartScreen({ navigation }: Props) {
       fullName: `${firstName} ${lastName}`.trim(),
       phone,
       itemCount: cartCount,
-      deliveryTime: finalDeliveryTime,
+      deliveryTime: `${finalDelivery.isToday ? t('cart.today') : t('cart.tomorrow')}, ${finalDelivery.time}`,
       total: `$${orderTotal.toFixed(2)}`,
     });
   };
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
-      <HeaderBar title="Your Order" onBack={() => navigation.goBack()} />
+      <HeaderBar title={t('cart.title')} onBack={() => navigation.goBack()} />
 
       <KeyboardAvoidingView style={styles.flexOne} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
@@ -144,54 +158,54 @@ export default function CartScreen({ navigation }: Props) {
                 </View>
               </View>
             ))}
-            {cartItems.length === 0 && <Text style={styles.emptyText}>Your cart is empty</Text>}
+            {cartItems.length === 0 && <Text style={styles.emptyText}>{t('cart.empty')}</Text>}
           </View>
 
           {cartItems.length > 0 && (
             <View style={styles.form}>
               <View style={styles.divider} />
-              <Text style={styles.formTitle}>Delivery Details</Text>
+              <Text style={styles.formTitle}>{t('cart.deliveryDetails')}</Text>
 
               <View style={styles.field}>
-                <Text style={styles.label}>First Name</Text>
+                <Text style={styles.label}>{t('cart.firstName')}</Text>
                 <TextInput
                   value={firstName}
                   onChangeText={setFirstName}
-                  placeholder="Ali"
+                  placeholder={t('cart.firstNamePlaceholder')}
                   placeholderTextColor={colors.textFaded}
                   style={styles.input}
                 />
               </View>
               <View style={styles.field}>
-                <Text style={styles.label}>Last Name</Text>
+                <Text style={styles.label}>{t('cart.lastName')}</Text>
                 <TextInput
                   value={lastName}
                   onChangeText={setLastName}
-                  placeholder="Valiyev"
+                  placeholder={t('cart.lastNamePlaceholder')}
                   placeholderTextColor={colors.textFaded}
                   style={styles.input}
                 />
               </View>
               <View style={styles.field}>
-                <Text style={styles.label}>Phone Number</Text>
+                <Text style={styles.label}>{t('cart.phone')}</Text>
                 <TextInput
                   value={phone}
                   onChangeText={setPhone}
-                  placeholder="Your Number"
+                  placeholder={t('cart.phonePlaceholder')}
                   placeholderTextColor={colors.textFaded}
                   keyboardType="phone-pad"
                   style={styles.input}
                 />
               </View>
-              <SelectField label="Şəhər" value={city} options={CITIES} onChange={setCity} />
+              <SelectField label={t('cart.city')} value={city} options={cities} onChange={setCity} />
 
               {isBaku ? (
                 <>
-                  <SelectField label="Rayon / Qəsəbə" value={region} options={REGIONS.map(r => ({ label: r, value: r }))} onChange={setRegion} />
+                  <SelectField label={t('cart.district')} value={region} options={REGIONS.map(r => ({ label: r, value: r }))} onChange={setRegion} />
 
                   <Pressable style={styles.mapBtn} onPress={() => setShowMap(true)}>
                     <Text style={styles.mapBtnLabel}>📍 {locationLabel}</Text>
-                    <Text style={styles.mapBtnAction}>Xəritədən seç (könüllü)</Text>
+                    <Text style={styles.mapBtnAction}>{t('cart.chooseOnMap')}</Text>
                   </Pressable>
 
                   <Pressable style={styles.urgentRow} onPress={() => setUrgent(u => !u)}>
@@ -201,26 +215,24 @@ export default function CartScreen({ navigation }: Props) {
                       trackColor={{ true: colors.brand, false: colors.borderLight }}
                       thumbColor={colors.white}
                     />
-                    <Text style={styles.urgentLabel}>Təcili çatdırılma (könüllü)</Text>
+                    <Text style={styles.urgentLabel}>{t('cart.urgentDelivery')}</Text>
                   </Pressable>
 
                   <View style={styles.deliveryBox}>
-                    <Text style={styles.deliveryBoxTitle}>Çatdırılma vaxtı</Text>
-                    <Text style={styles.deliveryBoxTime}>{deliveryTime}</Text>
-                    <Text style={styles.deliveryBoxNote}>
-                      Saat 21:00-dək verilən sifarişlər eyni gün, daha sonra verilənlər isə növbəti gün çatdırılır.
-                    </Text>
+                    <Text style={styles.deliveryBoxTitle}>{t('cart.deliveryTime')}</Text>
+                    <Text style={styles.deliveryBoxTime}>{deliveryTimeLabel}</Text>
+                    <Text style={styles.deliveryBoxNote}>{t('cart.deliveryNote')}</Text>
                   </View>
                 </>
               ) : (
                 <View style={styles.notice}>
-                  <Text style={styles.noticeText}>Hazırda yalnız Bakı daxilində çatdırılma mövcuddur.</Text>
+                  <Text style={styles.noticeText}>{t('cart.bakuOnlyNotice')}</Text>
                 </View>
               )}
 
               <View style={styles.divider} />
               <View style={styles.totalRow}>
-                <Text style={styles.totalLabel}>Total</Text>
+                <Text style={styles.totalLabel}>{t('cart.total')}</Text>
                 <Text style={styles.totalValue}>${orderTotal.toFixed(2)}</Text>
               </View>
             </View>
@@ -234,7 +246,7 @@ export default function CartScreen({ navigation }: Props) {
               style={[styles.sendBtn, { backgroundColor: canSend ? colors.brand : colors.cardAlt }]}
               onPress={handleSend}
               disabled={!canSend}>
-              <Text style={[styles.sendBtnText, { color: canSend ? colors.white : colors.textFaded }]}>Sifarişi göndər</Text>
+              <Text style={[styles.sendBtnText, { color: canSend ? colors.white : colors.textFaded }]}>{t('cart.send')}</Text>
             </Pressable>
           </View>
         )}
@@ -256,7 +268,7 @@ export default function CartScreen({ navigation }: Props) {
         }}
         onConfirm={() => {
           if (!coords) {
-            setGpsError('Zəhmət olmasa GPS düyməsini basın');
+            setGpsError(t('map.pressGps'));
             return;
           }
           setLocationConfirmed(true);
