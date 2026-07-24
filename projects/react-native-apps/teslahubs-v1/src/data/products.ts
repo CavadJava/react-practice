@@ -12,6 +12,8 @@ export type Product = {
   id: string;
   name: string;
   category: ProductCategory;
+  /** Selling store's display name. Every product belongs to exactly one store; the app currently has a single store, but this is what future multi-store support will key off of. */
+  store: string;
   price: number;
   wasPrice?: number;
   badge?: 'BEST SELLER' | 'TOP RATED' | 'NEW';
@@ -61,6 +63,7 @@ export const PRODUCTS: Product[] = [
   id: 'p1',
   name: 'Solar Shield® Roof Sunshade Pro Kit',
   category: ProductCategory.Interior,
+  store: 'Teslahubs',
   image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500&q=80',
   images: ['https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500&q=80'],
   price: 139.99,
@@ -95,6 +98,7 @@ export const PRODUCTS: Product[] = [
   id: 'p2',
   name: 'ProGuard Noise Reduction & Weatherproofing Kit',
   category: ProductCategory.Exterior,
+  store: 'Teslahubs',
   image: 'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=500&q=80',
   images: ['https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=500&q=80'],
   price: 79.99,
@@ -124,6 +128,7 @@ export const PRODUCTS: Product[] = [
   id: 'p3',
   name: 'Aluminium Caliper Covers',
   category: ProductCategory.Wheels,
+  store: 'Teslahubs',
   image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80',
   images: ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80'],
   price: 149.99,
@@ -153,6 +158,7 @@ export const PRODUCTS: Product[] = [
   id: 'p4',
   name: 'DashGlow 360° Vision System (BLIS)',
   category: ProductCategory.Exterior,
+  store: 'Teslahubs',
   image: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?w=500&q=80',
   images: ['https://images.unsplash.com/photo-1617788138017-80ad40651399?w=500&q=80'],
   price: 149.99,
@@ -182,6 +188,7 @@ export const PRODUCTS: Product[] = [
   id: 'p5',
   name: 'All-Weather Floor Mat Set',
   category: ProductCategory.Interior,
+  store: 'Teslahubs',
   price: 89.0,
   fit: 'Model 3 & Model Y',
   rating: '4.8',
@@ -207,6 +214,7 @@ export const PRODUCTS: Product[] = [
   id: 'p6',
   name: 'Dual Wireless Charging Pad',
   category: ProductCategory.Charging,
+  store: 'Teslahubs',
   price: 59.0,
   wasPrice: 79.0,
   fit: 'Model 3 & Model Y',
@@ -233,6 +241,7 @@ export const PRODUCTS: Product[] = [
   id: 'p7',
   name: 'Tesla Wall Connector Gen 2',
   category: ProductCategory.Charging,
+  store: 'Teslahubs',
   image: 'https://i.ebayimg.com/images/g/T-cAAOSw7KZnUKSN/s-l400.jpg',
   images: ['https://i.ebayimg.com/images/g/T-cAAOSw7KZnUKSN/s-l400.jpg'],
   price: 299.99,
@@ -265,6 +274,7 @@ export const PRODUCTS: Product[] = [
   id: 'p8',
   name: 'CCS2 + Type 2 to NACS Fast Charging Adapter',
   category: ProductCategory.Charging,
+  store: 'Teslahubs',
   image: 'https://s.alicdn.com/@sc04/kf/H26db433949144feeac32dd62529efcd43.jpg',
   images: ['https://s.alicdn.com/@sc04/kf/H26db433949144feeac32dd62529efcd43.jpg'],
   price: 189.99,
@@ -297,6 +307,7 @@ export const PRODUCTS: Product[] = [
   id: 'p9',
   name: 'Tesla NFC Key Card',
   category: ProductCategory.Charging,
+  store: 'Teslahubs',
   image: 'https://www.slashgear.com/img/gallery/the-20-dollar-device-that-can-break-into-a-tesla/intro-1659390855.jpg',
   images: ['https://www.slashgear.com/img/gallery/the-20-dollar-device-that-can-break-into-a-tesla/intro-1659390855.jpg'],
   price: 24.99,
@@ -327,6 +338,7 @@ export const PRODUCTS: Product[] = [
   id: 'p10',
   name: 'USB Flash Drive 128GB',
   category: ProductCategory.Charging,
+  store: 'Teslahubs',
   image: 'https://teslaemblems.com/cdn/shop/files/1995188-10-A-01.jpg?v=1763448706',
   images: ['https://teslaemblems.com/cdn/shop/files/1995188-10-A-01.jpg?v=1763448706','https://teslaemblems.com/cdn/shop/files/1995188-10-A-01.jpg?v=1763448706'],
   price: 34.99,

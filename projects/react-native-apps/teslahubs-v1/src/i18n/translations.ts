@@ -41,6 +41,7 @@ const en = {
     fits: 'Fits',
     ownersSay: 'What owners say',
     reviews: '({{count}} reviews)',
+    soldBy: 'Sold by {{store}}',
   },
   cart: {
     title: 'Your Order',
@@ -140,6 +141,7 @@ const az: typeof en = {
     fits: 'Uyğunluq',
     ownersSay: 'Sahiblərin rəyi',
     reviews: '({{count}} rəy)',
+    soldBy: 'Satıcı: {{store}}',
   },
   cart: {
     title: 'Sifarişiniz',

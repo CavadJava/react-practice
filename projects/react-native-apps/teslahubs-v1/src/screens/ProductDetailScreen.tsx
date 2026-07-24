@@ -68,6 +68,7 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
             <Text style={styles.rating}>
               ★★★★★ {product.rating} {t('product.reviews', { count: product.reviewCount })}
             </Text>
+            <Text style={styles.soldBy}>{t('product.soldBy', { store: product.store })}</Text>
           </View>
 
           <View style={styles.divider} />
@@ -143,6 +144,7 @@ const makeStyles = (colors: ThemeColors) =>
     price: { fontSize: 22, fontWeight: '800', color: colors.text },
     wasPrice: { fontSize: 15, color: colors.textStrike, textDecorationLine: 'line-through' },
     rating: { fontSize: 13, color: colors.brandLight, marginTop: 4 },
+    soldBy: { fontSize: 12, color: colors.textFaded, marginTop: 4 },
     divider: { height: 1, backgroundColor: colors.divider },
     blockTitle: { fontSize: 14, fontWeight: '700', color: colors.text, marginBottom: 8 },
     description: { fontSize: 13.5, lineHeight: 22, color: colors.textMuted },
