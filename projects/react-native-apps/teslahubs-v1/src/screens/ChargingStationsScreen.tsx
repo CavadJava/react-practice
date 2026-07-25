@@ -15,7 +15,7 @@ import {
   POWER_RANGES,
   filterStations,
 } from '../data/chargingStations';
-import { ThemeColors, radius, spacing } from '../theme/theme';
+import { ThemeColors, radius, spacing, withAlpha } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
 
@@ -25,6 +25,12 @@ type Props = CompositeScreenProps<
 >;
 
 const BAKU_REGION: Region = { latitude: 40.39, longitude: 49.86, latitudeDelta: 0.12, longitudeDelta: 0.12 };
+
+// Fixed "Service" pin colors — independent of the app theme, matching the
+// glowing charging-pin style: green when the station has open ports, purple
+// when it doesn't.
+const MARKER_AVAILABLE_COLOR = '#22C55E';
+const MARKER_UNAVAILABLE_COLOR = '#8B5CF6';
 
 function openGoogleMaps(station: ChargingStation) {
   Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${station.lat},${station.lng}`);
@@ -112,36 +118,50 @@ export default function ChargingStationsScreen({ navigation }: Props) {
 
   return (
     <View style={styles.screen}>
-      <MapView ref={mapRef} style={StyleSheet.absoluteFill} initialRegion={BAKU_REGION} userInterfaceStyle="dark">
-        {stations.map(station => (
-          <Marker
-            key={station.id}
-            coordinate={{ latitude: station.lat, longitude: station.lng }}
-            pinColor={station.portsAvailable > 0 ? colors.brand : colors.textFaded}
-            onPress={() => setSelectedId(station.id)}>
-            <Callout tooltip>
-              <View style={styles.callout}>
-                <Text style={styles.calloutTitle}>{station.name}</Text>
-                <Text style={styles.calloutLine}>
-                  {station.network} · {station.address}
-                </Text>
-                <Text style={styles.calloutLine}>{t('charging.available', { count: station.portsAvailable, total: station.portsTotal })}</Text>
-                <Text style={styles.calloutLine}>
-                  {station.powerKw} kW · {t(station.currentType === 'dc' ? 'charging.currentDc' : 'charging.currentAc')}
-                </Text>
-                <Text style={styles.calloutLine}>{station.connectors.map(c => t(`charging.connector.${c}`)).join(', ')}</Text>
-                <View style={styles.calloutNavRow}>
-                  <Pressable onPress={() => openGoogleMaps(station)} style={styles.calloutNavBtn}>
-                    <Text style={styles.calloutNavBtnText}>🗺️ {t('charging.googleMaps')}</Text>
-                  </Pressable>
-                  <Pressable onPress={() => openWaze(station)} style={styles.calloutNavBtn}>
-                    <Text style={styles.calloutNavBtnText}>🚗 {t('charging.waze')}</Text>
-                  </Pressable>
+      <MapView
+        ref={mapRef}
+        style={StyleSheet.absoluteFill}
+        initialRegion={BAKU_REGION}
+        userInterfaceStyle="dark"
+        showsPointsOfInterests={false}
+        showsBuildings={false}>
+        {stations.map(station => {
+          const markerColor = station.portsAvailable > 0 ? MARKER_AVAILABLE_COLOR : MARKER_UNAVAILABLE_COLOR;
+          return (
+            <Marker
+              key={station.id}
+              coordinate={{ latitude: station.lat, longitude: station.lng }}
+              anchor={{ x: 0.5, y: 0.5 }}
+              onPress={() => setSelectedId(station.id)}>
+              <View style={[styles.markerGlow, { backgroundColor: withAlpha(markerColor, 0.28) }]}>
+                <View style={[styles.markerBadge, { backgroundColor: markerColor }]}>
+                  <Text style={styles.markerIcon}>⚡</Text>
                 </View>
               </View>
-            </Callout>
-          </Marker>
-        ))}
+              <Callout tooltip>
+                <View style={styles.callout}>
+                  <Text style={styles.calloutTitle}>{station.name}</Text>
+                  <Text style={styles.calloutLine}>
+                    {station.network} · {station.address}
+                  </Text>
+                  <Text style={styles.calloutLine}>{t('charging.available', { count: station.portsAvailable, total: station.portsTotal })}</Text>
+                  <Text style={styles.calloutLine}>
+                    {station.powerKw} kW · {t(station.currentType === 'dc' ? 'charging.currentDc' : 'charging.currentAc')}
+                  </Text>
+                  <Text style={styles.calloutLine}>{station.connectors.map(c => t(`charging.connector.${c}`)).join(', ')}</Text>
+                  <View style={styles.calloutNavRow}>
+                    <Pressable onPress={() => openGoogleMaps(station)} style={styles.calloutNavBtn}>
+                      <Text style={styles.calloutNavBtnText}>🗺️ {t('charging.googleMaps')}</Text>
+                    </Pressable>
+                    <Pressable onPress={() => openWaze(station)} style={styles.calloutNavBtn}>
+                      <Text style={styles.calloutNavBtnText}>🚗 {t('charging.waze')}</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </Callout>
+            </Marker>
+          );
+        })}
       </MapView>
 
       <View style={[styles.topOverlay, { paddingTop: insets.top + 8 }]}>
@@ -324,6 +344,17 @@ const makeStyles = (colors: ThemeColors) =>
       justifyContent: 'center',
     },
     recenterIcon: { color: '#fff', fontSize: 18 },
+    markerGlow: { width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center' },
+    markerBadge: {
+      width: 30,
+      height: 30,
+      borderRadius: 15,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 2,
+      borderColor: 'rgba(255,255,255,0.9)',
+    },
+    markerIcon: { fontSize: 14, color: '#fff' },
     callout: {
       minWidth: 210,
       gap: 2,
