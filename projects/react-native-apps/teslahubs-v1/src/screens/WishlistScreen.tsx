@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { MainTabParamList, RootStackParamList } from '../navigation/types';
+import type { MainTabParamList, RootStackParamList, WishlistStackParamList } from '../navigation/types';
 import { PRODUCTS } from '../data/products';
 import { ThemeColors, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
@@ -13,7 +13,10 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import ProductCard from '../components/ProductCard';
 
-type Props = CompositeScreenProps<BottomTabScreenProps<MainTabParamList, 'Wishlist'>, NativeStackScreenProps<RootStackParamList>>;
+type Props = CompositeScreenProps<
+  NativeStackScreenProps<WishlistStackParamList, 'Wishlist'>,
+  CompositeScreenProps<BottomTabScreenProps<MainTabParamList>, NativeStackScreenProps<RootStackParamList>>
+>;
 
 export default function WishlistScreen({ navigation }: Props) {
   const { colors } = useTheme();

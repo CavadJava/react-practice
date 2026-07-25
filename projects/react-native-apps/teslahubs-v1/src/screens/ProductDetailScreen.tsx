@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../navigation/types';
+import type { ProductBrowseParamList } from '../navigation/types';
 import { PRODUCTS, getProductImages } from '../data/products';
 import { ThemeColors, radius, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
@@ -11,7 +11,7 @@ import { useCurrency } from '../context/CurrencyContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetail'>;
+type Props = NativeStackScreenProps<ProductBrowseParamList, 'ProductDetail'>;
 
 export default function ProductDetailScreen({ navigation, route }: Props) {
   const { colors } = useTheme();

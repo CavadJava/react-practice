@@ -6,9 +6,9 @@ import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import HomeScreen from '../screens/HomeScreen';
-import CategoriesScreen from '../screens/CategoriesScreen';
-import WishlistScreen from '../screens/WishlistScreen';
+import HomeStackNavigator from './HomeStackNavigator';
+import CategoriesStackNavigator from './CategoriesStackNavigator';
+import WishlistStackNavigator from './WishlistStackNavigator';
 import CartScreen from '../screens/CartScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
@@ -71,9 +71,9 @@ export default function MainTabNavigator() {
           ),
         };
       }}>
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Categories" component={CategoriesScreen} />
-      <Tab.Screen name="Wishlist" component={WishlistScreen} />
+      <Tab.Screen name="Home" component={HomeStackNavigator} />
+      <Tab.Screen name="Categories" component={CategoriesStackNavigator} />
+      <Tab.Screen name="Wishlist" component={WishlistStackNavigator} />
       <Tab.Screen name="Cart" component={CartScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>

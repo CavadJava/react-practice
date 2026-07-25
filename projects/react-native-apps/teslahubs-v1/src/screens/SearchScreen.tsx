@@ -1,8 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { CompositeScreenProps } from '@react-navigation/native';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../navigation/types';
+import type { HomeStackParamList, MainTabParamList, RootStackParamList } from '../navigation/types';
 import { PRODUCTS } from '../data/products';
 import { ThemeColors, radius, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
@@ -10,7 +12,10 @@ import { useLocale } from '../context/LocaleContext';
 import { useCart } from '../context/CartContext';
 import ProductCard from '../components/ProductCard';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Search'>;
+type Props = CompositeScreenProps<
+  NativeStackScreenProps<HomeStackParamList, 'Search'>,
+  CompositeScreenProps<BottomTabScreenProps<MainTabParamList>, NativeStackScreenProps<RootStackParamList>>
+>;
 
 export default function SearchScreen({ navigation }: Props) {
   const { colors } = useTheme();
@@ -73,7 +78,7 @@ export default function SearchScreen({ navigation }: Props) {
                 isInCart={isInCart(item.id)}
                 onOpen={() => navigation.navigate('ProductDetail', { productId: item.id })}
                 onAddToCart={() => addToCart(item.id)}
-                onGoToOrder={() => navigation.navigate('MainTabs', { screen: 'Cart' })}
+                onGoToOrder={() => navigation.navigate('Cart')}
               />
             </View>
           )}

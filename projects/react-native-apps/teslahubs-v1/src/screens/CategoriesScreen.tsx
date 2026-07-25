@@ -4,13 +4,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { MainTabParamList, RootStackParamList } from '../navigation/types';
+import type { CategoriesStackParamList, MainTabParamList, RootStackParamList } from '../navigation/types';
 import { CATEGORIES } from '../data/products';
 import { ThemeColors, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
 
-type Props = CompositeScreenProps<BottomTabScreenProps<MainTabParamList, 'Categories'>, NativeStackScreenProps<RootStackParamList>>;
+type Props = CompositeScreenProps<
+  NativeStackScreenProps<CategoriesStackParamList, 'Categories'>,
+  CompositeScreenProps<BottomTabScreenProps<MainTabParamList>, NativeStackScreenProps<RootStackParamList>>
+>;
 
 export default function CategoriesScreen({ navigation }: Props) {
   const { colors } = useTheme();

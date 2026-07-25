@@ -1,8 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { CompositeScreenProps } from '@react-navigation/native';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../navigation/types';
+import type { MainTabParamList, ProductBrowseParamList, RootStackParamList } from '../navigation/types';
 import { CATEGORIES, PRODUCTS, Product } from '../data/products';
 import { ThemeColors, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
@@ -11,7 +13,10 @@ import { useCart } from '../context/CartContext';
 import ProductCard from '../components/ProductCard';
 import HeaderBar from '../components/HeaderBar';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'ProductList'>;
+type Props = CompositeScreenProps<
+  NativeStackScreenProps<ProductBrowseParamList, 'ProductList'>,
+  CompositeScreenProps<BottomTabScreenProps<MainTabParamList>, NativeStackScreenProps<RootStackParamList>>
+>;
 
 export default function ProductListScreen({ navigation, route }: Props) {
   const { colors } = useTheme();
@@ -60,7 +65,7 @@ export default function ProductListScreen({ navigation, route }: Props) {
               isInCart={isInCart(item.id)}
               onOpen={() => navigation.navigate('ProductDetail', { productId: item.id })}
               onAddToCart={() => addToCart(item.id)}
-              onGoToOrder={() => navigation.navigate('MainTabs', { screen: 'Cart' })}
+              onGoToOrder={() => navigation.navigate('Cart')}
             />
           </View>
         )}
