@@ -9,6 +9,7 @@ export type ProductBrowseParamList = {
 export type HomeStackParamList = ProductBrowseParamList & {
   Home: undefined;
   Search: undefined;
+  ChargingStations: undefined;
 };
 
 export type CategoriesStackParamList = ProductBrowseParamList & {

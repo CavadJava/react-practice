@@ -130,6 +130,19 @@ const en = {
     mingachevir: 'Mingachevir',
     other: 'Other',
   },
+  charging: {
+    title: 'Charging Stations',
+    entryTitle: 'Charging Stations',
+    entrySubtitle: 'Find EV chargers near you',
+    filterAll: 'All',
+    available: '{{count}} / {{total}} available',
+    connector: {
+      tesla: 'Tesla (NACS)',
+      ccs2: 'CCS2',
+      type2: 'Type 2',
+      chademo: 'CHAdeMO',
+    },
+  },
 };
 
 const az: typeof en = {
@@ -254,6 +267,19 @@ const az: typeof en = {
     sumgait: 'Sumqayıt',
     mingachevir: 'Mingəçevir',
     other: 'Digər',
+  },
+  charging: {
+    title: 'Şarj Məntəqələri',
+    entryTitle: 'Şarj Məntəqələri',
+    entrySubtitle: 'Yaxınlıqdakı şarj məntəqələrini tapın',
+    filterAll: 'Hamısı',
+    available: '{{count}} / {{total}} boş',
+    connector: {
+      tesla: 'Tesla (NACS)',
+      ccs2: 'CCS2',
+      type2: 'Type 2',
+      chademo: 'CHAdeMO',
+    },
   },
 };
 

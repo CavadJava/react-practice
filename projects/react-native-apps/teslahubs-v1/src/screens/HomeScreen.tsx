@@ -95,6 +95,18 @@ export default function HomeScreen({ navigation }: Props) {
         </View>
 
         <View style={styles.section}>
+          <Pressable
+            style={({ pressed }) => [styles.chargingBanner, pressed && styles.pressedCard]}
+            onPress={() => navigation.navigate('ChargingStations')}>
+            <View style={styles.chargingBannerText}>
+              <Text style={styles.chargingBannerTitle}>{t('charging.entryTitle')}</Text>
+              <Text style={styles.chargingBannerSub}>{t('charging.entrySubtitle')}</Text>
+            </View>
+            <Text style={styles.chargingBannerIcon}>🔌</Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t('home.categories')}</Text>
           <View style={styles.categoryGrid}>
             {CATEGORIES.map(c => (
@@ -200,4 +212,16 @@ const makeStyles = (colors: ThemeColors) =>
     categoryLabel: { fontSize: 11, fontWeight: '500', textAlign: 'center', color: colors.text },
     pressedCard: { opacity: 0.85 },
     pressedFaded: { opacity: 0.6 },
+    chargingBanner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: colors.cardAlt,
+      borderRadius: radius.xl,
+      padding: 16,
+    },
+    chargingBannerText: { flex: 1, gap: 3, paddingRight: 10 },
+    chargingBannerTitle: { fontSize: 14, fontWeight: '700', color: colors.text },
+    chargingBannerSub: { fontSize: 11.5, color: colors.textMuted },
+    chargingBannerIcon: { fontSize: 28 },
   });
