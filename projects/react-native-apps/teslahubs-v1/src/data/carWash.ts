@@ -1,6 +1,8 @@
 export type CarWashBranch = {
   id: string;
   address: string;
+  lat: number;
+  lng: number;
   phone?: string;
   workingHours?: string;
 };
@@ -20,8 +22,8 @@ export const CAR_WASH_PROVIDERS: CarWashProvider[] = [
     tagline: '50 fərqli xidmət növü',
     color: '#0F6FB8',
     branches: [
-      { id: 'b1', address: 'Nizami küç. 118, Bakı', phone: '+994 12 555 50 50', workingHours: '08:00–22:00' },
-      { id: 'b2', address: 'Xətai rayonu, Zərifə Əliyeva küç. 12, Bakı', phone: '+994 12 555 50 51', workingHours: '08:00–22:00' },
+      { id: 'b1', address: 'Nizami küç. 118, Bakı', lat: 40.3725, lng: 49.8442, phone: '+994 12 555 50 50', workingHours: '08:00–22:00' },
+      { id: 'b2', address: 'Xətai rayonu, Zərifə Əliyeva küç. 12, Bakı', lat: 40.3937, lng: 49.8896, phone: '+994 12 555 50 51', workingHours: '08:00–22:00' },
     ],
   },
   {
@@ -29,7 +31,9 @@ export const CAR_WASH_PROVIDERS: CarWashProvider[] = [
     name: 'Premium Xidmət',
     tagline: 'VIP avtomobil qulluğu',
     color: '#0EA5A5',
-    branches: [{ id: 'b1', address: 'Yasamal rayonu, Ə. Naxçıvani küç. 5, Bakı', phone: '+994 12 555 20 20', workingHours: '09:00–21:00' }],
+    branches: [
+      { id: 'b1', address: 'Yasamal rayonu, Ə. Naxçıvani küç. 5, Bakı', lat: 40.3877, lng: 49.8226, phone: '+994 12 555 20 20', workingHours: '09:00–21:00' },
+    ],
   },
   {
     id: 'cwavtobaku',
@@ -37,8 +41,8 @@ export const CAR_WASH_PROVIDERS: CarWashProvider[] = [
     tagline: 'Sürətli və keyfiyyətli yuma',
     color: '#E08A2E',
     branches: [
-      { id: 'b1', address: 'Nərimanov rayonu, Həsən Əliyev küç. 22, Bakı', phone: '+994 12 555 30 30', workingHours: '08:00–23:00' },
-      { id: 'b2', address: 'Binəqədi rayonu, Bakıxanov qəs., Bakı', phone: '+994 12 555 30 31', workingHours: '08:00–23:00' },
+      { id: 'b1', address: 'Nərimanov rayonu, Həsən Əliyev küç. 22, Bakı', lat: 40.4064, lng: 49.8425, phone: '+994 12 555 30 30', workingHours: '08:00–23:00' },
+      { id: 'b2', address: 'Binəqədi rayonu, Bakıxanov qəs., Bakı', lat: 40.4383, lng: 49.7566, phone: '+994 12 555 30 31', workingHours: '08:00–23:00' },
     ],
   },
 ];

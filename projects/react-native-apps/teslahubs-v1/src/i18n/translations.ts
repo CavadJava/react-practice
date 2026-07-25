@@ -157,7 +157,6 @@ const en = {
     tagline: 'Find trusted car wash services',
     branchCount: '{{count}} locations',
     branches: 'Locations',
-    mapComingSoon: 'Map view coming soon',
     bookBtn: 'Book now',
     bookingTitle: 'Booking',
     freeServices: 'Free with every wash',
@@ -183,6 +182,8 @@ const en = {
     bookingSuccessTitle: 'Booking sent!',
     bookingSuccessSubtitle: 'We received your reservation and will confirm it shortly on WhatsApp.',
     backToHome: 'Back to Home',
+    googleMaps: 'Google Maps',
+    waze: 'Waze',
   },
 };
 
@@ -336,7 +337,6 @@ const az: typeof en = {
     tagline: 'Etibarlı avtoyuma xidmətlərini tapın',
     branchCount: '{{count}} filial',
     branches: 'Filiallar',
-    mapComingSoon: 'Xəritə tezliklə əlavə olunacaq',
     bookBtn: 'Rezervasiya et',
     bookingTitle: 'Rezervasiya',
     freeServices: 'Hər yuma ilə pulsuz',
@@ -362,6 +362,8 @@ const az: typeof en = {
     bookingSuccessTitle: 'Rezervasiya göndərildi!',
     bookingSuccessSubtitle: 'Rezervasiyanızı aldıq, tezliklə WhatsApp üzərindən təsdiqləyəcəyik.',
     backToHome: 'Ana səhifəyə qayıt',
+    googleMaps: 'Google Maps',
+    waze: 'Waze',
   },
 };
 
