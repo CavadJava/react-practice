@@ -14,11 +14,17 @@ const en = {
     wishlist: 'Wishlist',
     cart: 'Cart',
     profile: 'Profile',
+    articles: 'Articles',
   },
   wishlist: {
     title: 'Wishlist',
     empty: 'Your wishlist is empty',
     emptyHint: 'Tap the heart on any product to save it here',
+  },
+  articles: {
+    title: 'Articles',
+    readMinutes: '{{count}} min read',
+    empty: 'No articles yet',
   },
   search: {
     placeholder: 'Search products',
@@ -131,11 +137,17 @@ const az: typeof en = {
     wishlist: 'Seçilmişlər',
     cart: 'Səbət',
     profile: 'Profil',
+    articles: 'Məqalələr',
   },
   wishlist: {
     title: 'Seçilmişlər',
     empty: 'Seçilmişlər boşdur',
     emptyHint: 'İstənilən məhsulun ürək işarəsinə basaraq burada saxlayın',
+  },
+  articles: {
+    title: 'Məqalələr',
+    readMinutes: '{{count}} dəq oxu',
+    empty: 'Hələ məqalə yoxdur',
   },
   search: {
     placeholder: 'Məhsul axtarın',

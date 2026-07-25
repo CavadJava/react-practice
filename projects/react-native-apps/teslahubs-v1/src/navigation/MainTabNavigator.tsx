@@ -9,6 +9,7 @@ import { useWishlist } from '../context/WishlistContext';
 import HomeStackNavigator from './HomeStackNavigator';
 import CategoriesStackNavigator from './CategoriesStackNavigator';
 import WishlistStackNavigator from './WishlistStackNavigator';
+import ArticlesStackNavigator from './ArticlesStackNavigator';
 import CartScreen from '../screens/CartScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
@@ -18,6 +19,7 @@ const ICONS: Record<keyof MainTabParamList, string> = {
   Home: '⌂',
   Categories: '▦',
   Wishlist: '♡',
+  Articles: '▤',
   Cart: '🛒',
   Profile: '👤',
 };
@@ -26,6 +28,7 @@ const LABEL_KEYS: Record<keyof MainTabParamList, string> = {
   Home: 'tabs.home',
   Categories: 'tabs.categories',
   Wishlist: 'tabs.wishlist',
+  Articles: 'tabs.articles',
   Cart: 'tabs.cart',
   Profile: 'tabs.profile',
 };
@@ -74,6 +77,7 @@ export default function MainTabNavigator() {
       <Tab.Screen name="Home" component={HomeStackNavigator} />
       <Tab.Screen name="Categories" component={CategoriesStackNavigator} />
       <Tab.Screen name="Wishlist" component={WishlistStackNavigator} />
+      <Tab.Screen name="Articles" component={ArticlesStackNavigator} />
       <Tab.Screen name="Cart" component={CartScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>

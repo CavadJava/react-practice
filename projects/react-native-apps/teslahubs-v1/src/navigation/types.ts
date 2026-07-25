@@ -20,10 +20,16 @@ export type WishlistStackParamList = {
   ProductDetail: { productId: string };
 };
 
+export type ArticlesStackParamList = {
+  Articles: undefined;
+  ArticleDetail: { articleId: string };
+};
+
 export type MainTabParamList = {
   Home: NavigatorScreenParams<HomeStackParamList> | undefined;
   Categories: NavigatorScreenParams<CategoriesStackParamList> | undefined;
   Wishlist: NavigatorScreenParams<WishlistStackParamList> | undefined;
+  Articles: NavigatorScreenParams<ArticlesStackParamList> | undefined;
   Cart: undefined;
   Profile: undefined;
 };
