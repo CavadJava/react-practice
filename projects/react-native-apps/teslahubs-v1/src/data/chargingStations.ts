@@ -1,14 +1,23 @@
 export enum ConnectorType {
   NACS = 'nacs',
-  CCS2 = 'ccs2',
   GBT = 'gbt',
+  CHAdeMO = 'chademo',
+  CCS2 = 'ccs2',
 }
 
-// Every station in the network offers all three connector standards.
-const ALL_CONNECTORS: ConnectorType[] = [ConnectorType.CCS2, ConnectorType.GBT, ConnectorType.NACS];
+export type CurrentType = 'ac' | 'dc';
 
 export const CHARGING_NETWORKS = ['Azərişıq', 'Tok.az'] as const;
 export type ChargingNetwork = (typeof CHARGING_NETWORKS)[number];
+
+export type PowerRange = { key: string; label: string; min: number; max: number };
+
+export const POWER_RANGES: PowerRange[] = [
+  { key: 'low', label: '≤22 kW', min: 0, max: 22 },
+  { key: 'mid', label: '23–60 kW', min: 23, max: 60 },
+  { key: 'high', label: '61–150 kW', min: 61, max: 150 },
+  { key: 'ultra', label: '150+ kW', min: 151, max: Infinity },
+];
 
 export type ChargingStation = {
   id: string;
@@ -18,7 +27,8 @@ export type ChargingStation = {
   lat: number;
   lng: number;
   connectors: ConnectorType[];
-  fastCharging: boolean;
+  currentType: CurrentType;
+  powerKw: number;
   portsTotal: number;
   portsAvailable: number;
   pricePerKwh: number;
@@ -33,8 +43,9 @@ export const CHARGING_STATIONS: ChargingStation[] = [
     address: '28 Mall, Nizami küç., Bakı',
     lat: 40.3777,
     lng: 49.8462,
-    connectors: ALL_CONNECTORS,
-    fastCharging: true,
+    connectors: [ConnectorType.NACS, ConnectorType.CCS2],
+    currentType: 'dc',
+    powerKw: 180,
     portsTotal: 8,
     portsAvailable: 5,
     pricePerKwh: 0.35,
@@ -47,8 +58,9 @@ export const CHARGING_STATIONS: ChargingStation[] = [
     address: 'Xətai rayonu, Bakı',
     lat: 40.3959,
     lng: 49.8878,
-    connectors: ALL_CONNECTORS,
-    fastCharging: true,
+    connectors: [ConnectorType.CCS2, ConnectorType.GBT],
+    currentType: 'dc',
+    powerKw: 50,
     portsTotal: 4,
     portsAvailable: 2,
     pricePerKwh: 0.3,
@@ -61,8 +73,9 @@ export const CHARGING_STATIONS: ChargingStation[] = [
     address: 'Yasamal rayonu, Bakı',
     lat: 40.3853,
     lng: 49.8215,
-    connectors: ALL_CONNECTORS,
-    fastCharging: false,
+    connectors: [ConnectorType.GBT],
+    currentType: 'ac',
+    powerKw: 22,
     portsTotal: 2,
     portsAvailable: 0,
     pricePerKwh: 0.22,
@@ -75,8 +88,9 @@ export const CHARGING_STATIONS: ChargingStation[] = [
     address: 'Neftçilər prospekti, Bakı',
     lat: 40.3706,
     lng: 49.8523,
-    connectors: ALL_CONNECTORS,
-    fastCharging: true,
+    connectors: [ConnectorType.CCS2, ConnectorType.CHAdeMO, ConnectorType.GBT],
+    currentType: 'dc',
+    powerKw: 180,
     portsTotal: 6,
     portsAvailable: 6,
     pricePerKwh: 0.32,
@@ -89,8 +103,9 @@ export const CHARGING_STATIONS: ChargingStation[] = [
     address: 'Gənclik metrosu yaxınlığı, Bakı',
     lat: 40.4009,
     lng: 49.8483,
-    connectors: ALL_CONNECTORS,
-    fastCharging: false,
+    connectors: [ConnectorType.CCS2, ConnectorType.GBT],
+    currentType: 'ac',
+    powerKw: 11,
     portsTotal: 3,
     portsAvailable: 1,
     pricePerKwh: 0.28,
@@ -98,6 +113,20 @@ export const CHARGING_STATIONS: ChargingStation[] = [
   },
 ];
 
-export function getStationsByNetwork(network: ChargingNetwork | null): ChargingStation[] {
-  return network ? CHARGING_STATIONS.filter(s => s.network === network) : CHARGING_STATIONS;
+export type StationFilters = {
+  network: ChargingNetwork | null;
+  connector: ConnectorType | null;
+  currentType: CurrentType | null;
+  powerRangeKey: string | null;
+};
+
+export function filterStations(filters: StationFilters): ChargingStation[] {
+  const range = filters.powerRangeKey ? POWER_RANGES.find(r => r.key === filters.powerRangeKey) : undefined;
+  return CHARGING_STATIONS.filter(s => {
+    if (filters.network && s.network !== filters.network) return false;
+    if (filters.connector && !s.connectors.includes(filters.connector)) return false;
+    if (filters.currentType && s.currentType !== filters.currentType) return false;
+    if (range && (s.powerKw < range.min || s.powerKw > range.max)) return false;
+    return true;
+  });
 }

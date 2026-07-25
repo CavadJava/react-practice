@@ -6,7 +6,15 @@ import type { CompositeScreenProps } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { HomeStackParamList, MainTabParamList, RootStackParamList } from '../navigation/types';
-import { CHARGING_NETWORKS, ChargingNetwork, ChargingStation, getStationsByNetwork } from '../data/chargingStations';
+import {
+  CHARGING_NETWORKS,
+  ChargingNetwork,
+  ChargingStation,
+  ConnectorType,
+  CurrentType,
+  POWER_RANGES,
+  filterStations,
+} from '../data/chargingStations';
 import { ThemeColors, radius, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
@@ -27,20 +35,61 @@ function openWaze(station: ChargingStation) {
   Linking.openURL(`https://waze.com/ul?ll=${station.lat},${station.lng}&navigate=yes`);
 }
 
+type FilterRowProps<T extends string> = {
+  label: string;
+  items: { key: T | null; label: string }[];
+  active: T | null;
+  onSelect: (key: T | null) => void;
+  styles: ReturnType<typeof makeStyles>;
+  colors: ThemeColors;
+};
+
+function FilterRow<T extends string>({ label, items, active, onSelect, styles, colors }: FilterRowProps<T>) {
+  return (
+    <View>
+      <Text style={styles.filterSectionLabel}>{label}</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterList} contentContainerStyle={styles.filterRow}>
+        {items.map(item => {
+          const isActive = active === item.key;
+          return (
+            <Pressable
+              key={String(item.key)}
+              onPress={() => onSelect(item.key)}
+              style={[styles.filterChip, { backgroundColor: isActive ? colors.brand : 'transparent', borderColor: isActive ? colors.brand : colors.borderLight }]}>
+              <Text style={[styles.filterLabel, { color: isActive ? colors.white : colors.textMuted }]}>{item.label}</Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+    </View>
+  );
+}
+
 export default function ChargingStationsScreen({ navigation }: Props) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const { t } = useLocale();
   const mapRef = useRef<MapView>(null);
   const [activeNetwork, setActiveNetwork] = useState<ChargingNetwork | null>(null);
+  const [activeConnector, setActiveConnector] = useState<ConnectorType | null>(null);
+  const [activeCurrent, setActiveCurrent] = useState<CurrentType | null>(null);
+  const [activePower, setActivePower] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const filters: { key: ChargingNetwork | null; label: string }[] = [
-    { key: null, label: t('charging.filterAll') },
-    ...CHARGING_NETWORKS.map(network => ({ key: network, label: network })),
+  const allLabel = t('charging.filterAll');
+  const networkItems = [{ key: null, label: allLabel }, ...CHARGING_NETWORKS.map(n => ({ key: n, label: n }))];
+  const connectorItems = [
+    { key: null, label: allLabel },
+    ...Object.values(ConnectorType).map(c => ({ key: c, label: t(`charging.connector.${c}`) })),
   ];
+  const currentItems: { key: CurrentType | null; label: string }[] = [
+    { key: null, label: allLabel },
+    { key: 'ac', label: t('charging.currentAc') },
+    { key: 'dc', label: t('charging.currentDc') },
+  ];
+  const powerItems = [{ key: null, label: allLabel }, ...POWER_RANGES.map(r => ({ key: r.key, label: r.label }))];
 
-  const stations = getStationsByNetwork(activeNetwork);
+  const stations = filterStations({ network: activeNetwork, connector: activeConnector, currentType: activeCurrent, powerRangeKey: activePower });
 
   const focusStation = (station: ChargingStation) => {
     setSelectedId(station.id);
@@ -51,19 +100,10 @@ export default function ChargingStationsScreen({ navigation }: Props) {
     <SafeAreaView style={styles.screen} edges={['top']}>
       <HeaderBar title={t('charging.title')} onBack={() => navigation.goBack()} />
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterList} contentContainerStyle={styles.filterRow}>
-        {filters.map(item => {
-          const active = activeNetwork === item.key;
-          return (
-            <Pressable
-              key={String(item.key)}
-              onPress={() => setActiveNetwork(item.key)}
-              style={[styles.filterChip, { backgroundColor: active ? colors.brand : 'transparent', borderColor: active ? colors.brand : colors.borderLight }]}>
-              <Text style={[styles.filterLabel, { color: active ? colors.white : colors.textMuted }]}>{item.label}</Text>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
+      <FilterRow label={t('charging.filterNetworkLabel')} items={networkItems} active={activeNetwork} onSelect={setActiveNetwork} styles={styles} colors={colors} />
+      <FilterRow label={t('charging.filterConnectorLabel')} items={connectorItems} active={activeConnector} onSelect={setActiveConnector} styles={styles} colors={colors} />
+      <FilterRow label={t('charging.filterCurrentLabel')} items={currentItems} active={activeCurrent} onSelect={setActiveCurrent} styles={styles} colors={colors} />
+      <FilterRow label={t('charging.filterPowerLabel')} items={powerItems} active={activePower} onSelect={setActivePower} styles={styles} colors={colors} />
 
       <View style={styles.mapWrap}>
         <MapView ref={mapRef} style={styles.map} initialRegion={BAKU_REGION}>
@@ -80,6 +120,9 @@ export default function ChargingStationsScreen({ navigation }: Props) {
                     {station.network} · {station.address}
                   </Text>
                   <Text style={styles.calloutLine}>{t('charging.available', { count: station.portsAvailable, total: station.portsTotal })}</Text>
+                  <Text style={styles.calloutLine}>
+                    {station.powerKw} kW · {t(station.currentType === 'dc' ? 'charging.currentDc' : 'charging.currentAc')}
+                  </Text>
                   <Text style={styles.calloutLine}>{station.connectors.map(c => t(`charging.connector.${c}`)).join(', ')}</Text>
                   <View style={styles.calloutNavRow}>
                     <Pressable onPress={() => openGoogleMaps(station)} style={styles.calloutNavBtn}>
@@ -119,6 +162,9 @@ export default function ChargingStationsScreen({ navigation }: Props) {
               <Text style={styles.cardAddress} numberOfLines={1}>
                 {station.address}
               </Text>
+              <Text style={styles.cardPower}>
+                {station.powerKw} kW · {t(station.currentType === 'dc' ? 'charging.currentDc' : 'charging.currentAc')}
+              </Text>
               <View style={styles.connectorRow}>
                 {station.connectors.map(c => (
                   <View key={c} style={styles.connectorChip}>
@@ -155,11 +201,20 @@ export default function ChargingStationsScreen({ navigation }: Props) {
 const makeStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     screen: { flex: 1, backgroundColor: colors.bg },
+    filterSectionLabel: {
+      fontSize: 10.5,
+      fontWeight: '700',
+      color: colors.textFaded,
+      textTransform: 'uppercase',
+      letterSpacing: 0.4,
+      paddingHorizontal: spacing.xl,
+      marginBottom: 4,
+    },
     filterList: { flexGrow: 0, flexShrink: 0 },
-    filterRow: { paddingHorizontal: spacing.xl, paddingBottom: spacing.md, gap: 8 },
-    filterChip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999, borderWidth: 1, alignSelf: 'flex-start' },
-    filterLabel: { fontSize: 12.5, fontWeight: '600' },
-    mapWrap: { height: 220, marginHorizontal: spacing.xl, marginBottom: spacing.md, borderRadius: radius.xl, overflow: 'hidden' },
+    filterRow: { paddingHorizontal: spacing.xl, paddingBottom: spacing.sm, gap: 8 },
+    filterChip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 999, borderWidth: 1, alignSelf: 'flex-start' },
+    filterLabel: { fontSize: 12, fontWeight: '600' },
+    mapWrap: { height: 200, marginHorizontal: spacing.xl, marginTop: 4, marginBottom: spacing.md, borderRadius: radius.xl, overflow: 'hidden' },
     map: { flex: 1 },
     callout: {
       minWidth: 210,
@@ -187,7 +242,8 @@ const makeStyles = (colors: ThemeColors) =>
     availabilityText: { fontSize: 10.5, fontWeight: '700' },
     cardNetwork: { fontSize: 11.5, fontWeight: '600', color: colors.brand },
     cardAddress: { fontSize: 11.5, color: colors.textMuted },
-    connectorRow: { flexDirection: 'row', gap: 6, marginTop: 4 },
+    cardPower: { fontSize: 11.5, color: colors.textMuted },
+    connectorRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 4 },
     connectorChip: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999, backgroundColor: colors.surface },
     connectorChipText: { fontSize: 10, fontWeight: '600', color: colors.textSecondary },
     cardNavRow: { flexDirection: 'row', gap: 8, marginTop: 8 },
