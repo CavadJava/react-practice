@@ -8,6 +8,11 @@ export const LOCALES: { key: Locale; label: string }[] = [
 export const DEFAULT_LOCALE: Locale = 'az';
 
 const en = {
+  search: {
+    placeholder: 'Search products',
+    prompt: 'Search by product name or category',
+    noResults: 'No results for "{{query}}"',
+  },
   home: {
     search: 'Search',
     saleEyebrow: 'TESLA BIRTHDAY SALE',
@@ -108,6 +113,11 @@ const en = {
 };
 
 const az: typeof en = {
+  search: {
+    placeholder: 'Məhsul axtarın',
+    prompt: 'Məhsul adına və ya kateqoriyaya görə axtarın',
+    noResults: '"{{query}}" üçün nəticə tapılmadı',
+  },
   home: {
     search: 'Axtarış',
     saleEyebrow: 'TESLA AD GÜNÜ ENDİRİMİ',

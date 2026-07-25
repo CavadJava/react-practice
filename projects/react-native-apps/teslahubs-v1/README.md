@@ -1,97 +1,63 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Teslahubs — React Native
 
-# Getting Started
+A React Native port of the Teslahubs mobile app design (Tesla accessories e-commerce, Baku/Azerbaijan). Bare React Native CLI, TypeScript, no Expo.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Screens
 
-## Step 1: Start Metro
+- **Home** — sale banner with live countdown, "Shop by Model", categories, best sellers grid
+- **Product List** — category filter chips + product grid
+- **Product Detail** — swipeable photo gallery, description, fit tags, reviews, seller
+- **Cart / Checkout** — quantity stepper per item, delivery form, map location picker, WhatsApp order submission
+- **Order Confirmation** — order summary, clears cart on return home
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Features added during development
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- **Theming** — 4 switchable color templates (Classic Red, Midnight Blue, Ember Orange, White/light), chosen from the profile dropdown, persisted across launches. Every screen reads colors from `ThemeContext` rather than a static palette, so switching is instant and app-wide.
+- **Localization** — Azerbaijani (default) and English, switchable from the profile dropdown, persisted. All UI chrome is translated (`src/i18n/translations.ts`); the WhatsApp order message stays in Azerbaijani regardless of UI language, since it's a business document read by the shop owner, not user-facing UI.
+- **Currency** — USD ($) and AZN (₼, default), switchable from the profile dropdown, persisted. Product prices are stored in USD in the data layer and converted for display (`src/currency/currency.ts`).
+- **Cart** — adding the same product again increments a quantity stepper instead of creating duplicate rows.
+- **Delivery location picker** — a native map (`react-native-maps`, Apple Maps on iOS — no API key needed) with a center-pin pattern: panning the map updates the selected coordinates live, plus a "use my location" GPS button. Replaced an earlier Google Maps `iframe` embed, which could navigate away with no way back and never actually reported coordinates (Google's free embed has no callback API).
+- **Product photo gallery** — swipeable carousel on the detail screen, with pagination dots that reflect the *actual* number of photos a product has (hidden entirely for single-photo products) rather than a fixed decorative count.
+- **Multi-store-ready data model** — every product carries a `store` field (all currently `"Teslahubs"`), shown on the detail page ("Sold by …"), so a second seller can be introduced later without a schema change.
 
-```sh
-# Using npm
-npm start
+## Project structure
 
-# OR using Yarn
-yarn start
+```
+src/
+  components/     ProductCard, HeaderBar, ProfileMenu, SelectField, MapPickerModal, ...
+  context/        ThemeContext, LocaleContext, CurrencyContext, CartContext
+  screens/        HomeScreen, ProductListScreen, ProductDetailScreen, CartScreen, OrderConfirmScreen
+  data/           products.ts — product catalog, categories, cities/regions
+  theme/          theme.ts — the 4 color templates
+  i18n/           translations.ts — az/en dictionaries
+  currency/       currency.ts — USD/AZN conversion + formatting
+  navigation/     RootNavigator, route types
 ```
 
-## Step 2: Build and run your app
+State (theme, language, currency, cart) is plain React Context + `AsyncStorage`, no external state library.
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+## Getting started
 
-### Android
+### Install
 
 ```sh
-# Using npm
+npm install
+cd ios && pod install && cd ..
+```
+
+### Run
+
+```sh
+npm start        # Metro bundler
+npm run ios       # or
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
+Android's map requires a Google Maps API key (`com.google.android.geo.API_KEY` in `AndroidManifest.xml`) for `react-native-maps` to render — not yet configured. iOS uses Apple Maps and needs no key.
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+If port 8081 is already in use by something else on your machine, run Metro on another port and point the app at it:
 
 ```sh
-bundle install
+RCT_METRO_PORT=8088 npx react-native start --port 8088
+RCT_METRO_PORT=8088 npx react-native run-ios
 ```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.

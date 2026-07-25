@@ -34,7 +34,9 @@ export default function HomeScreen({ navigation }: Props) {
         <View style={styles.topBar}>
           <Text style={styles.logo}>TESLAHUBS</Text>
           <View style={styles.topBarActions}>
-            <Pressable style={({ pressed }) => [styles.iconBtn, pressed && styles.iconBtnPressed]}>
+            <Pressable
+              onPress={() => navigation.navigate('Search')}
+              style={({ pressed }) => [styles.iconBtn, pressed && styles.iconBtnPressed]}>
               <Text style={styles.iconText}>⌕</Text>
             </Pressable>
             <Pressable
