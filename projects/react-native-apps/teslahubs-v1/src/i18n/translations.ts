@@ -16,6 +16,13 @@ const en = {
     profile: 'Profile',
     articles: 'Articles',
   },
+  lobby: {
+    subtitle: 'Choose where you want to go',
+  },
+  shopping: {
+    entryTitle: 'Shopping',
+    entrySubtitle: 'Browse products, cart & wishlist',
+  },
   wishlist: {
     title: 'Wishlist',
     empty: 'Your wishlist is empty',
@@ -240,6 +247,13 @@ const az: typeof en = {
     profile: 'Profil',
     articles: 'Məqalələr',
   },
+  lobby: {
+    subtitle: 'Getmək istədiyiniz bölməni seçin',
+  },
+  shopping: {
+    entryTitle: 'Alış-veriş',
+    entrySubtitle: 'Məhsullara baxın, səbət və seçilmişlər',
+  },
   wishlist: {
     title: 'Seçilmişlər',
     empty: 'Seçilmişlər boşdur',
@@ -257,8 +271,8 @@ const az: typeof en = {
   },
   home: {
     search: 'Axtarış',
-    saleEyebrow: 'TESLA AD GÜNÜ ENDİRİMİ',
-    saleTitle: '65%-DƏK ENDİRİM',
+    saleEyebrow: 'REKLAMLAR',
+    saleTitle: 'Sizin reklamlarınız',
     saleEnds: 'Bitməsinə {{d}}g {{h}}s {{m}}d qalıb',
     shopByModel: 'Modelə görə alış-veriş',
     categories: 'Kateqoriyalar',

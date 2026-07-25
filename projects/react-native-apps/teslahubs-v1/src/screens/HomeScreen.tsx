@@ -4,13 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { HomeStackParamList, MainTabParamList, RootStackParamList } from '../navigation/types';
+import type { HomeStackParamList, RootStackParamList, ShoppingTabParamList } from '../navigation/types';
 import { CATEGORIES, CollectionKey, getProductsByCollection } from '../data/products';
 import { ThemeColors, radius, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
 import { useCart } from '../context/CartContext';
-import { useSaleCountdown } from '../hooks/useSaleCountdown';
 import ProductSection from '../components/ProductSection';
 
 const modelImages = {
@@ -20,7 +19,7 @@ const modelImages = {
 
 type Props = CompositeScreenProps<
   NativeStackScreenProps<HomeStackParamList, 'Home'>,
-  CompositeScreenProps<BottomTabScreenProps<MainTabParamList>, NativeStackScreenProps<RootStackParamList>>
+  CompositeScreenProps<BottomTabScreenProps<ShoppingTabParamList>, NativeStackScreenProps<RootStackParamList>>
 >;
 
 export default function HomeScreen({ navigation }: Props) {
@@ -28,7 +27,6 @@ export default function HomeScreen({ navigation }: Props) {
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const { t } = useLocale();
   const { cartCount } = useCart();
-  const countdown = useSaleCountdown();
   const featured = getProductsByCollection(CollectionKey.BestSellers);
   const recommended = getProductsByCollection(CollectionKey.Recommended);
   const recentlyViewed = getProductsByCollection(CollectionKey.PreviouslyViewed);
@@ -45,7 +43,7 @@ export default function HomeScreen({ navigation }: Props) {
               <Text style={styles.iconText}>⌕</Text>
             </Pressable>
             <Pressable
-              onPress={() => navigation.navigate('Profile')}
+              onPress={() => navigation.navigate('MainTabs', { screen: 'Profile' })}
               style={({ pressed }) => [styles.iconBtn, pressed && styles.iconBtnPressed]}>
               <View style={styles.guestAvatar}>
                 <Text style={styles.guestAvatarText}>G</Text>
@@ -65,13 +63,23 @@ export default function HomeScreen({ navigation }: Props) {
         </View>
 
         <View style={styles.section}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.servicesRow}>
+
           <View style={styles.banner}>
             <Text style={styles.bannerEyebrow}>{t('home.saleEyebrow')}</Text>
             <Text style={styles.bannerTitle}>{t('home.saleTitle')}</Text>
-            <Text style={styles.bannerSub}>
+            {/* <Text style={styles.bannerSub}>
               {t('home.saleEnds', { d: countdown.days, h: countdown.hours, m: countdown.mins })}
-            </Text>
+            </Text> */}
           </View>
+          <View style={styles.banner}>
+            <Text style={styles.bannerEyebrow}>{t('home.saleEyebrow')}</Text>
+            <Text style={styles.bannerTitle}>{t('home.saleTitle')}</Text>
+            {/* <Text style={styles.bannerSub}>
+              {t('home.saleEnds', { d: countdown.days, h: countdown.hours, m: countdown.mins })}
+            </Text> */}
+          </View>
+          </ScrollView>
         </View>
 
         <View style={styles.section}>
@@ -90,32 +98,6 @@ export default function HomeScreen({ navigation }: Props) {
               <Image source={modelImages['model-3']} style={styles.modelImage} resizeMode="cover" />
               <View style={styles.modelOverlay} />
               <Text style={styles.modelLabel}>Model 3</Text>
-            </Pressable>
-          </ScrollView>
-        </View>
-
-        <View style={styles.section}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.servicesRow}>
-            <Pressable
-              style={({ pressed }) => [styles.serviceCard, pressed && styles.pressedCard]}
-              onPress={() => navigation.navigate('ChargingStations')}>
-              <Text style={styles.serviceIcon}>🔌</Text>
-              <Text style={styles.serviceTitle}>{t('charging.entryTitle')}</Text>
-              <Text style={styles.serviceSubtitle}>{t('charging.entrySubtitle')}</Text>
-            </Pressable>
-            <Pressable
-              style={({ pressed }) => [styles.serviceCard, pressed && styles.pressedCard]}
-              onPress={() => navigation.navigate('CarWash')}>
-              <Text style={styles.serviceIcon}>🧼</Text>
-              <Text style={styles.serviceTitle}>{t('carwash.entryTitle')}</Text>
-              <Text style={styles.serviceSubtitle}>{t('carwash.entrySubtitle')}</Text>
-            </Pressable>
-            <Pressable
-              style={({ pressed }) => [styles.serviceCard, pressed && styles.pressedCard]}
-              onPress={() => navigation.navigate('TeslaService')}>
-              <Text style={styles.serviceIcon}>🔧</Text>
-              <Text style={styles.serviceTitle}>{t('teslaservice.entryTitle')}</Text>
-              <Text style={styles.serviceSubtitle}>{t('teslaservice.entrySubtitle')}</Text>
             </Pressable>
           </ScrollView>
         </View>
@@ -227,8 +209,4 @@ const makeStyles = (colors: ThemeColors) =>
     pressedCard: { opacity: 0.85 },
     pressedFaded: { opacity: 0.6 },
     servicesRow: { flexDirection: 'row', gap: 10 },
-    serviceCard: { width: 160, backgroundColor: colors.cardAlt, borderRadius: radius.xl, padding: 14, gap: 4 },
-    serviceIcon: { fontSize: 24 },
-    serviceTitle: { fontSize: 13, fontWeight: '700', color: colors.text },
-    serviceSubtitle: { fontSize: 10.5, color: colors.textMuted },
   });

@@ -3,9 +3,8 @@ import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MapView, { Marker, Region } from 'react-native-maps';
 import type { CompositeScreenProps } from '@react-navigation/native';
-import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { HomeStackParamList, MainTabParamList, RootStackParamList } from '../navigation/types';
+import type { ChargingStationsStackParamList, RootStackParamList } from '../navigation/types';
 import {
   CHARGING_NETWORKS,
   ChargingNetwork,
@@ -21,8 +20,8 @@ import { useLocale } from '../context/LocaleContext';
 import LocationActionSheet from '../components/LocationActionSheet';
 
 type Props = CompositeScreenProps<
-  NativeStackScreenProps<HomeStackParamList, 'ChargingStations'>,
-  CompositeScreenProps<BottomTabScreenProps<MainTabParamList>, NativeStackScreenProps<RootStackParamList>>
+  NativeStackScreenProps<ChargingStationsStackParamList, 'ChargingStations'>,
+  NativeStackScreenProps<RootStackParamList>
 >;
 
 const BAKU_REGION: Region = { latitude: 40.39, longitude: 49.86, latitudeDelta: 0.12, longitudeDelta: 0.12 };
@@ -147,7 +146,7 @@ export default function ChargingStationsScreen({ navigation }: Props) {
 
       <View style={[styles.topOverlay, { paddingTop: insets.top + 8 }]}>
         <View style={styles.searchRow}>
-          <Pressable onPress={() => navigation.goBack()} hitSlop={10} style={styles.backCircle}>
+          <Pressable onPress={() => navigation.getParent()?.goBack()} hitSlop={10} style={styles.backCircle}>
             <Text style={styles.backCircleText}>←</Text>
           </Pressable>
           <View style={styles.searchBar}>

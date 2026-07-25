@@ -2,9 +2,8 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { CompositeScreenProps } from '@react-navigation/native';
-import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { HomeStackParamList, MainTabParamList, RootStackParamList } from '../navigation/types';
+import type { ChargingStationsStackParamList, RootStackParamList } from '../navigation/types';
 import { getChargingStation } from '../data/chargingStations';
 import { ThemeColors, radius, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
@@ -12,8 +11,8 @@ import { useLocale } from '../context/LocaleContext';
 import LocationActionSheet from '../components/LocationActionSheet';
 
 type Props = CompositeScreenProps<
-  NativeStackScreenProps<HomeStackParamList, 'ChargingStationDetail'>,
-  CompositeScreenProps<BottomTabScreenProps<MainTabParamList>, NativeStackScreenProps<RootStackParamList>>
+  NativeStackScreenProps<ChargingStationsStackParamList, 'ChargingStationDetail'>,
+  NativeStackScreenProps<RootStackParamList>
 >;
 
 type Tab = 'location' | 'connectors' | 'reviews';

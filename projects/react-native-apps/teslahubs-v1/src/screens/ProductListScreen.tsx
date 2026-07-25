@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { MainTabParamList, ProductBrowseParamList, RootStackParamList } from '../navigation/types';
+import type { ProductBrowseParamList, RootStackParamList, ShoppingTabParamList } from '../navigation/types';
 import { CATEGORIES, PRODUCTS, Product } from '../data/products';
 import { ThemeColors, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
@@ -15,7 +15,7 @@ import HeaderBar from '../components/HeaderBar';
 
 type Props = CompositeScreenProps<
   NativeStackScreenProps<ProductBrowseParamList, 'ProductList'>,
-  CompositeScreenProps<BottomTabScreenProps<MainTabParamList>, NativeStackScreenProps<RootStackParamList>>
+  CompositeScreenProps<BottomTabScreenProps<ShoppingTabParamList>, NativeStackScreenProps<RootStackParamList>>
 >;
 
 export default function ProductListScreen({ navigation, route }: Props) {

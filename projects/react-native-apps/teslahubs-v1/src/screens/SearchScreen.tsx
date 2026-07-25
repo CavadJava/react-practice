@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { HomeStackParamList, MainTabParamList, RootStackParamList } from '../navigation/types';
+import type { HomeStackParamList, RootStackParamList, ShoppingTabParamList } from '../navigation/types';
 import { PRODUCTS } from '../data/products';
 import { ThemeColors, radius, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
@@ -14,7 +14,7 @@ import ProductCard from '../components/ProductCard';
 
 type Props = CompositeScreenProps<
   NativeStackScreenProps<HomeStackParamList, 'Search'>,
-  CompositeScreenProps<BottomTabScreenProps<MainTabParamList>, NativeStackScreenProps<RootStackParamList>>
+  CompositeScreenProps<BottomTabScreenProps<ShoppingTabParamList>, NativeStackScreenProps<RootStackParamList>>
 >;
 
 export default function SearchScreen({ navigation }: Props) {

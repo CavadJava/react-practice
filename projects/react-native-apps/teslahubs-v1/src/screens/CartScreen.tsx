@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { MainTabParamList, RootStackParamList } from '../navigation/types';
+import type { RootStackParamList, ShoppingTabParamList } from '../navigation/types';
 import { CITIES, REGIONS, WHATSAPP_PHONE, getProductImage } from '../data/products';
 import { ThemeColors, radius, spacing, withAlpha } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
@@ -14,7 +14,7 @@ import { useCart } from '../context/CartContext';
 import MapPickerModal from '../components/MapPickerModal';
 import SelectField from '../components/SelectField';
 
-type Props = CompositeScreenProps<BottomTabScreenProps<MainTabParamList, 'Cart'>, NativeStackScreenProps<RootStackParamList>>;
+type Props = CompositeScreenProps<BottomTabScreenProps<ShoppingTabParamList, 'Cart'>, NativeStackScreenProps<RootStackParamList>>;
 
 function computeDelivery(now: Date) {
   const eta = new Date(now.getTime() + 3 * 3600000);

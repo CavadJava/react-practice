@@ -9,8 +9,6 @@ export type ProductBrowseParamList = {
 export type HomeStackParamList = ProductBrowseParamList & {
   Home: undefined;
   Search: undefined;
-  ChargingStations: undefined;
-  ChargingStationDetail: { stationId: string };
 };
 
 export type CategoriesStackParamList = ProductBrowseParamList & {
@@ -38,17 +36,36 @@ export type TeslaServiceStackParamList = {
   TeslaServiceRequest: { serviceId?: string };
 };
 
-export type MainTabParamList = {
+export type ChargingStationsStackParamList = {
+  ChargingStations: undefined;
+  ChargingStationDetail: { stationId: string };
+};
+
+// The full shopping experience (browsing, cart, wishlist) — presented as its
+// own section from the root, the same way CarWash/TeslaService are, so it
+// reads as a distinct part of the app. This is exactly the previous
+// MainTabParamList's Home/Categories/Wishlist/Cart tabs, unchanged, just
+// hosted one level deeper.
+export type ShoppingTabParamList = {
   Home: NavigatorScreenParams<HomeStackParamList> | undefined;
   Categories: NavigatorScreenParams<CategoriesStackParamList> | undefined;
   Wishlist: NavigatorScreenParams<WishlistStackParamList> | undefined;
-  Articles: NavigatorScreenParams<ArticlesStackParamList> | undefined;
   Cart: undefined;
+};
+
+export type MainTabParamList = {
+  // Not product-browsing content itself — a lobby listing the app's
+  // sections (Shopping, Charging Stations, AvtoYuma, Tesla Service) as
+  // equal peer entries (see LobbyScreen).
+  Home: undefined;
+  Articles: NavigatorScreenParams<ArticlesStackParamList> | undefined;
   Profile: undefined;
 };
 
 export type RootStackParamList = {
   MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
+  Shopping: NavigatorScreenParams<ShoppingTabParamList> | undefined;
+  ChargingStations: NavigatorScreenParams<ChargingStationsStackParamList> | undefined;
   CarWash: NavigatorScreenParams<CarWashStackParamList> | undefined;
   TeslaService: NavigatorScreenParams<TeslaServiceStackParamList> | undefined;
   OrderConfirm: {
