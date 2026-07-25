@@ -32,6 +32,11 @@ export type CarWashStackParamList = {
   CarWashBooking: { providerId: string; branchId: string };
 };
 
+export type TeslaServiceStackParamList = {
+  TeslaService: undefined;
+  TeslaServiceRequest: { serviceId?: string };
+};
+
 export type MainTabParamList = {
   Home: NavigatorScreenParams<HomeStackParamList> | undefined;
   Categories: NavigatorScreenParams<CategoriesStackParamList> | undefined;
@@ -44,6 +49,7 @@ export type MainTabParamList = {
 export type RootStackParamList = {
   MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
   CarWash: NavigatorScreenParams<CarWashStackParamList> | undefined;
+  TeslaService: NavigatorScreenParams<TeslaServiceStackParamList> | undefined;
   OrderConfirm: {
     firstName: string;
     fullName: string;

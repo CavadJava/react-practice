@@ -95,7 +95,7 @@ export default function HomeScreen({ navigation }: Props) {
         </View>
 
         <View style={styles.section}>
-          <View style={styles.servicesRow}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.servicesRow}>
             <Pressable
               style={({ pressed }) => [styles.serviceCard, pressed && styles.pressedCard]}
               onPress={() => navigation.navigate('ChargingStations')}>
@@ -110,7 +110,14 @@ export default function HomeScreen({ navigation }: Props) {
               <Text style={styles.serviceTitle}>{t('carwash.entryTitle')}</Text>
               <Text style={styles.serviceSubtitle}>{t('carwash.entrySubtitle')}</Text>
             </Pressable>
-          </View>
+            <Pressable
+              style={({ pressed }) => [styles.serviceCard, pressed && styles.pressedCard]}
+              onPress={() => navigation.navigate('TeslaService')}>
+              <Text style={styles.serviceIcon}>🔧</Text>
+              <Text style={styles.serviceTitle}>{t('teslaservice.entryTitle')}</Text>
+              <Text style={styles.serviceSubtitle}>{t('teslaservice.entrySubtitle')}</Text>
+            </Pressable>
+          </ScrollView>
         </View>
 
         <View style={styles.section}>
@@ -220,7 +227,7 @@ const makeStyles = (colors: ThemeColors) =>
     pressedCard: { opacity: 0.85 },
     pressedFaded: { opacity: 0.6 },
     servicesRow: { flexDirection: 'row', gap: 10 },
-    serviceCard: { flex: 1, backgroundColor: colors.cardAlt, borderRadius: radius.xl, padding: 14, gap: 4 },
+    serviceCard: { width: 160, backgroundColor: colors.cardAlt, borderRadius: radius.xl, padding: 14, gap: 4 },
     serviceIcon: { fontSize: 24 },
     serviceTitle: { fontSize: 13, fontWeight: '700', color: colors.text },
     serviceSubtitle: { fontSize: 10.5, color: colors.textMuted },
