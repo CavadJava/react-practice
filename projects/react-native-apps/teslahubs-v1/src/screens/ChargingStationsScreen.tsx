@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MapView, { Callout, Marker, Region } from 'react-native-maps';
 import type { CompositeScreenProps } from '@react-navigation/native';
@@ -18,6 +18,14 @@ type Props = CompositeScreenProps<
 >;
 
 const BAKU_REGION: Region = { latitude: 40.39, longitude: 49.86, latitudeDelta: 0.12, longitudeDelta: 0.12 };
+
+function openGoogleMaps(station: ChargingStation) {
+  Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${station.lat},${station.lng}`);
+}
+
+function openWaze(station: ChargingStation) {
+  Linking.openURL(`https://waze.com/ul?ll=${station.lat},${station.lng}&navigate=yes`);
+}
 
 export default function ChargingStationsScreen({ navigation }: Props) {
   const { colors } = useTheme();
@@ -65,7 +73,7 @@ export default function ChargingStationsScreen({ navigation }: Props) {
               coordinate={{ latitude: station.lat, longitude: station.lng }}
               pinColor={station.portsAvailable > 0 ? colors.brand : colors.textFaded}
               onPress={() => setSelectedId(station.id)}>
-              <Callout>
+              <Callout tooltip>
                 <View style={styles.callout}>
                   <Text style={styles.calloutTitle}>{station.name}</Text>
                   <Text style={styles.calloutLine}>
@@ -73,6 +81,14 @@ export default function ChargingStationsScreen({ navigation }: Props) {
                   </Text>
                   <Text style={styles.calloutLine}>{t('charging.available', { count: station.portsAvailable, total: station.portsTotal })}</Text>
                   <Text style={styles.calloutLine}>{station.connectors.map(c => t(`charging.connector.${c}`)).join(', ')}</Text>
+                  <View style={styles.calloutNavRow}>
+                    <Pressable onPress={() => openGoogleMaps(station)} style={styles.calloutNavBtn}>
+                      <Text style={styles.calloutNavBtnText}>🗺️ {t('charging.googleMaps')}</Text>
+                    </Pressable>
+                    <Pressable onPress={() => openWaze(station)} style={styles.calloutNavBtn}>
+                      <Text style={styles.calloutNavBtnText}>🚗 {t('charging.waze')}</Text>
+                    </Pressable>
+                  </View>
                 </View>
               </Callout>
             </Marker>
@@ -110,6 +126,24 @@ export default function ChargingStationsScreen({ navigation }: Props) {
                   </View>
                 ))}
               </View>
+              <View style={styles.cardNavRow}>
+                <Pressable
+                  onPress={e => {
+                    e.stopPropagation();
+                    openGoogleMaps(station);
+                  }}
+                  style={styles.cardNavBtn}>
+                  <Text style={styles.cardNavBtnText}>🗺️ {t('charging.googleMaps')}</Text>
+                </Pressable>
+                <Pressable
+                  onPress={e => {
+                    e.stopPropagation();
+                    openWaze(station);
+                  }}
+                  style={styles.cardNavBtn}>
+                  <Text style={styles.cardNavBtnText}>🚗 {t('charging.waze')}</Text>
+                </Pressable>
+              </View>
             </Pressable>
           );
         })}
@@ -127,9 +161,23 @@ const makeStyles = (colors: ThemeColors) =>
     filterLabel: { fontSize: 12.5, fontWeight: '600' },
     mapWrap: { height: 220, marginHorizontal: spacing.xl, marginBottom: spacing.md, borderRadius: radius.xl, overflow: 'hidden' },
     map: { flex: 1 },
-    callout: { minWidth: 200, gap: 2, padding: 4 },
+    callout: {
+      minWidth: 210,
+      gap: 2,
+      padding: 10,
+      backgroundColor: '#ffffff',
+      borderRadius: radius.md,
+      shadowColor: '#000',
+      shadowOpacity: 0.25,
+      shadowRadius: 6,
+      shadowOffset: { width: 0, height: 3 },
+      elevation: 4,
+    },
     calloutTitle: { fontWeight: '800', fontSize: 13, color: '#161616' },
     calloutLine: { fontSize: 11.5, color: '#4a4a4a' },
+    calloutNavRow: { flexDirection: 'row', gap: 6, marginTop: 6 },
+    calloutNavBtn: { flex: 1, backgroundColor: '#f0f0f0', borderRadius: radius.sm, paddingVertical: 6, alignItems: 'center' },
+    calloutNavBtnText: { fontSize: 10.5, fontWeight: '700', color: '#161616' },
     list: { flex: 1 },
     listContent: { paddingHorizontal: spacing.xl, paddingBottom: 40, gap: 10 },
     card: { backgroundColor: colors.cardAlt, borderRadius: radius.lg, borderWidth: 1.5, padding: 14, gap: 4 },
@@ -142,4 +190,7 @@ const makeStyles = (colors: ThemeColors) =>
     connectorRow: { flexDirection: 'row', gap: 6, marginTop: 4 },
     connectorChip: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999, backgroundColor: colors.surface },
     connectorChipText: { fontSize: 10, fontWeight: '600', color: colors.textSecondary },
+    cardNavRow: { flexDirection: 'row', gap: 8, marginTop: 8 },
+    cardNavBtn: { flex: 1, backgroundColor: colors.surface, borderRadius: radius.sm, paddingVertical: 8, alignItems: 'center' },
+    cardNavBtnText: { fontSize: 11.5, fontWeight: '700', color: colors.text },
   });

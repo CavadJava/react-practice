@@ -141,6 +141,8 @@ const en = {
       ccs2: 'CCS2',
       gbt: 'GB/T',
     },
+    googleMaps: 'Google Maps',
+    waze: 'Waze',
   },
 };
 
@@ -278,6 +280,8 @@ const az: typeof en = {
       ccs2: 'CCS2',
       gbt: 'GB/T',
     },
+    googleMaps: 'Google Maps',
+    waze: 'Waze',
   },
 };
 
