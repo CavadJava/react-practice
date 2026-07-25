@@ -26,6 +26,12 @@ export type ArticlesStackParamList = {
   ArticleDetail: { articleId: string };
 };
 
+export type CarWashStackParamList = {
+  CarWash: undefined;
+  CarWashProvider: { providerId: string };
+  CarWashBooking: { providerId: string; branchId: string };
+};
+
 export type MainTabParamList = {
   Home: NavigatorScreenParams<HomeStackParamList> | undefined;
   Categories: NavigatorScreenParams<CategoriesStackParamList> | undefined;
@@ -37,6 +43,7 @@ export type MainTabParamList = {
 
 export type RootStackParamList = {
   MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
+  CarWash: NavigatorScreenParams<CarWashStackParamList> | undefined;
   OrderConfirm: {
     firstName: string;
     fullName: string;

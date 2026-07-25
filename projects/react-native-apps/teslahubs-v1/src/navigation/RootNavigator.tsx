@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { RootStackParamList } from './types';
 import { useTheme } from '../context/ThemeContext';
 import MainTabNavigator from './MainTabNavigator';
+import CarWashStackNavigator from './CarWashStackNavigator';
 import OrderConfirmScreen from '../screens/OrderConfirmScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -23,6 +24,7 @@ export default function RootNavigator() {
     <NavigationContainer theme={navTheme}>
       <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
         <Stack.Screen name="MainTabs" component={MainTabNavigator} />
+        <Stack.Screen name="CarWash" component={CarWashStackNavigator} options={{ presentation: 'fullScreenModal' }} />
         <Stack.Screen name="OrderConfirm" component={OrderConfirmScreen} />
       </Stack.Navigator>
     </NavigationContainer>
