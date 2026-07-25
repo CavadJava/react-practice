@@ -10,6 +10,7 @@ export type HomeStackParamList = ProductBrowseParamList & {
   Home: undefined;
   Search: undefined;
   ChargingStations: undefined;
+  ChargingStationDetail: { stationId: string };
 };
 
 export type CategoriesStackParamList = ProductBrowseParamList & {

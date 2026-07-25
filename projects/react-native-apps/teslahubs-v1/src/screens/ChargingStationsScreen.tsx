@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Linking, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import MapView, { Callout, Marker, Region } from 'react-native-maps';
+import MapView, { Marker, Region } from 'react-native-maps';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -18,6 +18,7 @@ import {
 import { ThemeColors, radius, spacing, withAlpha } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
+import LocationActionSheet from '../components/LocationActionSheet';
 
 type Props = CompositeScreenProps<
   NativeStackScreenProps<HomeStackParamList, 'ChargingStations'>,
@@ -32,13 +33,8 @@ const BAKU_REGION: Region = { latitude: 40.39, longitude: 49.86, latitudeDelta: 
 const MARKER_AVAILABLE_COLOR = '#22C55E';
 const MARKER_UNAVAILABLE_COLOR = '#8B5CF6';
 
-function openGoogleMaps(station: ChargingStation) {
-  Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${station.lat},${station.lng}`);
-}
-
-function openWaze(station: ChargingStation) {
-  Linking.openURL(`https://waze.com/ul?ll=${station.lat},${station.lng}&navigate=yes`);
-}
+const CARD_WIDTH = 240;
+const CARD_GAP = 12;
 
 function matchesQuery(station: ChargingStation, query: string): boolean {
   if (!query.trim()) return true;
@@ -82,6 +78,7 @@ export default function ChargingStationsScreen({ navigation }: Props) {
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const { t } = useLocale();
   const mapRef = useRef<MapView>(null);
+  const carouselRef = useRef<ScrollView>(null);
   const [query, setQuery] = useState('');
   const [activeNetwork, setActiveNetwork] = useState<ChargingNetwork | null>(null);
   const [activeConnector, setActiveConnector] = useState<ConnectorType | null>(null);
@@ -89,6 +86,7 @@ export default function ChargingStationsScreen({ navigation }: Props) {
   const [activePower, setActivePower] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
+  const [sheetStation, setSheetStation] = useState<ChargingStation | null>(null);
 
   const allLabel = t('charging.filterAll');
   const networkItems = [{ key: null, label: allLabel }, ...CHARGING_NETWORKS.map(n => ({ key: n, label: n }))];
@@ -109,9 +107,13 @@ export default function ChargingStationsScreen({ navigation }: Props) {
     matchesQuery(s, query),
   );
 
-  const focusStation = (station: ChargingStation) => {
+  const selectStation = (station: ChargingStation) => {
     setSelectedId(station.id);
     mapRef.current?.animateToRegion({ latitude: station.lat, longitude: station.lng, latitudeDelta: 0.03, longitudeDelta: 0.03 }, 400);
+    const index = stations.findIndex(s => s.id === station.id);
+    if (index >= 0) {
+      carouselRef.current?.scrollTo({ x: index * (CARD_WIDTH + CARD_GAP), animated: true });
+    }
   };
 
   const recenter = () => mapRef.current?.animateToRegion(BAKU_REGION, 400);
@@ -132,33 +134,12 @@ export default function ChargingStationsScreen({ navigation }: Props) {
               key={station.id}
               coordinate={{ latitude: station.lat, longitude: station.lng }}
               anchor={{ x: 0.5, y: 0.5 }}
-              onPress={() => setSelectedId(station.id)}>
+              onPress={() => selectStation(station)}>
               <View style={[styles.markerGlow, { backgroundColor: withAlpha(markerColor, 0.28) }]}>
                 <View style={[styles.markerBadge, { backgroundColor: markerColor }]}>
                   <Text style={styles.markerIcon}>⚡</Text>
                 </View>
               </View>
-              <Callout tooltip>
-                <View style={styles.callout}>
-                  <Text style={styles.calloutTitle}>{station.name}</Text>
-                  <Text style={styles.calloutLine}>
-                    {station.network} · {station.address}
-                  </Text>
-                  <Text style={styles.calloutLine}>{t('charging.available', { count: station.portsAvailable, total: station.portsTotal })}</Text>
-                  <Text style={styles.calloutLine}>
-                    {station.powerKw} kW · {t(station.currentType === 'dc' ? 'charging.currentDc' : 'charging.currentAc')}
-                  </Text>
-                  <Text style={styles.calloutLine}>{station.connectors.map(c => t(`charging.connector.${c}`)).join(', ')}</Text>
-                  <View style={styles.calloutNavRow}>
-                    <Pressable onPress={() => openGoogleMaps(station)} style={styles.calloutNavBtn}>
-                      <Text style={styles.calloutNavBtnText}>🗺️ {t('charging.googleMaps')}</Text>
-                    </Pressable>
-                    <Pressable onPress={() => openWaze(station)} style={styles.calloutNavBtn}>
-                      <Text style={styles.calloutNavBtnText}>🚗 {t('charging.waze')}</Text>
-                    </Pressable>
-                  </View>
-                </View>
-              </Callout>
             </Marker>
           );
         })}
@@ -215,56 +196,72 @@ export default function ChargingStationsScreen({ navigation }: Props) {
             <Text style={styles.noResultsText}>{t('charging.noResults')}</Text>
           </View>
         ) : (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContent}>
+          <ScrollView ref={carouselRef} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContent}>
             {stations.map(station => {
               const selected = selectedId === station.id;
-              const hasAvailable = station.portsAvailable > 0;
               return (
                 <Pressable
                   key={station.id}
-                  onPress={() => focusStation(station)}
+                  onPress={() => selectStation(station)}
                   style={[styles.card, { borderColor: selected ? colors.brand : 'transparent' }]}>
-                  <View style={styles.cardHeader}>
+                  <View style={styles.cardTopRow}>
+                    <View style={styles.categoryTag}>
+                      <Text style={styles.categoryTagText}>{t('category.other')}</Text>
+                    </View>
+                    <Text style={styles.hoursTag}>{station.is24h ? t('charging.open247') : t('charging.limitedHours')}</Text>
+                  </View>
+                  <View style={styles.cardNameRow}>
                     <Text style={styles.cardTitle} numberOfLines={1}>
                       {station.name}
                     </Text>
-                    <View style={[styles.availabilityBadge, { backgroundColor: hasAvailable ? colors.brand : colors.cardAlt }]}>
-                      <Text style={[styles.availabilityText, { color: hasAvailable ? colors.white : colors.textFaded }]}>
-                        {t('charging.available', { count: station.portsAvailable, total: station.portsTotal })}
-                      </Text>
+                    <Text style={styles.chevron}>›</Text>
+                  </View>
+
+                  <View style={styles.cardInnerPanel}>
+                    <Text style={styles.cardNetwork}>{station.network}</Text>
+                    <View style={styles.connectorRow}>
+                      <Text style={styles.connectorRowIcon}>🔌</Text>
+                      <Text style={styles.connectorRowText}>{t('charging.connectorsCount', { count: station.connectors.length })} ›</Text>
+                    </View>
+                    <View style={styles.cardStatsRow}>
+                      <Text style={styles.cardPower}>{station.powerKw} kW</Text>
+                      <Text style={styles.cardAvailable}>{t('charging.available', { count: station.portsAvailable, total: station.portsTotal })}</Text>
                     </View>
                   </View>
-                  <Text style={styles.cardNetwork}>{station.network}</Text>
-                  <Text style={styles.cardAddress} numberOfLines={1}>
-                    {station.address}
-                  </Text>
-                  <Text style={styles.cardPower}>
-                    {station.powerKw} kW · {t(station.currentType === 'dc' ? 'charging.currentDc' : 'charging.currentAc')}
-                  </Text>
-                  <View style={styles.cardNavRow}>
-                    <Pressable
-                      onPress={e => {
-                        e.stopPropagation();
-                        openGoogleMaps(station);
-                      }}
-                      style={styles.cardNavBtn}>
-                      <Text style={styles.cardNavBtnText}>🗺️ {t('charging.googleMaps')}</Text>
-                    </Pressable>
-                    <Pressable
-                      onPress={e => {
-                        e.stopPropagation();
-                        openWaze(station);
-                      }}
-                      style={styles.cardNavBtn}>
-                      <Text style={styles.cardNavBtnText}>🚗 {t('charging.waze')}</Text>
-                    </Pressable>
-                  </View>
+
+                  <Pressable
+                    style={styles.viewInfoBtn}
+                    onPress={e => {
+                      e.stopPropagation();
+                      navigation.navigate('ChargingStationDetail', { stationId: station.id });
+                    }}>
+                    <Text style={styles.viewInfoBtnText}>{t('charging.viewInfo')}</Text>
+                  </Pressable>
+
+                  <Pressable
+                    style={styles.directionsBtn}
+                    onPress={e => {
+                      e.stopPropagation();
+                      setSheetStation(station);
+                    }}>
+                    <Text style={styles.directionsBtnIcon}>➤</Text>
+                  </Pressable>
                 </Pressable>
               );
             })}
           </ScrollView>
         )}
       </View>
+
+      <LocationActionSheet
+        visible={!!sheetStation}
+        onClose={() => setSheetStation(null)}
+        lat={sheetStation?.lat ?? 0}
+        lng={sheetStation?.lng ?? 0}
+        onViewOnMap={() => {
+          if (sheetStation) selectStation(sheetStation);
+        }}
+      />
 
       <Modal visible={filterModalOpen} transparent animationType="slide" onRequestClose={() => setFilterModalOpen(false)}>
         <Pressable style={styles.modalBackdrop} onPress={() => setFilterModalOpen(false)} />
@@ -355,50 +352,59 @@ const makeStyles = (colors: ThemeColors) =>
       borderColor: 'rgba(255,255,255,0.9)',
     },
     markerIcon: { fontSize: 14, color: '#fff' },
-    callout: {
-      minWidth: 210,
-      gap: 2,
-      padding: 10,
-      backgroundColor: '#ffffff',
-      borderRadius: radius.md,
-      shadowColor: '#000',
-      shadowOpacity: 0.25,
-      shadowRadius: 6,
-      shadowOffset: { width: 0, height: 3 },
-      elevation: 4,
-    },
-    calloutTitle: { fontWeight: '800', fontSize: 13, color: '#161616' },
-    calloutLine: { fontSize: 11.5, color: '#4a4a4a' },
-    calloutNavRow: { flexDirection: 'row', gap: 6, marginTop: 6 },
-    calloutNavBtn: { flex: 1, backgroundColor: '#f0f0f0', borderRadius: radius.sm, paddingVertical: 6, alignItems: 'center' },
-    calloutNavBtnText: { fontSize: 10.5, fontWeight: '700', color: '#161616' },
     bottomCarousel: { position: 'absolute', left: 0, right: 0, bottom: 0 },
-    carouselContent: { paddingHorizontal: spacing.lg, gap: 12 },
+    carouselContent: { paddingHorizontal: spacing.lg, gap: CARD_GAP },
     noResults: { marginHorizontal: spacing.lg, backgroundColor: 'rgba(20,20,22,0.9)', borderRadius: radius.lg, padding: 16, alignItems: 'center' },
     noResultsText: { color: '#fff', fontSize: 12.5 },
     card: {
-      width: 240,
+      width: CARD_WIDTH,
       backgroundColor: colors.card,
       borderRadius: radius.lg,
       borderWidth: 1.5,
       padding: 14,
-      gap: 4,
+      gap: 6,
       shadowColor: '#000',
       shadowOpacity: 0.3,
       shadowRadius: 10,
       shadowOffset: { width: 0, height: 4 },
       elevation: 6,
     },
-    cardHeader: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 },
-    cardTitle: { flex: 1, fontSize: 13.5, fontWeight: '700', color: colors.text },
-    availabilityBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999 },
-    availabilityText: { fontSize: 10, fontWeight: '700' },
+    directionsBtn: {
+      position: 'absolute',
+      top: -14,
+      right: 12,
+      width: 34,
+      height: 34,
+      borderRadius: 17,
+      backgroundColor: colors.surface,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 2,
+      borderColor: colors.card,
+      shadowColor: '#000',
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 5,
+    },
+    directionsBtnIcon: { fontSize: 14, color: colors.text, transform: [{ rotate: '-45deg' }] },
+    cardTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    categoryTag: { backgroundColor: colors.surface, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3 },
+    categoryTagText: { fontSize: 10, fontWeight: '600', color: colors.textMuted },
+    hoursTag: { fontSize: 10.5, fontWeight: '600', color: colors.textMuted },
+    cardNameRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 6 },
+    cardTitle: { flex: 1, fontSize: 14, fontWeight: '700', color: colors.text },
+    chevron: { fontSize: 18, color: colors.textMuted },
+    cardInnerPanel: { backgroundColor: colors.cardAlt, borderRadius: radius.md, padding: 10, gap: 6, marginTop: 2 },
     cardNetwork: { fontSize: 11.5, fontWeight: '600', color: colors.brand },
-    cardAddress: { fontSize: 11.5, color: colors.textMuted },
-    cardPower: { fontSize: 11.5, color: colors.textMuted },
-    cardNavRow: { flexDirection: 'row', gap: 8, marginTop: 8 },
-    cardNavBtn: { flex: 1, backgroundColor: colors.surface, borderRadius: radius.sm, paddingVertical: 8, alignItems: 'center' },
-    cardNavBtnText: { fontSize: 11, fontWeight: '700', color: colors.text },
+    connectorRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+    connectorRowIcon: { fontSize: 13 },
+    connectorRowText: { fontSize: 12, color: colors.text, fontWeight: '600' },
+    cardStatsRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    cardPower: { fontSize: 12.5, fontWeight: '700', color: colors.text },
+    cardAvailable: { fontSize: 10.5, color: colors.textMuted },
+    viewInfoBtn: { borderWidth: 1, borderColor: colors.brand, borderRadius: radius.md, paddingVertical: 10, alignItems: 'center', marginTop: 2 },
+    viewInfoBtnText: { fontSize: 12.5, fontWeight: '700', color: colors.brand },
     modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' },
     modalSheet: {
       backgroundColor: colors.bg,

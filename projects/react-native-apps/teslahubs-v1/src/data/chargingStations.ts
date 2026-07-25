@@ -120,6 +120,10 @@ export type StationFilters = {
   powerRangeKey: string | null;
 };
 
+export function getChargingStation(id: string): ChargingStation | undefined {
+  return CHARGING_STATIONS.find(s => s.id === id);
+}
+
 export function filterStations(filters: StationFilters): ChargingStation[] {
   const range = filters.powerRangeKey ? POWER_RANGES.find(r => r.key === filters.powerRangeKey) : undefined;
   return CHARGING_STATIONS.filter(s => {
