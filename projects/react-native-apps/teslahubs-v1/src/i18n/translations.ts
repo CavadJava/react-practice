@@ -135,6 +135,10 @@ const en = {
     entryTitle: 'Charging Stations',
     entrySubtitle: 'Find EV chargers near you',
     filterAll: 'All',
+    searchPlaceholder: 'Search stations',
+    filterBtn: 'Filter',
+    showResults: 'Show {{count}} results',
+    noResults: 'No stations match your search/filters',
     available: '{{count}} / {{total}} available',
     connector: {
       nacs: 'NACS (Tesla)',
@@ -341,6 +345,10 @@ const az: typeof en = {
     entryTitle: 'Şarj Məntəqələri',
     entrySubtitle: 'Yaxınlıqdakı şarj məntəqələrini tapın',
     filterAll: 'Hamısı',
+    searchPlaceholder: 'Məntəqə axtar',
+    filterBtn: 'Filter',
+    showResults: '{{count}} nəticəni göstər',
+    noResults: 'Axtarışa/filterə uyğun məntəqə tapılmadı',
     available: '{{count}} / {{total}} boş',
     connector: {
       nacs: 'NACS (Tesla)',
