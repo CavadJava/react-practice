@@ -1,8 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { CompositeScreenProps } from '@react-navigation/native';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../navigation/types';
+import type { MainTabParamList, RootStackParamList } from '../navigation/types';
 import { CATEGORIES, PRODUCTS } from '../data/products';
 import { ThemeColors, radius, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
@@ -10,14 +12,13 @@ import { useLocale } from '../context/LocaleContext';
 import { useCart } from '../context/CartContext';
 import { useSaleCountdown } from '../hooks/useSaleCountdown';
 import ProductCard from '../components/ProductCard';
-import ProfileMenu from '../components/ProfileMenu';
 
 const modelImages = {
   'model-y': require('../assets/images/model-y.png'),
   'model-3': require('../assets/images/model-3.png'),
 } as const;
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+type Props = CompositeScreenProps<BottomTabScreenProps<MainTabParamList, 'Home'>, NativeStackScreenProps<RootStackParamList>>;
 
 export default function HomeScreen({ navigation }: Props) {
   const { colors } = useTheme();
@@ -26,7 +27,6 @@ export default function HomeScreen({ navigation }: Props) {
   const { cartCount, isInCart, addToCart } = useCart();
   const countdown = useSaleCountdown();
   const featured = PRODUCTS.slice(0, 4);
-  const [profileOpen, setProfileOpen] = useState(false);
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
@@ -40,7 +40,7 @@ export default function HomeScreen({ navigation }: Props) {
               <Text style={styles.iconText}>⌕</Text>
             </Pressable>
             <Pressable
-              onPress={() => setProfileOpen(true)}
+              onPress={() => navigation.navigate('Profile')}
               style={({ pressed }) => [styles.iconBtn, pressed && styles.iconBtnPressed]}>
               <View style={styles.guestAvatar}>
                 <Text style={styles.guestAvatarText}>G</Text>
@@ -58,8 +58,6 @@ export default function HomeScreen({ navigation }: Props) {
             </Pressable>
           </View>
         </View>
-
-        <ProfileMenu visible={profileOpen} onClose={() => setProfileOpen(false)} />
 
         <View style={styles.section}>
           <View style={styles.banner}>

@@ -8,6 +8,18 @@ export const LOCALES: { key: Locale; label: string }[] = [
 export const DEFAULT_LOCALE: Locale = 'az';
 
 const en = {
+  tabs: {
+    home: 'Home',
+    categories: 'Categories',
+    wishlist: 'Wishlist',
+    cart: 'Cart',
+    profile: 'Profile',
+  },
+  wishlist: {
+    title: 'Wishlist',
+    empty: 'Your wishlist is empty',
+    emptyHint: 'Tap the heart on any product to save it here',
+  },
   search: {
     placeholder: 'Search products',
     prompt: 'Search by product name or category',
@@ -113,6 +125,18 @@ const en = {
 };
 
 const az: typeof en = {
+  tabs: {
+    home: 'Ana səhifə',
+    categories: 'Kateqoriyalar',
+    wishlist: 'Seçilmişlər',
+    cart: 'Səbət',
+    profile: 'Profil',
+  },
+  wishlist: {
+    title: 'Seçilmişlər',
+    empty: 'Seçilmişlər boşdur',
+    emptyHint: 'İstənilən məhsulun ürək işarəsinə basaraq burada saxlayın',
+  },
   search: {
     placeholder: 'Məhsul axtarın',
     prompt: 'Məhsul adına və ya kateqoriyaya görə axtarın',

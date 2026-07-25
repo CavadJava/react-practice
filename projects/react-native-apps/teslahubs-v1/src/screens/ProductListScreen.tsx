@@ -60,7 +60,7 @@ export default function ProductListScreen({ navigation, route }: Props) {
               isInCart={isInCart(item.id)}
               onOpen={() => navigation.navigate('ProductDetail', { productId: item.id })}
               onAddToCart={() => addToCart(item.id)}
-              onGoToOrder={() => navigation.navigate('Cart')}
+              onGoToOrder={() => navigation.navigate('MainTabs', { screen: 'Cart' })}
             />
           </View>
         )}

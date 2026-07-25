@@ -11,6 +11,7 @@ import { CartProvider } from './src/context/CartContext';
 import { ThemeProvider } from './src/context/ThemeContext';
 import { LocaleProvider } from './src/context/LocaleContext';
 import { CurrencyProvider } from './src/context/CurrencyContext';
+import { WishlistProvider } from './src/context/WishlistContext';
 import RootNavigator from './src/navigation/RootNavigator';
 import AppStatusBar from './src/components/AppStatusBar';
 
@@ -22,7 +23,9 @@ function App() {
           <CurrencyProvider>
             <AppStatusBar />
             <CartProvider>
-              <RootNavigator />
+              <WishlistProvider>
+                <RootNavigator />
+              </WishlistProvider>
             </CartProvider>
           </CurrencyProvider>
         </LocaleProvider>

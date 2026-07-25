@@ -5,6 +5,7 @@ import { ThemeColors, radius, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
 import { useCurrency } from '../context/CurrencyContext';
+import { useWishlist } from '../context/WishlistContext';
 
 type Props = {
   product: Product;
@@ -19,6 +20,8 @@ export default function ProductCard({ product, isInCart, onOpen, onAddToCart, on
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const { t } = useLocale();
   const { format } = useCurrency();
+  const { isWishlisted, toggleWishlist } = useWishlist();
+  const wishlisted = isWishlisted(product.id);
 
   return (
     <Pressable style={({ pressed }) => [styles.card, pressed && styles.cardPressed]} onPress={onOpen}>
@@ -29,6 +32,15 @@ export default function ProductCard({ product, isInCart, onOpen, onAddToCart, on
             <Text style={styles.badgeText}>{t(`badge.${product.badge}`)}</Text>
           </View>
         )}
+        <Pressable
+          hitSlop={8}
+          onPress={e => {
+            e.stopPropagation();
+            toggleWishlist(product.id);
+          }}
+          style={styles.heartBtn}>
+          <Text style={[styles.heartIcon, wishlisted && styles.heartIconActive]}>{wishlisted ? '♥' : '♡'}</Text>
+        </Pressable>
       </View>
       <View style={styles.body}>
         <Text style={styles.name} numberOfLines={2}>
@@ -80,6 +92,19 @@ const makeStyles = (colors: ThemeColors) =>
       borderRadius: 6,
     },
     badgeText: { color: colors.white, fontSize: 10, fontWeight: '800' },
+    heartBtn: {
+      position: 'absolute',
+      top: 8,
+      right: 8,
+      width: 26,
+      height: 26,
+      borderRadius: 13,
+      backgroundColor: 'rgba(20,10,10,0.45)',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    heartIcon: { color: colors.white, fontSize: 14 },
+    heartIconActive: { color: colors.brand },
     body: { padding: spacing.md, gap: spacing.sm },
     name: { fontSize: 12.5, fontWeight: '600', lineHeight: 16, color: colors.text },
     priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: 6 },

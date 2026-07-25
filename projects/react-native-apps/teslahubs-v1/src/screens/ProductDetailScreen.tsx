@@ -9,6 +9,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
 import { useCurrency } from '../context/CurrencyContext';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetail'>;
 
@@ -18,6 +19,7 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
   const { t } = useLocale();
   const { format } = useCurrency();
   const { addToCart } = useCart();
+  const { isWishlisted, toggleWishlist } = useWishlist();
   const { width } = useWindowDimensions();
   const product = PRODUCTS.find(p => p.id === route.params.productId) ?? PRODUCTS[0];
   const images = useMemo(() => getProductImages(product), [product]);
@@ -107,8 +109,8 @@ export default function ProductDetailScreen({ navigation, route }: Props) {
       </ScrollView>
 
       <View style={styles.footer}>
-        <Pressable style={styles.favBtn}>
-          <Text style={styles.favIcon}>♡</Text>
+        <Pressable style={styles.favBtn} onPress={() => toggleWishlist(product.id)}>
+          <Text style={[styles.favIcon, isWishlisted(product.id) && styles.favIconActive]}>{isWishlisted(product.id) ? '♥' : '♡'}</Text>
         </Pressable>
         <Pressable style={styles.addBtn} onPress={handleAddToCart}>
           <Text style={styles.addBtnText}>{justAdded ? t('product.added') : t('product.addToCartPrice', { price: format(product.price) })}</Text>
@@ -180,6 +182,7 @@ const makeStyles = (colors: ThemeColors) =>
       justifyContent: 'center',
     },
     favIcon: { color: colors.white, fontSize: 18 },
+    favIconActive: { color: colors.brand },
     addBtn: { flex: 1, backgroundColor: colors.brand, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center' },
     addBtnText: { color: colors.white, fontSize: 15, fontWeight: '700' },
   });

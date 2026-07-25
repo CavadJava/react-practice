@@ -1,19 +1,20 @@
 import React, { useMemo, useState } from 'react';
 import { Image, KeyboardAvoidingView, Linking, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { CompositeScreenProps } from '@react-navigation/native';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../navigation/types';
+import type { MainTabParamList, RootStackParamList } from '../navigation/types';
 import { CITIES, REGIONS, WHATSAPP_PHONE, getProductImage } from '../data/products';
 import { ThemeColors, radius, spacing, withAlpha } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
 import { useCurrency } from '../context/CurrencyContext';
 import { useCart } from '../context/CartContext';
-import HeaderBar from '../components/HeaderBar';
 import MapPickerModal from '../components/MapPickerModal';
 import SelectField from '../components/SelectField';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Cart'>;
+type Props = CompositeScreenProps<BottomTabScreenProps<MainTabParamList, 'Cart'>, NativeStackScreenProps<RootStackParamList>>;
 
 function computeDelivery(now: Date) {
   const eta = new Date(now.getTime() + 3 * 3600000);
@@ -132,7 +133,7 @@ export default function CartScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
-      <HeaderBar title={t('cart.title')} onBack={() => navigation.goBack()} />
+      <Text style={styles.screenTitle}>{t('cart.title')}</Text>
 
       <KeyboardAvoidingView style={styles.flexOne} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
@@ -270,6 +271,7 @@ export default function CartScreen({ navigation }: Props) {
 const makeStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     screen: { flex: 1, backgroundColor: colors.bg },
+    screenTitle: { fontSize: 22, fontWeight: '800', color: colors.text, paddingHorizontal: spacing.xl, paddingBottom: spacing.lg },
     flexOne: { flex: 1 },
     scrollContent: { paddingHorizontal: spacing.xl, paddingBottom: 150 },
     cartList: { gap: 10 },

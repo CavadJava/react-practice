@@ -20,6 +20,7 @@ export default function OrderConfirmScreen({ navigation, route }: Props) {
   const backToHome = () => {
     clearCart();
     navigation.popToTop();
+    navigation.navigate('MainTabs', { screen: 'Home' });
   };
 
   return (
