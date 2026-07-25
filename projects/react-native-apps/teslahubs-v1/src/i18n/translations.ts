@@ -39,6 +39,8 @@ const en = {
     shopByModel: 'Shop by Model',
     categories: 'Categories',
     bestSellers: 'Best Sellers',
+    pickedForYou: 'Picked for You',
+    recentlyViewed: 'Recently Viewed',
     seeAll: 'See all',
   },
   category: {
@@ -162,6 +164,8 @@ const az: typeof en = {
     shopByModel: 'Modelə görə alış-veriş',
     categories: 'Kateqoriyalar',
     bestSellers: 'Ən çox satılanlar',
+    pickedForYou: 'Sizin üçün seçdik',
+    recentlyViewed: 'Əvvəl baxdıqlarınız',
     seeAll: 'Hamısına bax',
   },
   category: {

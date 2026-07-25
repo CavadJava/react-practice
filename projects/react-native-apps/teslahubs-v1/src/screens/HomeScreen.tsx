@@ -5,13 +5,13 @@ import type { CompositeScreenProps } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { HomeStackParamList, MainTabParamList, RootStackParamList } from '../navigation/types';
-import { CATEGORIES, PRODUCTS } from '../data/products';
+import { CATEGORIES, CollectionKey, getProductsByCollection } from '../data/products';
 import { ThemeColors, radius, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
 import { useCart } from '../context/CartContext';
 import { useSaleCountdown } from '../hooks/useSaleCountdown';
-import ProductCard from '../components/ProductCard';
+import ProductSection from '../components/ProductSection';
 
 const modelImages = {
   'model-y': require('../assets/images/model-y.png'),
@@ -27,9 +27,11 @@ export default function HomeScreen({ navigation }: Props) {
   const { colors } = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
   const { t } = useLocale();
-  const { cartCount, isInCart, addToCart } = useCart();
+  const { cartCount } = useCart();
   const countdown = useSaleCountdown();
-  const featured = PRODUCTS.slice(0, 4);
+  const featured = getProductsByCollection(CollectionKey.BestSellers);
+  const recommended = getProductsByCollection(CollectionKey.Recommended);
+  const recentlyViewed = getProductsByCollection(CollectionKey.PreviouslyViewed);
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
@@ -107,25 +109,28 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
         </View>
 
-        <View style={styles.bestSellersHeader}>
-          <Text style={styles.sectionTitle}>{t('home.bestSellers')}</Text>
-          <Text style={styles.seeAll} onPress={() => navigation.navigate('ProductList', { category: null })}>
-            {t('home.seeAll')}
-          </Text>
-        </View>
-        <View style={styles.productGrid}>
-          {featured.map(p => (
-            <View key={p.id} style={styles.productGridItem}>
-              <ProductCard
-                product={p}
-                isInCart={isInCart(p.id)}
-                onOpen={() => navigation.navigate('ProductDetail', { productId: p.id })}
-                onAddToCart={() => addToCart(p.id)}
-                onGoToOrder={() => navigation.navigate('Cart')}
-              />
-            </View>
-          ))}
-        </View>
+        <ProductSection
+          title={t('home.bestSellers')}
+          products={featured}
+          seeAllLabel={t('home.seeAll')}
+          onSeeAll={() => navigation.navigate('ProductList', { category: null })}
+          onOpenProduct={productId => navigation.navigate('ProductDetail', { productId })}
+          onGoToOrder={() => navigation.navigate('Cart')}
+        />
+
+        <ProductSection
+          title={t('home.pickedForYou')}
+          products={recommended}
+          onOpenProduct={productId => navigation.navigate('ProductDetail', { productId })}
+          onGoToOrder={() => navigation.navigate('Cart')}
+        />
+
+        <ProductSection
+          title={t('home.recentlyViewed')}
+          products={recentlyViewed}
+          onOpenProduct={productId => navigation.navigate('ProductDetail', { productId })}
+          onGoToOrder={() => navigation.navigate('Cart')}
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -195,14 +200,4 @@ const makeStyles = (colors: ThemeColors) =>
     categoryLabel: { fontSize: 11, fontWeight: '500', textAlign: 'center', color: colors.text },
     pressedCard: { opacity: 0.85 },
     pressedFaded: { opacity: 0.6 },
-    bestSellersHeader: {
-      flexDirection: 'row',
-      alignItems: 'baseline',
-      justifyContent: 'space-between',
-      paddingHorizontal: spacing.xl,
-      paddingBottom: spacing.md,
-    },
-    seeAll: { fontSize: 12, fontWeight: '600', color: colors.brand },
-    productGrid: { paddingHorizontal: spacing.xl, flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-    productGridItem: { width: '47%' },
   });

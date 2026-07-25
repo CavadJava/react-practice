@@ -8,6 +8,19 @@ export enum ProductCategory {
   Other = 'other',
 }
 
+/**
+ * Curated product groupings shown as Home sections (e.g. "Best Sellers").
+ * Mirrors a `collections` + `collection_products` join table: each key here
+ * is a `collections.slug`, and a product's `collections` array is the set of
+ * join rows for that product. Membership order within a collection follows
+ * each product's position in `PRODUCTS` (stands in for `sort_order`).
+ */
+export enum CollectionKey {
+  BestSellers = 'best-sellers',
+  Recommended = 'recommended',
+  PreviouslyViewed = 'previously-viewed',
+}
+
 export type Product = {
   id: string;
   name: string;
@@ -29,6 +42,8 @@ export type Product = {
   image?: string;
   /** Optional gallery of photo URLs, for products with more than one real photo. */
   images?: string[];
+  /** Collections (Home sections) this product belongs to. See `CollectionKey`. */
+  collections?: CollectionKey[];
 };
 
 export const CATEGORIES: { key: ProductCategory; name: string; color: string }[] = [
@@ -69,6 +84,7 @@ export const PRODUCTS: Product[] = [
   price: 139.99,
   wasPrice: 185.0,
   badge: 'BEST SELLER',
+  collections: [CollectionKey.BestSellers],
   fit: 'Model 3 & Model Y',
   rating: '4.9',
   reviewCount: 842,
@@ -104,6 +120,7 @@ export const PRODUCTS: Product[] = [
   price: 79.99,
   wasPrice: 179.99,
   badge: 'TOP RATED',
+  collections: [CollectionKey.BestSellers],
   fit: 'Model 3 & Model Y',
   rating: '4.8',
   reviewCount: 613,
@@ -134,6 +151,7 @@ export const PRODUCTS: Product[] = [
   price: 149.99,
   wasPrice: 300.0,
   badge: 'BEST SELLER',
+  collections: [CollectionKey.BestSellers],
   fit: 'Model 3 & Model Y',
   rating: '4.9',
   reviewCount: 401,
@@ -164,6 +182,7 @@ export const PRODUCTS: Product[] = [
   price: 149.99,
   wasPrice: 199.99,
   badge: 'NEW',
+  collections: [CollectionKey.BestSellers],
   fit: 'Model 3 & Model Y',
   rating: '4.7',
   reviewCount: 219,
@@ -217,6 +236,7 @@ export const PRODUCTS: Product[] = [
   store: 'Teslahubs',
   price: 59.0,
   wasPrice: 79.0,
+  collections: [CollectionKey.Recommended],
   fit: 'Model 3 & Model Y',
   rating: '4.6',
   reviewCount: 188,
@@ -311,6 +331,7 @@ export const PRODUCTS: Product[] = [
   image: 'https://www.slashgear.com/img/gallery/the-20-dollar-device-that-can-break-into-a-tesla/intro-1659390855.jpg',
   images: ['https://www.slashgear.com/img/gallery/the-20-dollar-device-that-can-break-into-a-tesla/intro-1659390855.jpg'],
   price: 24.99,
+  collections: [CollectionKey.PreviouslyViewed],
   fit: 'All Tesla Models',
   rating: '4.9',
   reviewCount: 324,
@@ -368,6 +389,17 @@ export const PRODUCTS: Product[] = [
 },
 
 ];
+
+/**
+ * Products belonging to a given collection, in catalog order.
+ * `Recommended`/`PreviouslyViewed` are hand-picked mock membership until a
+ * real recommendation/view-history engine assigns these keys dynamically;
+ * an empty result is expected and is how the calling screen knows to hide
+ * that section, not an error state.
+ */
+export function getProductsByCollection(key: CollectionKey): Product[] {
+  return PRODUCTS.filter(p => p.collections?.includes(key));
+}
 
 export const CITIES = [
   { value: 'baku', label: 'Bakı' },
