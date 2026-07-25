@@ -137,10 +137,9 @@ const en = {
     filterAll: 'All',
     available: '{{count}} / {{total}} available',
     connector: {
-      tesla: 'Tesla (NACS)',
+      nacs: 'NACS (Tesla)',
       ccs2: 'CCS2',
-      type2: 'Type 2',
-      chademo: 'CHAdeMO',
+      gbt: 'GB/T',
     },
   },
 };
@@ -275,10 +274,9 @@ const az: typeof en = {
     filterAll: 'Hamısı',
     available: '{{count}} / {{total}} boş',
     connector: {
-      tesla: 'Tesla (NACS)',
+      nacs: 'NACS (Tesla)',
       ccs2: 'CCS2',
-      type2: 'Type 2',
-      chademo: 'CHAdeMO',
+      gbt: 'GB/T',
     },
   },
 };

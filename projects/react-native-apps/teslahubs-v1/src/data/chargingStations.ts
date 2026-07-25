@@ -1,14 +1,19 @@
 export enum ConnectorType {
-  Tesla = 'tesla',
+  NACS = 'nacs',
   CCS2 = 'ccs2',
-  Type2 = 'type2',
-  CHAdeMO = 'chademo',
+  GBT = 'gbt',
 }
+
+// Every station in the network offers all three connector standards.
+const ALL_CONNECTORS: ConnectorType[] = [ConnectorType.CCS2, ConnectorType.GBT, ConnectorType.NACS];
+
+export const CHARGING_NETWORKS = ['Azərişıq', 'Tok.az'] as const;
+export type ChargingNetwork = (typeof CHARGING_NETWORKS)[number];
 
 export type ChargingStation = {
   id: string;
   name: string;
-  network: string;
+  network: ChargingNetwork;
   address: string;
   lat: number;
   lng: number;
@@ -23,12 +28,12 @@ export type ChargingStation = {
 export const CHARGING_STATIONS: ChargingStation[] = [
   {
     id: 'cs1',
-    name: 'Tesla Supercharger — 28 Mall',
-    network: 'Tesla Supercharger',
+    name: 'Azərişıq Charge — 28 Mall',
+    network: 'Azərişıq',
     address: '28 Mall, Nizami küç., Bakı',
     lat: 40.3777,
     lng: 49.8462,
-    connectors: [ConnectorType.Tesla],
+    connectors: ALL_CONNECTORS,
     fastCharging: true,
     portsTotal: 8,
     portsAvailable: 5,
@@ -37,12 +42,12 @@ export const CHARGING_STATIONS: ChargingStation[] = [
   },
   {
     id: 'cs2',
-    name: 'SOCAR EV — Xətai',
-    network: 'SOCAR',
+    name: 'Tok.az — Xətai',
+    network: 'Tok.az',
     address: 'Xətai rayonu, Bakı',
     lat: 40.3959,
     lng: 49.8878,
-    connectors: [ConnectorType.CCS2, ConnectorType.Type2],
+    connectors: ALL_CONNECTORS,
     fastCharging: true,
     portsTotal: 4,
     portsAvailable: 2,
@@ -51,12 +56,12 @@ export const CHARGING_STATIONS: ChargingStation[] = [
   },
   {
     id: 'cs3',
-    name: 'AzEnerji Charge — Yasamal',
-    network: 'AzEnerji',
+    name: 'Azərişıq Charge — Yasamal',
+    network: 'Azərişıq',
     address: 'Yasamal rayonu, Bakı',
     lat: 40.3853,
     lng: 49.8215,
-    connectors: [ConnectorType.Type2],
+    connectors: ALL_CONNECTORS,
     fastCharging: false,
     portsTotal: 2,
     portsAvailable: 0,
@@ -65,12 +70,12 @@ export const CHARGING_STATIONS: ChargingStation[] = [
   },
   {
     id: 'cs4',
-    name: 'Port Baku Charging Hub',
-    network: 'BP Pulse',
+    name: 'Tok.az — Port Baku',
+    network: 'Tok.az',
     address: 'Neftçilər prospekti, Bakı',
     lat: 40.3706,
     lng: 49.8523,
-    connectors: [ConnectorType.CCS2, ConnectorType.CHAdeMO, ConnectorType.Type2],
+    connectors: ALL_CONNECTORS,
     fastCharging: true,
     portsTotal: 6,
     portsAvailable: 6,
@@ -79,12 +84,12 @@ export const CHARGING_STATIONS: ChargingStation[] = [
   },
   {
     id: 'cs5',
-    name: 'Gənclik Mall EV Point',
-    network: 'EV Baku',
+    name: 'Azərişıq Charge — Gənclik',
+    network: 'Azərişıq',
     address: 'Gənclik metrosu yaxınlığı, Bakı',
     lat: 40.4009,
     lng: 49.8483,
-    connectors: [ConnectorType.Type2, ConnectorType.CCS2],
+    connectors: ALL_CONNECTORS,
     fastCharging: false,
     portsTotal: 3,
     portsAvailable: 1,
@@ -93,6 +98,6 @@ export const CHARGING_STATIONS: ChargingStation[] = [
   },
 ];
 
-export function getStationsByConnector(type: ConnectorType | null): ChargingStation[] {
-  return type ? CHARGING_STATIONS.filter(s => s.connectors.includes(type)) : CHARGING_STATIONS;
+export function getStationsByNetwork(network: ChargingNetwork | null): ChargingStation[] {
+  return network ? CHARGING_STATIONS.filter(s => s.network === network) : CHARGING_STATIONS;
 }
