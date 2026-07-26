@@ -79,26 +79,34 @@ export default function AutoServicesScreen({ navigation }: Props) {
 
   const activeChips: { key: string; label: string; onClear: () => void }[] = [];
   if (activeProviderId) {
-    activeChips.push({ key: 'seller', label: brandFilters.find(f => f.key === activeProviderId)?.label ?? '', onClear: () => setActiveProviderId(null) });
+    activeChips.push({
+      key: 'seller',
+      label: `🏢 ${brandFilters.find(f => f.key === activeProviderId)?.label ?? ''}`,
+      onClear: () => setActiveProviderId(null),
+    });
   }
   if (activeServiceId) {
-    activeChips.push({ key: 'service', label: serviceFilters.find(f => f.key === activeServiceId)?.label ?? '', onClear: () => setActiveServiceId(null) });
+    activeChips.push({
+      key: 'service',
+      label: `🛠️ ${serviceFilters.find(f => f.key === activeServiceId)?.label ?? ''}`,
+      onClear: () => setActiveServiceId(null),
+    });
   }
   if (activeDiscountMin != null) {
     const tier = DISCOUNT_TIERS.find(d => d.min === activeDiscountMin);
-    activeChips.push({ key: 'discount', label: tier ? t(tier.labelKey) : '', onClear: () => setActiveDiscountMin(null) });
+    activeChips.push({ key: 'discount', label: `🏷️ ${tier ? t(tier.labelKey) : ''}`, onClear: () => setActiveDiscountMin(null) });
   }
   if (activeCarBrand) {
-    activeChips.push({ key: 'carBrand', label: activeCarBrand, onClear: () => setActiveCarBrand(null) });
+    activeChips.push({ key: 'carBrand', label: `🚘 ${activeCarBrand}`, onClear: () => setActiveCarBrand(null) });
   }
   if (activePriceRangeIndex != null) {
-    activeChips.push({ key: 'price', label: PRICE_RANGES[activePriceRangeIndex].label, onClear: () => setActivePriceRangeIndex(null) });
+    activeChips.push({ key: 'price', label: `💰 ${PRICE_RANGES[activePriceRangeIndex].label}`, onClear: () => setActivePriceRangeIndex(null) });
   }
   if (activeRatingMin != null) {
     activeChips.push({ key: 'rating', label: `⭐ ${activeRatingMin.toFixed(1)}+`, onClear: () => setActiveRatingMin(null) });
   }
   if (activeCity) {
-    activeChips.push({ key: 'city', label: activeCity, onClear: () => setActiveCity(null) });
+    activeChips.push({ key: 'city', label: `📍 ${activeCity}`, onClear: () => setActiveCity(null) });
   }
 
   const resetAllFilters = () => {
@@ -267,7 +275,7 @@ export default function AutoServicesScreen({ navigation }: Props) {
         <Pressable style={styles.modalBackdrop} onPress={() => setFiltersOpen(false)}>
           <Pressable style={styles.modalSheet} onPress={() => {}}>
             <View style={styles.modalHeaderRow}>
-              <Text style={styles.modalTitle}>{t('autoservices.filtersBtn')}</Text>
+              <Text style={styles.modalTitle}>☰ {t('autoservices.filtersBtn')}</Text>
               {activeFilterCount > 0 && (
                 <Pressable onPress={resetAllFilters}>
                   <Text style={styles.modalResetText}>{t('autoservices.resetFilters')}</Text>
@@ -276,7 +284,7 @@ export default function AutoServicesScreen({ navigation }: Props) {
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
               <Pressable style={styles.sectionHeaderRow} onPress={() => toggleSection('seller')}>
-                <Text style={styles.filterSectionTitle}>{t('autoservices.seller')}</Text>
+                <Text style={styles.filterSectionTitle}>🏢 {t('autoservices.seller')}</Text>
                 <Text style={styles.sectionChevron}>{expandedSection === 'seller' ? '⌃' : '⌄'}</Text>
               </Pressable>
               {expandedSection === 'seller' && (
@@ -294,7 +302,7 @@ export default function AutoServicesScreen({ navigation }: Props) {
               )}
 
               <Pressable style={styles.sectionHeaderRow} onPress={() => toggleSection('service')}>
-                <Text style={styles.filterSectionTitle}>{t('autoservices.serviceFilter')}</Text>
+                <Text style={styles.filterSectionTitle}>🛠️ {t('autoservices.serviceFilter')}</Text>
                 <Text style={styles.sectionChevron}>{expandedSection === 'service' ? '⌃' : '⌄'}</Text>
               </Pressable>
               {expandedSection === 'service' && (
@@ -312,7 +320,7 @@ export default function AutoServicesScreen({ navigation }: Props) {
               )}
 
               <Pressable style={styles.sectionHeaderRow} onPress={() => toggleSection('discount')}>
-                <Text style={styles.filterSectionTitle}>{t('autoservices.discount')}</Text>
+                <Text style={styles.filterSectionTitle}>🏷️ {t('autoservices.discount')}</Text>
                 <Text style={styles.sectionChevron}>{expandedSection === 'discount' ? '⌃' : '⌄'}</Text>
               </Pressable>
               {expandedSection === 'discount' && (
@@ -334,7 +342,7 @@ export default function AutoServicesScreen({ navigation }: Props) {
               )}
 
               <Pressable style={styles.sectionHeaderRow} onPress={() => toggleSection('carBrand')}>
-                <Text style={styles.filterSectionTitle}>{t('autoservices.carBrand')}</Text>
+                <Text style={styles.filterSectionTitle}>🚘 {t('autoservices.carBrand')}</Text>
                 <Text style={styles.sectionChevron}>{expandedSection === 'carBrand' ? '⌃' : '⌄'}</Text>
               </Pressable>
               {expandedSection === 'carBrand' && (
@@ -356,7 +364,7 @@ export default function AutoServicesScreen({ navigation }: Props) {
               )}
 
               <Pressable style={styles.sectionHeaderRow} onPress={() => toggleSection('price')}>
-                <Text style={styles.filterSectionTitle}>{t('autoservices.priceRange')}</Text>
+                <Text style={styles.filterSectionTitle}>💰 {t('autoservices.priceRange')}</Text>
                 <Text style={styles.sectionChevron}>{expandedSection === 'price' ? '⌃' : '⌄'}</Text>
               </Pressable>
               {expandedSection === 'price' && (
@@ -378,7 +386,7 @@ export default function AutoServicesScreen({ navigation }: Props) {
               )}
 
               <Pressable style={styles.sectionHeaderRow} onPress={() => toggleSection('rating')}>
-                <Text style={styles.filterSectionTitle}>{t('autoservices.rating')}</Text>
+                <Text style={styles.filterSectionTitle}>⭐ {t('autoservices.rating')}</Text>
                 <Text style={styles.sectionChevron}>{expandedSection === 'rating' ? '⌃' : '⌄'}</Text>
               </Pressable>
               {expandedSection === 'rating' && (
@@ -403,7 +411,7 @@ export default function AutoServicesScreen({ navigation }: Props) {
               )}
 
               <Pressable style={styles.sectionHeaderRow} onPress={() => toggleSection('city')}>
-                <Text style={styles.filterSectionTitle}>{t('autoservices.location')}</Text>
+                <Text style={styles.filterSectionTitle}>📍 {t('autoservices.location')}</Text>
                 <Text style={styles.sectionChevron}>{expandedSection === 'city' ? '⌃' : '⌄'}</Text>
               </Pressable>
               {expandedSection === 'city' && (
@@ -436,7 +444,7 @@ export default function AutoServicesScreen({ navigation }: Props) {
       <Modal visible={brandOpen} animationType="slide" transparent onRequestClose={() => setBrandOpen(false)}>
         <Pressable style={styles.modalBackdrop} onPress={() => setBrandOpen(false)}>
           <Pressable style={styles.modalSheet} onPress={() => {}}>
-            <Text style={styles.modalTitle}>{t('autoservices.seller')}</Text>
+            <Text style={styles.modalTitle}>🏢 {t('autoservices.seller')}</Text>
             <ScrollView>
               {brandFilters.map(item => {
                 const isActive = activeProviderId === item.key;
@@ -461,7 +469,7 @@ export default function AutoServicesScreen({ navigation }: Props) {
       <Modal visible={serviceOpen} animationType="slide" transparent onRequestClose={() => setServiceOpen(false)}>
         <Pressable style={styles.modalBackdrop} onPress={() => setServiceOpen(false)}>
           <Pressable style={styles.modalSheet} onPress={() => {}}>
-            <Text style={styles.modalTitle}>{t('autoservices.serviceFilter')}</Text>
+            <Text style={styles.modalTitle}>🛠️ {t('autoservices.serviceFilter')}</Text>
             <ScrollView>
               {serviceFilters.map(item => {
                 const isActive = activeServiceId === item.key;
@@ -486,7 +494,7 @@ export default function AutoServicesScreen({ navigation }: Props) {
       <Modal visible={discountOpen} animationType="slide" transparent onRequestClose={() => setDiscountOpen(false)}>
         <Pressable style={styles.modalBackdrop} onPress={() => setDiscountOpen(false)}>
           <Pressable style={styles.modalSheet} onPress={() => {}}>
-            <Text style={styles.modalTitle}>{t('autoservices.discount')}</Text>
+            <Text style={styles.modalTitle}>🏷️ {t('autoservices.discount')}</Text>
             <ScrollView>
               <Pressable
                 style={styles.optionRow}
@@ -520,7 +528,7 @@ export default function AutoServicesScreen({ navigation }: Props) {
       <Modal visible={carBrandOpen} animationType="slide" transparent onRequestClose={() => setCarBrandOpen(false)}>
         <Pressable style={styles.modalBackdrop} onPress={() => setCarBrandOpen(false)}>
           <Pressable style={styles.modalSheet} onPress={() => {}}>
-            <Text style={styles.modalTitle}>{t('autoservices.carBrand')}</Text>
+            <Text style={styles.modalTitle}>🚘 {t('autoservices.carBrand')}</Text>
             <ScrollView>
               <Pressable
                 style={styles.optionRow}
@@ -554,7 +562,7 @@ export default function AutoServicesScreen({ navigation }: Props) {
       <Modal visible={priceOpen} animationType="slide" transparent onRequestClose={() => setPriceOpen(false)}>
         <Pressable style={styles.modalBackdrop} onPress={() => setPriceOpen(false)}>
           <Pressable style={styles.modalSheet} onPress={() => {}}>
-            <Text style={styles.modalTitle}>{t('autoservices.priceRange')}</Text>
+            <Text style={styles.modalTitle}>💰 {t('autoservices.priceRange')}</Text>
             <ScrollView>
               <Pressable
                 style={styles.optionRow}
@@ -588,7 +596,7 @@ export default function AutoServicesScreen({ navigation }: Props) {
       <Modal visible={ratingOpen} animationType="slide" transparent onRequestClose={() => setRatingOpen(false)}>
         <Pressable style={styles.modalBackdrop} onPress={() => setRatingOpen(false)}>
           <Pressable style={styles.modalSheet} onPress={() => {}}>
-            <Text style={styles.modalTitle}>{t('autoservices.rating')}</Text>
+            <Text style={styles.modalTitle}>⭐ {t('autoservices.rating')}</Text>
             <ScrollView>
               <Pressable
                 style={styles.optionRow}
@@ -625,7 +633,7 @@ export default function AutoServicesScreen({ navigation }: Props) {
       <Modal visible={cityOpen} animationType="slide" transparent onRequestClose={() => setCityOpen(false)}>
         <Pressable style={styles.modalBackdrop} onPress={() => setCityOpen(false)}>
           <Pressable style={styles.modalSheet} onPress={() => {}}>
-            <Text style={styles.modalTitle}>{t('autoservices.location')}</Text>
+            <Text style={styles.modalTitle}>📍 {t('autoservices.location')}</Text>
             <ScrollView>
               <Pressable
                 style={styles.optionRow}
