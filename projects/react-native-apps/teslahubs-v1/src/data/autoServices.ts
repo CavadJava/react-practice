@@ -7,6 +7,9 @@ export type SampleWorkItem = {
   url: string;
   thumbnail: string;
   caption: string;
+  serviceOptionId?: string;
+  originalPrice?: number;
+  discountPrice?: number;
 };
 
 export type SubServiceOption = {
@@ -136,18 +139,21 @@ export const AUTO_SERVICE_PROVIDERS: AutoServiceProvider[] = [
         url: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=900&q=80',
         thumbnail: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=500&q=80',
         caption: 'Tam ön kapot PPF tətbiqi',
+        serviceOptionId: 'ppf-front',
       },
       {
         type: 'image',
         url: 'https://images.unsplash.com/photo-1600661653561-629509216228?w=900&q=80',
         thumbnail: 'https://images.unsplash.com/photo-1600661653561-629509216228?w=500&q=80',
         caption: 'Güzgü və qapı kənarları',
+        serviceOptionId: 'ppf-mirrors',
       },
       {
         type: 'video',
         url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
         thumbnail: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500&q=80',
         caption: 'Tətbiq prosesi (video)',
+        serviceOptionId: 'ppf-full',
       },
     ],
     serviceOptionIds: ['ppf-full', 'ppf-front', 'ppf-hood', 'ppf-mirrors', 'ceramic', 'tint'],
@@ -171,19 +177,33 @@ export const AUTO_SERVICE_PROVIDERS: AutoServiceProvider[] = [
         type: 'image',
         url: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=900&q=80',
         thumbnail: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=500&q=80',
-        caption: 'Tam bədən PPF örtüyü',
+        caption: 'Tam bədən PPF örtüyü — endirimli kampaniya',
+        serviceOptionId: 'ppf-full',
+        originalPrice: 1200,
+        discountPrice: 950,
       },
       {
         type: 'image',
         url: 'https://images.unsplash.com/photo-1616422285623-13ff0162193c?w=900&q=80',
         thumbnail: 'https://images.unsplash.com/photo-1616422285623-13ff0162193c?w=500&q=80',
         caption: 'Keramik təbəqə + PPF',
+        serviceOptionId: 'ceramic',
       },
       {
         type: 'video',
         url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
         thumbnail: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=500&q=80',
         caption: 'Salon detallandırma (video)',
+        serviceOptionId: 'ceramic-interior',
+      },
+      {
+        type: 'image',
+        url: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=900&q=80',
+        thumbnail: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500&q=80',
+        caption: 'Güzgü və qapı kənarları — həftəlik endirim',
+        serviceOptionId: 'ppf-mirrors',
+        originalPrice: 120,
+        discountPrice: 89,
       },
     ],
     serviceOptionIds: ['ppf-full', 'ppf-mirrors', 'ceramic', 'ceramic-interior'],

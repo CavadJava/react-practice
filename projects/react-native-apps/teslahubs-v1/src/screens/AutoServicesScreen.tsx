@@ -36,31 +36,33 @@ export default function AutoServicesScreen({ navigation }: Props) {
 
   const query = search.trim().toLowerCase();
 
-  const providers = AUTO_SERVICE_PROVIDERS.filter(p => {
-    if (activeCategory && p.category !== activeCategory) return false;
-    if (activeProviderId && p.id !== activeProviderId) return false;
-    if (activeServiceId && !p.serviceOptionIds.includes(activeServiceId)) return false;
-    if (query) {
-      const serviceNames = p.serviceOptionIds.map(id => getServiceOption(id)?.name ?? '').join(' ');
-      const haystack = `${p.name} ${p.tagline} ${serviceNames}`.toLowerCase();
-      if (!haystack.includes(query)) return false;
-    }
-    return true;
-  }).sort((a, b) => (sortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)));
-
   const activeBrandLabel = activeProviderId ? brandFilters.find(f => f.key === activeProviderId)?.label : t('autoservices.brand');
   const activeServiceLabel = activeServiceId ? serviceFilters.find(f => f.key === activeServiceId)?.label : t('autoservices.serviceFilter');
   const activeFilterCount = (activeCategory ? 1 : 0) + (activeProviderId ? 1 : 0) + (activeServiceId ? 1 : 0);
 
   const posts = useMemo(
-    () => AUTO_SERVICE_PROVIDERS.flatMap(p => p.sampleWork.map(item => ({ ...item, providerId: p.id, providerName: p.name, providerColor: p.color }))),
+    () =>
+      AUTO_SERVICE_PROVIDERS.flatMap(p =>
+        p.sampleWork.map(item => ({
+          ...item,
+          providerId: p.id,
+          providerName: p.name,
+          providerColor: p.color,
+          providerCategory: p.category,
+          serviceName: item.serviceOptionId ? getServiceOption(item.serviceOptionId)?.name : undefined,
+        })),
+      ),
     [],
   );
-  const filteredPosts = posts.filter(post => {
-    if (activeProviderId && post.providerId !== activeProviderId) return false;
-    if (query && !`${post.providerName} ${post.caption}`.toLowerCase().includes(query)) return false;
-    return true;
-  });
+  const filteredPosts = posts
+    .filter(post => {
+      if (activeCategory && post.providerCategory !== activeCategory) return false;
+      if (activeProviderId && post.providerId !== activeProviderId) return false;
+      if (activeServiceId && post.serviceOptionId !== activeServiceId) return false;
+      if (query && !`${post.providerName} ${post.serviceName ?? ''} ${post.caption}`.toLowerCase().includes(query)) return false;
+      return true;
+    })
+    .sort((a, b) => (sortAsc ? a.providerName.localeCompare(b.providerName) : b.providerName.localeCompare(a.providerName)));
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
@@ -188,49 +190,57 @@ export default function AutoServicesScreen({ navigation }: Props) {
       </Modal>
 
       <ScrollView contentContainerStyle={styles.scrollBody} showsVerticalScrollIndicator={false}>
-        {filteredPosts.length > 0 && (
-          <>
-            <Text style={styles.sectionLabel}>{t('autoservices.recentPosts')}</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.postsRow}>
-              {filteredPosts.map((post, i) => (
-                <Pressable
-                  key={`${post.providerId}-${i}`}
-                  style={styles.postCard}
-                  onPress={() => navigation.navigate('AutoServiceProvider', { providerId: post.providerId })}>
-                  <Image source={{ uri: post.thumbnail }} style={styles.postThumbnail} resizeMode="cover" />
-                  {post.type === 'video' && (
-                    <View style={styles.postPlayBadge}>
-                      <Text style={styles.postPlayBadgeText}>▶</Text>
-                    </View>
-                  )}
-                  <Text style={[styles.postProvider, { color: post.providerColor }]}>{post.providerName}</Text>
-                  <Text style={styles.postCaption} numberOfLines={2}>
-                    {post.caption}
-                  </Text>
-                </Pressable>
-              ))}
-            </ScrollView>
-          </>
-        )}
-
-        <Text style={styles.sectionLabel}>{t('autoservices.providersTitle')}</Text>
-        {providers.length === 0 ? (
+        <Text style={styles.sectionLabel}>{t('autoservices.recentPosts')}</Text>
+        {filteredPosts.length === 0 ? (
           <Text style={styles.emptyText}>{t('autoservices.noResults')}</Text>
         ) : (
-          <View style={styles.grid}>
-            {providers.map(provider => (
-              <Pressable
-                key={provider.id}
-                style={({ pressed }) => [styles.tile, { borderColor: provider.color }, pressed && styles.tilePressed]}
-                onPress={() => navigation.navigate('AutoServiceProvider', { providerId: provider.id })}>
-                <Text style={styles.tileIcon}>{provider.icon}</Text>
-                <Text style={styles.tileName}>{provider.name}</Text>
-                <Text style={styles.tileTagline} numberOfLines={2}>
-                  {provider.tagline}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
+          <>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.postsRow}>
+              {filteredPosts.map((post, i) => {
+                const hasDiscount = post.discountPrice != null && post.originalPrice != null;
+                const discountPct = hasDiscount ? Math.round(100 - (post.discountPrice! / post.originalPrice!) * 100) : 0;
+                const goToProvider = () => navigation.navigate('AutoServiceProvider', { providerId: post.providerId });
+                return (
+                  <View key={`${post.providerId}-${i}`} style={styles.postCard}>
+                    <Pressable onPress={goToProvider}>
+                      <Image source={{ uri: post.thumbnail }} style={styles.postThumbnail} resizeMode="cover" />
+                      {post.type === 'video' && (
+                        <View style={styles.postPlayBadge}>
+                          <Text style={styles.postPlayBadgeText}>▶</Text>
+                        </View>
+                      )}
+                      {hasDiscount && (
+                        <View style={styles.postDiscountBadge}>
+                          <Text style={styles.postDiscountBadgeText}>-{discountPct}%</Text>
+                        </View>
+                      )}
+                    </Pressable>
+                    <Pressable onPress={goToProvider}>
+                      <Text style={[styles.postProvider, { color: post.providerColor }]}>{post.providerName}</Text>
+                    </Pressable>
+                    {post.serviceName && (
+                      <Pressable onPress={goToProvider}>
+                        <Text style={styles.postServiceName} numberOfLines={1}>
+                          {post.serviceName}
+                        </Text>
+                      </Pressable>
+                    )}
+                    <Text style={styles.postCaption} numberOfLines={2}>
+                      {post.caption}
+                    </Text>
+                    {hasDiscount ? (
+                      <View style={styles.postPriceRow}>
+                        <Text style={styles.postPriceOld}>{post.originalPrice} ₼</Text>
+                        <Text style={[styles.postPriceNew, { color: post.providerColor }]}>{post.discountPrice} ₼</Text>
+                      </View>
+                    ) : (
+                      post.originalPrice != null && <Text style={styles.postPriceOnly}>{post.originalPrice} ₼</Text>
+                    )}
+                  </View>
+                );
+              })}
+            </ScrollView>
+          </>
         )}
       </ScrollView>
     </SafeAreaView>
@@ -343,21 +353,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   postPlayBadgeText: { color: AS_THEME.white, fontSize: 12 },
-  postProvider: { fontSize: 11, fontWeight: '800', marginTop: 6 },
-  postCaption: { fontSize: 11.5, color: AS_THEME.textMuted, marginTop: 2, lineHeight: 15 },
-  grid: { paddingHorizontal: 20, flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  tile: {
-    width: '47%',
-    backgroundColor: AS_THEME.card,
-    borderRadius: 16,
-    borderWidth: 1.5,
-    padding: 16,
-    gap: 6,
-    minHeight: 130,
-    justifyContent: 'center',
+  postDiscountBadge: {
+    position: 'absolute',
+    top: 6,
+    left: 6,
+    backgroundColor: '#E23744',
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
   },
-  tilePressed: { opacity: 0.85 },
-  tileIcon: { fontSize: 28 },
-  tileName: { fontSize: 15, fontWeight: '800', color: AS_THEME.text },
-  tileTagline: { fontSize: 11, color: AS_THEME.textMuted, lineHeight: 15 },
+  postDiscountBadgeText: { color: AS_THEME.white, fontSize: 10.5, fontWeight: '800' },
+  postProvider: { fontSize: 11, fontWeight: '800', marginTop: 6 },
+  postServiceName: { fontSize: 10.5, color: AS_THEME.textMuted, fontWeight: '600', marginTop: 1 },
+  postCaption: { fontSize: 11.5, color: AS_THEME.textMuted, marginTop: 2, lineHeight: 15 },
+  postPriceRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
+  postPriceOld: { fontSize: 11, color: AS_THEME.textMuted, textDecorationLine: 'line-through' },
+  postPriceNew: { fontSize: 13, fontWeight: '800' },
+  postPriceOnly: { fontSize: 12.5, fontWeight: '700', color: AS_THEME.text, marginTop: 4 },
 });

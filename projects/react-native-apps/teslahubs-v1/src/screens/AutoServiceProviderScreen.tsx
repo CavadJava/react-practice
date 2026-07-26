@@ -36,6 +36,7 @@ export default function AutoServiceProviderScreen({ navigation, route }: Props) 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedSubIds, setSelectedSubIds] = useState<Record<string, string[]>>({});
   const [servicePickerOpen, setServicePickerOpen] = useState(false);
+  const [activePost, setActivePost] = useState<SampleWorkItem | null>(null);
   const [description, setDescription] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('994');
@@ -178,23 +179,48 @@ export default function AutoServiceProviderScreen({ navigation, route }: Props) 
 
               <Text style={styles.sectionLabel}>{t('autoservices.sampleWork')}</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.workRow}>
-                {provider.sampleWork.map((item, i) => (
-                  <Pressable
-                    key={i}
-                    style={styles.workCard}
-                    onPress={() => openSampleWork(item)}
-                    disabled={item.type !== 'video'}>
-                    <Image source={{ uri: item.thumbnail }} style={styles.workThumbnail} resizeMode="cover" />
-                    {item.type === 'video' && (
-                      <View style={styles.playBadge}>
-                        <Text style={styles.playBadgeText}>▶</Text>
-                      </View>
-                    )}
-                    <Text style={styles.workCaption} numberOfLines={2}>
-                      {item.caption}
-                    </Text>
-                  </Pressable>
-                ))}
+                {provider.sampleWork.map((item, i) => {
+                  const linkedService = item.serviceOptionId ? getServiceOption(item.serviceOptionId) : undefined;
+                  const hasDiscount = item.discountPrice != null && item.originalPrice != null;
+                  const discountPct = hasDiscount ? Math.round(100 - (item.discountPrice! / item.originalPrice!) * 100) : 0;
+                  return (
+                    <View key={i} style={styles.workCard}>
+                      <Pressable onPress={() => setActivePost(item)}>
+                        <Image source={{ uri: item.thumbnail }} style={styles.workThumbnail} resizeMode="cover" />
+                        {item.type === 'video' && (
+                          <View style={styles.playBadge}>
+                            <Text style={styles.playBadgeText}>▶</Text>
+                          </View>
+                        )}
+                        {hasDiscount && (
+                          <View style={styles.workDiscountBadge}>
+                            <Text style={styles.workDiscountBadgeText}>-{discountPct}%</Text>
+                          </View>
+                        )}
+                      </Pressable>
+                      {linkedService && (
+                        <Pressable
+                          style={[styles.workServiceChip, { borderColor: provider.color }]}
+                          onPress={() => !selectedIds.includes(linkedService.id) && toggleService(linkedService.id)}>
+                          <Text style={[styles.workServiceChipText, { color: provider.color }]} numberOfLines={1}>
+                            {linkedService.name}
+                          </Text>
+                        </Pressable>
+                      )}
+                      <Text style={styles.workCaption} numberOfLines={2}>
+                        {item.caption}
+                      </Text>
+                      {hasDiscount ? (
+                        <View style={styles.workPriceRow}>
+                          <Text style={styles.workPriceOld}>{item.originalPrice} ₼</Text>
+                          <Text style={[styles.workPriceNew, { color: provider.color }]}>{item.discountPrice} ₼</Text>
+                        </View>
+                      ) : (
+                        item.originalPrice != null && <Text style={styles.workPriceOnly}>{item.originalPrice} ₼</Text>
+                      )}
+                    </View>
+                  );
+                })}
               </ScrollView>
 
               <Text style={styles.sectionLabel}>{t('autoservices.requestTitle')}</Text>
@@ -322,6 +348,74 @@ export default function AutoServiceProviderScreen({ navigation, route }: Props) 
           </Pressable>
         </Pressable>
       </Modal>
+
+      <Modal visible={!!activePost} animationType="slide" transparent onRequestClose={() => setActivePost(null)}>
+        <Pressable style={styles.modalBackdrop} onPress={() => setActivePost(null)}>
+          <Pressable style={styles.postModalSheet} onPress={() => {}}>
+            {activePost && (
+              <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={styles.postModalImageWrap}>
+                  <Image source={{ uri: activePost.thumbnail }} style={styles.postModalImage} resizeMode="cover" />
+                  {activePost.discountPrice != null && activePost.originalPrice != null && (
+                    <View style={styles.workDiscountBadge}>
+                      <Text style={styles.workDiscountBadgeText}>
+                        -{Math.round(100 - (activePost.discountPrice / activePost.originalPrice) * 100)}%
+                      </Text>
+                    </View>
+                  )}
+                  <Pressable style={styles.postModalClose} onPress={() => setActivePost(null)}>
+                    <Text style={styles.postModalCloseText}>✕</Text>
+                  </Pressable>
+                </View>
+
+                <View style={styles.postModalBody}>
+                  <Text style={styles.postModalCaption}>{activePost.caption}</Text>
+
+                  {activePost.serviceOptionId &&
+                    (() => {
+                      const svc = getServiceOption(activePost.serviceOptionId);
+                      if (!svc) return null;
+                      return (
+                        <View style={[styles.postModalServiceCard, { borderColor: provider.color }]}>
+                          <Text style={[styles.postModalServiceName, { color: provider.color }]}>{svc.name}</Text>
+                          <Text style={styles.postModalServiceDesc}>{svc.description}</Text>
+                        </View>
+                      );
+                    })()}
+
+                  {activePost.discountPrice != null && activePost.originalPrice != null ? (
+                    <View style={styles.postModalPriceRow}>
+                      <Text style={styles.workPriceOld}>{activePost.originalPrice} ₼</Text>
+                      <Text style={[styles.postModalPriceNew, { color: provider.color }]}>{activePost.discountPrice} ₼</Text>
+                    </View>
+                  ) : (
+                    activePost.originalPrice != null && <Text style={styles.workPriceOnly}>{activePost.originalPrice} ₼</Text>
+                  )}
+
+                  {activePost.type === 'video' && (
+                    <Pressable style={[styles.postModalVideoBtn, { borderColor: provider.color }]} onPress={() => openSampleWork(activePost)}>
+                      <Text style={[styles.postModalVideoBtnText, { color: provider.color }]}>▶ {t('autoservices.watchVideo')}</Text>
+                    </Pressable>
+                  )}
+
+                  {activePost.serviceOptionId && (
+                    <Pressable
+                      style={[styles.postModalSelectBtn, { backgroundColor: provider.color }]}
+                      onPress={() => {
+                        if (activePost.serviceOptionId && !selectedIds.includes(activePost.serviceOptionId)) {
+                          toggleService(activePost.serviceOptionId);
+                        }
+                        setActivePost(null);
+                      }}>
+                      <Text style={styles.postModalSelectBtnText}>{t('autoservices.selectThisService')}</Text>
+                    </Pressable>
+                  )}
+                </View>
+              </ScrollView>
+            )}
+          </Pressable>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -375,7 +469,30 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   playBadgeText: { color: AS_THEME.white, fontSize: 13 },
+  workDiscountBadge: {
+    position: 'absolute',
+    top: 6,
+    left: 6,
+    backgroundColor: '#E23744',
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  workDiscountBadgeText: { color: AS_THEME.white, fontSize: 10.5, fontWeight: '800' },
+  workServiceChip: {
+    alignSelf: 'flex-start',
+    marginTop: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
+    borderWidth: 1,
+  },
+  workServiceChipText: { fontSize: 10.5, fontWeight: '700', maxWidth: 140 },
   workCaption: { fontSize: 11.5, color: AS_THEME.textMuted, marginTop: 6, lineHeight: 15 },
+  workPriceRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
+  workPriceOld: { fontSize: 11, color: AS_THEME.textMuted, textDecorationLine: 'line-through' },
+  workPriceNew: { fontSize: 13, fontWeight: '800' },
+  workPriceOnly: { fontSize: 12.5, fontWeight: '700', color: AS_THEME.text, marginTop: 4 },
   field: { gap: 6, marginTop: 12 },
   label: { fontSize: 12, color: AS_THEME.textMuted, fontWeight: '600' },
   input: {
@@ -478,4 +595,35 @@ const styles = StyleSheet.create({
   successSubtitle: { fontSize: 13, color: AS_THEME.textMuted, textAlign: 'center', lineHeight: 19 },
   successBtn: { marginTop: 16, borderRadius: 12, paddingHorizontal: 24, paddingVertical: 14 },
   successBtnText: { fontSize: 14, fontWeight: '700', color: AS_THEME.white },
+  postModalSheet: {
+    backgroundColor: AS_THEME.bg,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '88%',
+  },
+  postModalImageWrap: { width: '100%', height: 260, backgroundColor: AS_THEME.cardAlt },
+  postModalImage: { width: '100%', height: '100%' },
+  postModalClose: {
+    position: 'absolute',
+    top: 14,
+    right: 14,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  postModalCloseText: { color: AS_THEME.white, fontSize: 14 },
+  postModalBody: { padding: 20, gap: 12 },
+  postModalCaption: { fontSize: 16, fontWeight: '800', color: AS_THEME.text, lineHeight: 22 },
+  postModalServiceCard: { borderWidth: 1, borderRadius: 12, padding: 12, gap: 4 },
+  postModalServiceName: { fontSize: 13.5, fontWeight: '800' },
+  postModalServiceDesc: { fontSize: 12, color: AS_THEME.textMuted, lineHeight: 16 },
+  postModalPriceRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  postModalPriceNew: { fontSize: 20, fontWeight: '800' },
+  postModalVideoBtn: { borderWidth: 1.5, borderRadius: 12, paddingVertical: 12, alignItems: 'center' },
+  postModalVideoBtnText: { fontSize: 13.5, fontWeight: '700' },
+  postModalSelectBtn: { borderRadius: 12, paddingVertical: 14, alignItems: 'center' },
+  postModalSelectBtnText: { fontSize: 14, fontWeight: '700', color: AS_THEME.white },
 });
