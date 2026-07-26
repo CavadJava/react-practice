@@ -10,6 +10,7 @@ export type MyPlace = {
   note?: string;
   lat?: number;
   lng?: number;
+  icon?: string;
 };
 
 type MyPlacesContextValue = {

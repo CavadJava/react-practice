@@ -11,7 +11,7 @@ type Props = {
   onClose: () => void;
   lat: number;
   lng: number;
-  onViewOnMap: () => void;
+  onViewOnMap?: () => void;
 };
 
 export default function LocationActionSheet({ visible, onClose, lat, lng, onViewOnMap }: Props) {
@@ -34,10 +34,14 @@ export default function LocationActionSheet({ visible, onClose, lat, lng, onView
             <Text style={styles.subtitle}>{t('charging.routeSheetSubtitle')}</Text>
           </View>
           <View style={styles.divider} />
-          <Pressable style={styles.option} onPress={() => run(onViewOnMap)}>
-            <Text style={styles.optionText}>{t('charging.viewOnMap')}</Text>
-          </Pressable>
-          <View style={styles.divider} />
+          {onViewOnMap && (
+            <>
+              <Pressable style={styles.option} onPress={() => run(onViewOnMap)}>
+                <Text style={styles.optionText}>{t('charging.viewOnMap')}</Text>
+              </Pressable>
+              <View style={styles.divider} />
+            </>
+          )}
           <Pressable style={styles.option} onPress={() => run(() => openGoogleMaps(lat, lng))}>
             <Text style={styles.optionText}>{t('charging.googleMaps')}</Text>
           </Pressable>
