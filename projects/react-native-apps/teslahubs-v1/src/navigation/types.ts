@@ -1,5 +1,6 @@
 import type { NavigatorScreenParams } from '@react-navigation/native';
 import { Product } from '../data/products';
+import { FoodCategory } from '../data/restaurants';
 
 export type ProductBrowseParamList = {
   ProductList: { category: Product['category'] | null };
@@ -51,6 +52,14 @@ export type DoctorsStackParamList = {
   DoctorDetail: { doctorId: string };
 };
 
+export type RestaurantListMode = 'top' | 'discount' | 'nearby' | 'popular' | 'category';
+
+export type RestaurantsStackParamList = {
+  Restaurants: undefined;
+  RestaurantDetail: { restaurantId: string };
+  RestaurantList: { mode: RestaurantListMode; category?: FoodCategory; title: string };
+};
+
 // The "Xidmətlər" (Services) tab: a grid landing screen (AvtoYuma/Tesla
 // Service/Articles) with Articles' own screens pushed inline in the same
 // stack — AvtoYuma/Tesla Service still open as their own root-level modals.
@@ -88,6 +97,7 @@ export type RootStackParamList = {
   TeslaService: NavigatorScreenParams<TeslaServiceStackParamList> | undefined;
   AutoServices: NavigatorScreenParams<AutoServicesStackParamList> | undefined;
   Doctors: NavigatorScreenParams<DoctorsStackParamList> | undefined;
+  Restaurants: NavigatorScreenParams<RestaurantsStackParamList> | undefined;
   MyPlaces: undefined;
   OrderConfirm: {
     firstName: string;

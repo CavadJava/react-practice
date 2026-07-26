@@ -13,6 +13,7 @@ import { LocaleProvider } from './src/context/LocaleContext';
 import { CurrencyProvider } from './src/context/CurrencyContext';
 import { WishlistProvider } from './src/context/WishlistContext';
 import { MyPlacesProvider } from './src/context/MyPlacesContext';
+import { RestaurantFavoritesProvider } from './src/context/RestaurantFavoritesContext';
 import { CarWashBookingProvider } from './src/context/CarWashBookingContext';
 import RootNavigator from './src/navigation/RootNavigator';
 import AppStatusBar from './src/components/AppStatusBar';
@@ -27,9 +28,11 @@ function App() {
             <CartProvider>
               <WishlistProvider>
                 <MyPlacesProvider>
-                  <CarWashBookingProvider>
-                    <RootNavigator />
-                  </CarWashBookingProvider>
+                  <RestaurantFavoritesProvider>
+                    <CarWashBookingProvider>
+                      <RootNavigator />
+                    </CarWashBookingProvider>
+                  </RestaurantFavoritesProvider>
                 </MyPlacesProvider>
               </WishlistProvider>
             </CartProvider>
