@@ -19,6 +19,7 @@ type Tile = { key: string; icon: string; titleKey: string; subtitleKey: string; 
 const TILES: Tile[] = [
   { key: 'carwash', icon: '🧼', titleKey: 'carwash.entryTitle', subtitleKey: 'carwash.entrySubtitle', onPress: nav => nav.navigate('CarWash') },
   { key: 'teslaservice', icon: '🔧', titleKey: 'teslaservice.entryTitle', subtitleKey: 'teslaservice.entrySubtitle', onPress: nav => nav.navigate('TeslaService') },
+  { key: 'autoservices', icon: '🛡️', titleKey: 'autoservices.entryTitle', subtitleKey: 'autoservices.entrySubtitle', onPress: nav => nav.navigate('AutoServices') },
   { key: 'articles', icon: '▤', titleKey: 'articles.title', subtitleKey: 'articles.gridSubtitle', onPress: nav => nav.navigate('Articles') },
 ];
 
