@@ -94,6 +94,30 @@ export const AUTO_SERVICE_OPTIONS: ServiceOption[] = [
       { id: 'tint-full', name: 'Tam qara (%5)', price: 20 },
     ],
   },
+  {
+    id: 'engine-care',
+    name: 'Mühərrik baxımı',
+    description: 'Mühərrik bölməsinin təmizlənməsi və qorunması',
+    price: 90,
+  },
+  {
+    id: 'interior-care',
+    name: 'Salon baxımı',
+    description: 'Salonun dərin təmizlənməsi və qulluğu',
+    price: 110,
+  },
+  {
+    id: 'polish',
+    name: 'Cilalama',
+    description: 'Boyanın cilalanması və parlaqlığın bərpası',
+    price: 180,
+  },
+  {
+    id: 'tire-service',
+    name: 'Təkər xidməti',
+    description: 'Təkərlərin yuyulması, mumlanması və qorunması',
+    price: 70,
+  },
 ];
 
 export function getServiceOption(id: string): ServiceOption | undefined {
@@ -104,6 +128,10 @@ export function getSubServiceOption(serviceId: string, subId: string): SubServic
   return getServiceOption(serviceId)?.subOptions?.find(s => s.id === subId);
 }
 
+export const AUTO_SERVICE_CAR_BRANDS = ['BMW', 'Tesla', 'Porsche', 'Mercedes-Benz', 'Audi', 'Toyota', 'Lexus', 'Hyundai'];
+
+export const AUTO_SERVICE_CITIES = ['Bakı', 'Gəncə', 'Sumqayıt', 'Digər'];
+
 export type AutoServiceProvider = {
   id: string;
   name: string;
@@ -113,6 +141,9 @@ export type AutoServiceProvider = {
   color: string;
   address: string;
   phone?: string;
+  city: string;
+  rating: number;
+  carBrands: string[];
   photos: string[];
   sampleWork: SampleWorkItem[];
   serviceOptionIds: string[];
@@ -128,6 +159,9 @@ export const AUTO_SERVICE_PROVIDERS: AutoServiceProvider[] = [
     color: '#2F8FE0',
     address: 'Bakı, Nərimanov rayonu, Həsən Əliyev küç. 12',
     phone: '+994 12 555 60 60',
+    city: 'Bakı',
+    rating: 4.6,
+    carBrands: ['BMW', 'Mercedes-Benz', 'Audi', 'Toyota', 'Hyundai'],
     photos: [
       'https://images.unsplash.com/photo-1607853202273-797f1c22a38e?w=900&q=80',
       'https://images.unsplash.com/photo-1601362840469-51e4d8d58785?w=900&q=80',
@@ -156,7 +190,7 @@ export const AUTO_SERVICE_PROVIDERS: AutoServiceProvider[] = [
         serviceOptionId: 'ppf-full',
       },
     ],
-    serviceOptionIds: ['ppf-full', 'ppf-front', 'ppf-hood', 'ppf-mirrors', 'ceramic', 'tint'],
+    serviceOptionIds: ['ppf-full', 'ppf-front', 'ppf-hood', 'ppf-mirrors', 'ceramic', 'tint', 'polish', 'tire-service'],
   },
   {
     id: 'auto444',
@@ -167,6 +201,9 @@ export const AUTO_SERVICE_PROVIDERS: AutoServiceProvider[] = [
     color: '#E08A2E',
     address: 'Bakı, Xətai rayonu, Zərifə Əliyeva küç. 27',
     phone: '+994 12 555 44 44',
+    city: 'Bakı',
+    rating: 4.8,
+    carBrands: ['Tesla', 'Porsche', 'BMW', 'Mercedes-Benz', 'Lexus'],
     photos: [
       'https://images.unsplash.com/photo-1617788138017-80ad40651399?w=900&q=80',
       'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=900&q=80',
@@ -206,7 +243,7 @@ export const AUTO_SERVICE_PROVIDERS: AutoServiceProvider[] = [
         discountPrice: 89,
       },
     ],
-    serviceOptionIds: ['ppf-full', 'ppf-mirrors', 'ceramic', 'ceramic-interior'],
+    serviceOptionIds: ['ppf-full', 'ppf-mirrors', 'ceramic', 'ceramic-interior', 'engine-care', 'interior-care'],
   },
 ];
 

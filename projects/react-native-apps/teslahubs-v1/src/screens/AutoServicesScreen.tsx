@@ -4,28 +4,44 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { AutoServicesStackParamList, RootStackParamList } from '../navigation/types';
-import { AUTO_SERVICE_CATEGORIES, AUTO_SERVICE_PROVIDERS, AutoServiceCategory, getServiceOption } from '../data/autoServices';
+import { AUTO_SERVICE_CAR_BRANDS, AUTO_SERVICE_CITIES, AUTO_SERVICE_PROVIDERS, getServiceOption } from '../data/autoServices';
 import { AS_THEME } from '../theme/autoServicesTheme';
 import { useLocale } from '../context/LocaleContext';
 
 type Props = CompositeScreenProps<NativeStackScreenProps<AutoServicesStackParamList, 'AutoServices'>, NativeStackScreenProps<RootStackParamList>>;
 
+const PRICE_RANGES: { min: number; max: number | null; label: string }[] = [
+  { min: 0, max: 50, label: '0–50 AZN' },
+  { min: 50, max: 100, label: '50–100 AZN' },
+  { min: 100, max: 250, label: '100–250 AZN' },
+  { min: 250, max: 500, label: '250–500 AZN' },
+  { min: 500, max: null, label: '500+ AZN' },
+];
+
+const DISCOUNT_TIERS: { min: number; labelKey: string }[] = [
+  { min: 0, labelKey: 'autoservices.discountAny' },
+  { min: 10, labelKey: 'autoservices.discount10' },
+  { min: 20, labelKey: 'autoservices.discount20' },
+  { min: 30, labelKey: 'autoservices.discount30' },
+];
+
+const RATING_TIERS = [4.0, 4.5, 5.0];
+
 export default function AutoServicesScreen({ navigation }: Props) {
   const { t } = useLocale();
   const insets = useSafeAreaInsets();
   const [search, setSearch] = useState('');
-  const [activeCategory, setActiveCategory] = useState<AutoServiceCategory | null>(null);
   const [activeProviderId, setActiveProviderId] = useState<string | null>(null);
   const [activeServiceId, setActiveServiceId] = useState<string | null>(null);
+  const [activeDiscountMin, setActiveDiscountMin] = useState<number | null>(null);
+  const [activeCarBrand, setActiveCarBrand] = useState<string | null>(null);
+  const [activePriceRangeIndex, setActivePriceRangeIndex] = useState<number | null>(null);
+  const [activeRatingMin, setActiveRatingMin] = useState<number | null>(null);
+  const [activeCity, setActiveCity] = useState<string | null>(null);
   const [sortAsc, setSortAsc] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [brandOpen, setBrandOpen] = useState(false);
   const [serviceOpen, setServiceOpen] = useState(false);
-
-  const categoryFilters: { key: AutoServiceCategory | null; label: string }[] = [
-    { key: null, label: t('charging.filterAll') },
-    ...AUTO_SERVICE_CATEGORIES.map(c => ({ key: c.key, label: c.label })),
-  ];
 
   const brandFilters = [{ key: null, label: t('charging.filterAll') }, ...AUTO_SERVICE_PROVIDERS.map(p => ({ key: p.id, label: p.name }))];
 
@@ -37,9 +53,26 @@ export default function AutoServicesScreen({ navigation }: Props) {
 
   const query = search.trim().toLowerCase();
 
-  const activeBrandLabel = activeProviderId ? brandFilters.find(f => f.key === activeProviderId)?.label : t('autoservices.brand');
+  const activeBrandLabel = activeProviderId ? brandFilters.find(f => f.key === activeProviderId)?.label : t('autoservices.seller');
   const activeServiceLabel = activeServiceId ? serviceFilters.find(f => f.key === activeServiceId)?.label : t('autoservices.serviceFilter');
-  const activeFilterCount = (activeCategory ? 1 : 0) + (activeProviderId ? 1 : 0) + (activeServiceId ? 1 : 0);
+  const activeFilterCount =
+    (activeProviderId ? 1 : 0) +
+    (activeServiceId ? 1 : 0) +
+    (activeDiscountMin != null ? 1 : 0) +
+    (activeCarBrand ? 1 : 0) +
+    (activePriceRangeIndex != null ? 1 : 0) +
+    (activeRatingMin != null ? 1 : 0) +
+    (activeCity ? 1 : 0);
+
+  const resetAllFilters = () => {
+    setActiveProviderId(null);
+    setActiveServiceId(null);
+    setActiveDiscountMin(null);
+    setActiveCarBrand(null);
+    setActivePriceRangeIndex(null);
+    setActiveRatingMin(null);
+    setActiveCity(null);
+  };
 
   const posts = useMemo(
     () =>
@@ -50,16 +83,36 @@ export default function AutoServicesScreen({ navigation }: Props) {
           providerName: p.name,
           providerColor: p.color,
           providerCategory: p.category,
+          providerCarBrands: p.carBrands,
+          providerRating: p.rating,
+          providerCity: p.city,
           serviceName: item.serviceOptionId ? getServiceOption(item.serviceOptionId)?.name : undefined,
         })),
       ),
     [],
   );
+  const activePriceRange = activePriceRangeIndex != null ? PRICE_RANGES[activePriceRangeIndex] : null;
+
   const filteredPosts = posts
     .filter(post => {
-      if (activeCategory && post.providerCategory !== activeCategory) return false;
       if (activeProviderId && post.providerId !== activeProviderId) return false;
       if (activeServiceId && post.serviceOptionId !== activeServiceId) return false;
+      if (activeCarBrand && !post.providerCarBrands.includes(activeCarBrand)) return false;
+      if (activeRatingMin != null && post.providerRating < activeRatingMin) return false;
+      if (activeCity && post.providerCity !== activeCity) return false;
+      if (activeDiscountMin != null) {
+        const hasDiscount = post.discountPrice != null && post.originalPrice != null;
+        if (!hasDiscount) return false;
+        if (activeDiscountMin > 0) {
+          const pct = Math.round(100 - (post.discountPrice! / post.originalPrice!) * 100);
+          if (pct < activeDiscountMin) return false;
+        }
+      }
+      if (activePriceRange) {
+        const value = post.discountPrice ?? post.originalPrice;
+        if (value == null) return false;
+        if (value < activePriceRange.min || (activePriceRange.max != null && value > activePriceRange.max)) return false;
+      }
       if (query && !`${post.providerName} ${post.serviceName ?? ''} ${post.caption}`.toLowerCase().includes(query)) return false;
       return true;
     })
@@ -118,24 +171,120 @@ export default function AutoServicesScreen({ navigation }: Props) {
       <Modal visible={filtersOpen} animationType="slide" transparent onRequestClose={() => setFiltersOpen(false)}>
         <Pressable style={styles.modalBackdrop} onPress={() => setFiltersOpen(false)}>
           <Pressable style={styles.modalSheet} onPress={() => {}}>
-            <Text style={styles.modalTitle}>{t('autoservices.filtersBtn')}</Text>
-            <ScrollView>
-              {categoryFilters.map(item => {
-                const isActive = activeCategory === item.key;
+            <View style={styles.modalHeaderRow}>
+              <Text style={styles.modalTitle}>{t('autoservices.filtersBtn')}</Text>
+              {activeFilterCount > 0 && (
+                <Pressable onPress={resetAllFilters}>
+                  <Text style={styles.modalResetText}>{t('autoservices.resetFilters')}</Text>
+                </Pressable>
+              )}
+            </View>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <Text style={styles.filterSectionTitle}>{t('autoservices.seller')}</Text>
+              {brandFilters.map(item => {
+                const isActive = activeProviderId === item.key;
                 return (
-                  <Pressable
-                    key={`cat-${String(item.key)}`}
-                    style={styles.optionRow}
-                    onPress={() => {
-                      setActiveCategory(item.key);
-                      setFiltersOpen(false);
-                    }}>
+                  <Pressable key={`brand-${String(item.key)}`} style={styles.optionRow} onPress={() => setActiveProviderId(item.key)}>
                     <Text style={styles.optionName}>{item.label}</Text>
                     {isActive && <Text style={styles.optionCheck}>✓</Text>}
                   </Pressable>
                 );
               })}
+
+              <Text style={styles.filterSectionTitle}>{t('autoservices.serviceFilter')}</Text>
+              {serviceFilters.map(item => {
+                const isActive = activeServiceId === item.key;
+                return (
+                  <Pressable key={`svc-${String(item.key)}`} style={styles.optionRow} onPress={() => setActiveServiceId(item.key)}>
+                    <Text style={styles.optionName}>{item.label}</Text>
+                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                  </Pressable>
+                );
+              })}
+
+              <Text style={styles.filterSectionTitle}>{t('autoservices.discount')}</Text>
+              <Pressable style={styles.optionRow} onPress={() => setActiveDiscountMin(null)}>
+                <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
+                {activeDiscountMin == null && <Text style={styles.optionCheck}>✓</Text>}
+              </Pressable>
+              {DISCOUNT_TIERS.map(tier => {
+                const isActive = activeDiscountMin === tier.min;
+                return (
+                  <Pressable key={`disc-${tier.min}`} style={styles.optionRow} onPress={() => setActiveDiscountMin(tier.min)}>
+                    <Text style={styles.optionName}>{t(tier.labelKey)}</Text>
+                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                  </Pressable>
+                );
+              })}
+
+              <Text style={styles.filterSectionTitle}>{t('autoservices.carBrand')}</Text>
+              <Pressable style={styles.optionRow} onPress={() => setActiveCarBrand(null)}>
+                <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
+                {!activeCarBrand && <Text style={styles.optionCheck}>✓</Text>}
+              </Pressable>
+              {AUTO_SERVICE_CAR_BRANDS.map(brand => {
+                const isActive = activeCarBrand === brand;
+                return (
+                  <Pressable key={`car-${brand}`} style={styles.optionRow} onPress={() => setActiveCarBrand(brand)}>
+                    <Text style={styles.optionName}>{brand}</Text>
+                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                  </Pressable>
+                );
+              })}
+
+              <Text style={styles.filterSectionTitle}>{t('autoservices.priceRange')}</Text>
+              <Pressable style={styles.optionRow} onPress={() => setActivePriceRangeIndex(null)}>
+                <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
+                {activePriceRangeIndex == null && <Text style={styles.optionCheck}>✓</Text>}
+              </Pressable>
+              {PRICE_RANGES.map((range, i) => {
+                const isActive = activePriceRangeIndex === i;
+                return (
+                  <Pressable key={`price-${i}`} style={styles.optionRow} onPress={() => setActivePriceRangeIndex(i)}>
+                    <Text style={styles.optionName}>{range.label}</Text>
+                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                  </Pressable>
+                );
+              })}
+
+              <Text style={styles.filterSectionTitle}>{t('autoservices.rating')}</Text>
+              <Pressable style={styles.optionRow} onPress={() => setActiveRatingMin(null)}>
+                <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
+                {activeRatingMin == null && <Text style={styles.optionCheck}>✓</Text>}
+              </Pressable>
+              {RATING_TIERS.map(tier => {
+                const isActive = activeRatingMin === tier;
+                return (
+                  <Pressable key={`rating-${tier}`} style={styles.optionRow} onPress={() => setActiveRatingMin(tier)}>
+                    <Text style={styles.optionName}>
+                      ⭐ {tier.toFixed(1)}
+                      {tier < 5 ? '+' : ''}
+                    </Text>
+                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                  </Pressable>
+                );
+              })}
+
+              <Text style={styles.filterSectionTitle}>{t('autoservices.location')}</Text>
+              <Pressable style={styles.optionRow} onPress={() => setActiveCity(null)}>
+                <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
+                {!activeCity && <Text style={styles.optionCheck}>✓</Text>}
+              </Pressable>
+              {AUTO_SERVICE_CITIES.map(city => {
+                const isActive = activeCity === city;
+                return (
+                  <Pressable key={`city-${city}`} style={styles.optionRow} onPress={() => setActiveCity(city)}>
+                    <Text style={styles.optionName}>{city}</Text>
+                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                  </Pressable>
+                );
+              })}
             </ScrollView>
+            <Pressable style={styles.modalApplyBtn} onPress={() => setFiltersOpen(false)}>
+              <Text style={styles.modalApplyBtnText}>
+                {t('autoservices.showResults', { count: String(filteredPosts.length) })}
+              </Text>
+            </Pressable>
           </Pressable>
         </Pressable>
       </Modal>
@@ -143,7 +292,7 @@ export default function AutoServicesScreen({ navigation }: Props) {
       <Modal visible={brandOpen} animationType="slide" transparent onRequestClose={() => setBrandOpen(false)}>
         <Pressable style={styles.modalBackdrop} onPress={() => setBrandOpen(false)}>
           <Pressable style={styles.modalSheet} onPress={() => {}}>
-            <Text style={styles.modalTitle}>{t('autoservices.brand')}</Text>
+            <Text style={styles.modalTitle}>{t('autoservices.seller')}</Text>
             <ScrollView>
               {brandFilters.map(item => {
                 const isActive = activeProviderId === item.key;
@@ -310,12 +459,25 @@ const styles = StyleSheet.create({
     backgroundColor: AS_THEME.bg,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    maxHeight: '70%',
+    maxHeight: '85%',
     paddingTop: 16,
     paddingHorizontal: 20,
     paddingBottom: 30,
   },
   modalTitle: { fontSize: 16, fontWeight: '800', color: AS_THEME.text, marginBottom: 10 },
+  modalHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  modalResetText: { fontSize: 12.5, fontWeight: '700', color: AS_THEME.primary, marginBottom: 10 },
+  filterSectionTitle: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: AS_THEME.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginTop: 16,
+    marginBottom: 4,
+  },
+  modalApplyBtn: { marginTop: 14, borderRadius: 12, paddingVertical: 14, alignItems: 'center', backgroundColor: AS_THEME.primary },
+  modalApplyBtnText: { fontSize: 14, fontWeight: '700', color: AS_THEME.white },
   optionRow: {
     flexDirection: 'row',
     alignItems: 'center',
