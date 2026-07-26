@@ -85,6 +85,7 @@ export default function ChargingStationsScreen({ navigation }: Props) {
   const [activeCurrent, setActiveCurrent] = useState<CurrentType | null>(null);
   const [activePower, setActivePower] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showDetails, setShowDetails] = useState(false);
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [sheetStation, setSheetStation] = useState<ChargingStation | null>(null);
 
@@ -109,6 +110,7 @@ export default function ChargingStationsScreen({ navigation }: Props) {
 
   const selectStation = (station: ChargingStation) => {
     setSelectedId(station.id);
+    setShowDetails(true);
     mapRef.current?.animateToRegion({ latitude: station.lat, longitude: station.lng, latitudeDelta: 0.03, longitudeDelta: 0.03 }, 400);
     const index = stations.findIndex(s => s.id === station.id);
     if (index >= 0) {
@@ -187,68 +189,78 @@ export default function ChargingStationsScreen({ navigation }: Props) {
         <Text style={styles.recenterIcon}>◎</Text>
       </Pressable>
 
-      <View style={[styles.bottomCarousel, { paddingBottom: insets.bottom + 10 }]}>
-        {stations.length === 0 ? (
-          <View style={styles.noResults}>
-            <Text style={styles.noResultsText}>{t('charging.noResults')}</Text>
-          </View>
-        ) : (
-          <ScrollView ref={carouselRef} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContent}>
-            {stations.map(station => {
-              const selected = selectedId === station.id;
-              return (
-                <Pressable
-                  key={station.id}
-                  onPress={() => selectStation(station)}
-                  style={[styles.card, { borderColor: selected ? colors.brand : 'transparent' }]}>
-                  <View style={styles.cardTopRow}>
-                    <View style={styles.categoryTag}>
-                      <Text style={styles.categoryTagText}>{t('category.other')}</Text>
-                    </View>
-                    <Text style={styles.hoursTag}>{station.is24h ? t('charging.open247') : t('charging.limitedHours')}</Text>
-                  </View>
-                  <View style={styles.cardNameRow}>
-                    <Text style={styles.cardTitle} numberOfLines={1}>
-                      {station.name}
-                    </Text>
-                    <Text style={styles.chevron}>›</Text>
-                  </View>
+      <Pressable
+        style={[styles.listToggleBtn, { bottom: insets.bottom + (showDetails ? 300 : 30) }, showDetails && styles.listToggleBtnActive]}
+        onPress={() => setShowDetails(v => !v)}
+        hitSlop={8}>
+        <Text style={styles.listToggleIcon}>{showDetails ? '✕' : '☰'}</Text>
+        {!showDetails && <Text style={styles.listToggleText}>{t('charging.showResults', { count: stations.length })}</Text>}
+      </Pressable>
 
-                  <View style={styles.cardInnerPanel}>
-                    <Text style={styles.cardNetwork}>{station.network}</Text>
-                    <View style={styles.connectorRow}>
-                      <Text style={styles.connectorRowIcon}>🔌</Text>
-                      <Text style={styles.connectorRowText}>{t('charging.connectorsCount', { count: station.connectors.length })} ›</Text>
-                    </View>
-                    <View style={styles.cardStatsRow}>
-                      <Text style={styles.cardPower}>{station.powerKw} kW</Text>
-                      <Text style={styles.cardAvailable}>{t('charging.available', { count: station.portsAvailable, total: station.portsTotal })}</Text>
-                    </View>
-                  </View>
-
+      {showDetails && (
+        <View style={[styles.bottomCarousel, { paddingBottom: insets.bottom + 10 }]}>
+          {stations.length === 0 ? (
+            <View style={styles.noResults}>
+              <Text style={styles.noResultsText}>{t('charging.noResults')}</Text>
+            </View>
+          ) : (
+            <ScrollView ref={carouselRef} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContent}>
+              {stations.map(station => {
+                const selected = selectedId === station.id;
+                return (
                   <Pressable
-                    style={styles.viewInfoBtn}
-                    onPress={e => {
-                      e.stopPropagation();
-                      navigation.navigate('ChargingStationDetail', { stationId: station.id });
-                    }}>
-                    <Text style={styles.viewInfoBtnText}>{t('charging.viewInfo')}</Text>
-                  </Pressable>
+                    key={station.id}
+                    onPress={() => selectStation(station)}
+                    style={[styles.card, { borderColor: selected ? colors.brand : 'transparent' }]}>
+                    <View style={styles.cardTopRow}>
+                      <View style={styles.categoryTag}>
+                        <Text style={styles.categoryTagText}>{t('category.other')}</Text>
+                      </View>
+                      <Text style={styles.hoursTag}>{station.is24h ? t('charging.open247') : t('charging.limitedHours')}</Text>
+                    </View>
+                    <View style={styles.cardNameRow}>
+                      <Text style={styles.cardTitle} numberOfLines={1}>
+                        {station.name}
+                      </Text>
+                      <Text style={styles.chevron}>›</Text>
+                    </View>
 
-                  <Pressable
-                    style={styles.directionsBtn}
-                    onPress={e => {
-                      e.stopPropagation();
-                      setSheetStation(station);
-                    }}>
-                    <Text style={styles.directionsBtnIcon}>➤</Text>
+                    <View style={styles.cardInnerPanel}>
+                      <Text style={styles.cardNetwork}>{station.network}</Text>
+                      <View style={styles.connectorRow}>
+                        <Text style={styles.connectorRowIcon}>🔌</Text>
+                        <Text style={styles.connectorRowText}>{t('charging.connectorsCount', { count: station.connectors.length })} ›</Text>
+                      </View>
+                      <View style={styles.cardStatsRow}>
+                        <Text style={styles.cardPower}>{station.powerKw} kW</Text>
+                        <Text style={styles.cardAvailable}>{t('charging.available', { count: station.portsAvailable, total: station.portsTotal })}</Text>
+                      </View>
+                    </View>
+
+                    <Pressable
+                      style={styles.viewInfoBtn}
+                      onPress={e => {
+                        e.stopPropagation();
+                        navigation.navigate('ChargingStationDetail', { stationId: station.id });
+                      }}>
+                      <Text style={styles.viewInfoBtnText}>{t('charging.viewInfo')}</Text>
+                    </Pressable>
+
+                    <Pressable
+                      style={styles.directionsBtn}
+                      onPress={e => {
+                        e.stopPropagation();
+                        setSheetStation(station);
+                      }}>
+                      <Text style={styles.directionsBtnIcon}>➤</Text>
+                    </Pressable>
                   </Pressable>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        )}
-      </View>
+                );
+              })}
+            </ScrollView>
+          )}
+        </View>
+      )}
 
       <LocationActionSheet
         visible={!!sheetStation}
@@ -329,6 +341,26 @@ const makeStyles = (colors: ThemeColors) =>
       justifyContent: 'center',
     },
     recenterIcon: { color: '#fff', fontSize: 18 },
+    listToggleBtn: {
+      position: 'absolute',
+      left: spacing.lg,
+      right: spacing.lg,
+      height: 44,
+      borderRadius: 22,
+      backgroundColor: colors.brand,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
+      shadowColor: '#000',
+      shadowOpacity: 0.3,
+      shadowRadius: 6,
+      shadowOffset: { width: 0, height: 3 },
+      elevation: 5,
+    },
+    listToggleBtnActive: { left: undefined, right: spacing.lg, width: 44 },
+    listToggleIcon: { color: '#fff', fontSize: 16 },
+    listToggleText: { color: '#fff', fontSize: 13.5, fontWeight: '700' },
     markerGlow: { width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center' },
     markerBadge: {
       width: 30,
