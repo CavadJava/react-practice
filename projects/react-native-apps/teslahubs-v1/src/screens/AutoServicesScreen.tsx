@@ -43,6 +43,11 @@ export default function AutoServicesScreen({ navigation }: Props) {
   const [expandedSection, setExpandedSection] = useState<string | null>('seller');
   const [brandOpen, setBrandOpen] = useState(false);
   const [serviceOpen, setServiceOpen] = useState(false);
+  const [discountOpen, setDiscountOpen] = useState(false);
+  const [carBrandOpen, setCarBrandOpen] = useState(false);
+  const [priceOpen, setPriceOpen] = useState(false);
+  const [ratingOpen, setRatingOpen] = useState(false);
+  const [cityOpen, setCityOpen] = useState(false);
 
   const brandFilters = [{ key: null, label: t('charging.filterAll') }, ...AUTO_SERVICE_PROVIDERS.map(p => ({ key: p.id, label: p.name }))];
 
@@ -56,6 +61,11 @@ export default function AutoServicesScreen({ navigation }: Props) {
 
   const activeBrandLabel = activeProviderId ? brandFilters.find(f => f.key === activeProviderId)?.label : t('autoservices.seller');
   const activeServiceLabel = activeServiceId ? serviceFilters.find(f => f.key === activeServiceId)?.label : t('autoservices.serviceFilter');
+  const activeDiscountLabel = activeDiscountMin != null ? t(DISCOUNT_TIERS.find(d => d.min === activeDiscountMin)?.labelKey ?? '') : t('autoservices.discount');
+  const activeCarBrandLabel = activeCarBrand ?? t('autoservices.carBrand');
+  const activePriceLabel = activePriceRangeIndex != null ? PRICE_RANGES[activePriceRangeIndex].label : t('autoservices.priceRange');
+  const activeRatingLabel = activeRatingMin != null ? `⭐ ${activeRatingMin.toFixed(1)}+` : t('autoservices.rating');
+  const activeCityLabel = activeCity ?? t('autoservices.location');
   const activeFilterCount =
     (activeProviderId ? 1 : 0) +
     (activeServiceId ? 1 : 0) +
@@ -181,6 +191,7 @@ export default function AutoServicesScreen({ navigation }: Props) {
         </Pressable>
 
         <Pressable style={[styles.dropdownPill, activeProviderId && styles.dropdownPillActive]} onPress={() => setBrandOpen(true)}>
+          <Text style={styles.dropdownPillIcon}>🏢</Text>
           <Text style={[styles.dropdownPillText, !!activeProviderId && styles.dropdownPillTextActive]} numberOfLines={1}>
             {activeBrandLabel}
           </Text>
@@ -188,10 +199,51 @@ export default function AutoServicesScreen({ navigation }: Props) {
         </Pressable>
 
         <Pressable style={[styles.dropdownPill, activeServiceId && styles.dropdownPillActive]} onPress={() => setServiceOpen(true)}>
+          <Text style={styles.dropdownPillIcon}>🛠️</Text>
           <Text style={[styles.dropdownPillText, !!activeServiceId && styles.dropdownPillTextActive]} numberOfLines={1}>
             {activeServiceLabel}
           </Text>
           <Text style={[styles.dropdownChevronSm, !!activeServiceId && styles.dropdownPillTextActive]}>⌄</Text>
+        </Pressable>
+
+        <Pressable style={[styles.dropdownPill, activeDiscountMin != null && styles.dropdownPillActive]} onPress={() => setDiscountOpen(true)}>
+          <Text style={styles.dropdownPillIcon}>🏷️</Text>
+          <Text style={[styles.dropdownPillText, activeDiscountMin != null && styles.dropdownPillTextActive]} numberOfLines={1}>
+            {activeDiscountLabel}
+          </Text>
+          <Text style={[styles.dropdownChevronSm, activeDiscountMin != null && styles.dropdownPillTextActive]}>⌄</Text>
+        </Pressable>
+
+        <Pressable style={[styles.dropdownPill, !!activeCarBrand && styles.dropdownPillActive]} onPress={() => setCarBrandOpen(true)}>
+          <Text style={styles.dropdownPillIcon}>🚘</Text>
+          <Text style={[styles.dropdownPillText, !!activeCarBrand && styles.dropdownPillTextActive]} numberOfLines={1}>
+            {activeCarBrandLabel}
+          </Text>
+          <Text style={[styles.dropdownChevronSm, !!activeCarBrand && styles.dropdownPillTextActive]}>⌄</Text>
+        </Pressable>
+
+        <Pressable style={[styles.dropdownPill, activePriceRangeIndex != null && styles.dropdownPillActive]} onPress={() => setPriceOpen(true)}>
+          <Text style={styles.dropdownPillIcon}>💰</Text>
+          <Text style={[styles.dropdownPillText, activePriceRangeIndex != null && styles.dropdownPillTextActive]} numberOfLines={1}>
+            {activePriceLabel}
+          </Text>
+          <Text style={[styles.dropdownChevronSm, activePriceRangeIndex != null && styles.dropdownPillTextActive]}>⌄</Text>
+        </Pressable>
+
+        <Pressable style={[styles.dropdownPill, activeRatingMin != null && styles.dropdownPillActive]} onPress={() => setRatingOpen(true)}>
+          <Text style={styles.dropdownPillIcon}>⭐</Text>
+          <Text style={[styles.dropdownPillText, activeRatingMin != null && styles.dropdownPillTextActive]} numberOfLines={1}>
+            {activeRatingLabel}
+          </Text>
+          <Text style={[styles.dropdownChevronSm, activeRatingMin != null && styles.dropdownPillTextActive]}>⌄</Text>
+        </Pressable>
+
+        <Pressable style={[styles.dropdownPill, !!activeCity && styles.dropdownPillActive]} onPress={() => setCityOpen(true)}>
+          <Text style={styles.dropdownPillIcon}>📍</Text>
+          <Text style={[styles.dropdownPillText, !!activeCity && styles.dropdownPillTextActive]} numberOfLines={1}>
+            {activeCityLabel}
+          </Text>
+          <Text style={[styles.dropdownChevronSm, !!activeCity && styles.dropdownPillTextActive]}>⌄</Text>
         </Pressable>
       </ScrollView>
 
@@ -422,6 +474,179 @@ export default function AutoServicesScreen({ navigation }: Props) {
                       setServiceOpen(false);
                     }}>
                     <Text style={styles.optionName}>{item.label}</Text>
+                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      <Modal visible={discountOpen} animationType="slide" transparent onRequestClose={() => setDiscountOpen(false)}>
+        <Pressable style={styles.modalBackdrop} onPress={() => setDiscountOpen(false)}>
+          <Pressable style={styles.modalSheet} onPress={() => {}}>
+            <Text style={styles.modalTitle}>{t('autoservices.discount')}</Text>
+            <ScrollView>
+              <Pressable
+                style={styles.optionRow}
+                onPress={() => {
+                  setActiveDiscountMin(null);
+                  setDiscountOpen(false);
+                }}>
+                <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
+                {activeDiscountMin == null && <Text style={styles.optionCheck}>✓</Text>}
+              </Pressable>
+              {DISCOUNT_TIERS.map(tier => {
+                const isActive = activeDiscountMin === tier.min;
+                return (
+                  <Pressable
+                    key={`disc-${tier.min}`}
+                    style={styles.optionRow}
+                    onPress={() => {
+                      setActiveDiscountMin(tier.min);
+                      setDiscountOpen(false);
+                    }}>
+                    <Text style={styles.optionName}>{t(tier.labelKey)}</Text>
+                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      <Modal visible={carBrandOpen} animationType="slide" transparent onRequestClose={() => setCarBrandOpen(false)}>
+        <Pressable style={styles.modalBackdrop} onPress={() => setCarBrandOpen(false)}>
+          <Pressable style={styles.modalSheet} onPress={() => {}}>
+            <Text style={styles.modalTitle}>{t('autoservices.carBrand')}</Text>
+            <ScrollView>
+              <Pressable
+                style={styles.optionRow}
+                onPress={() => {
+                  setActiveCarBrand(null);
+                  setCarBrandOpen(false);
+                }}>
+                <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
+                {!activeCarBrand && <Text style={styles.optionCheck}>✓</Text>}
+              </Pressable>
+              {AUTO_SERVICE_CAR_BRANDS.map(brand => {
+                const isActive = activeCarBrand === brand;
+                return (
+                  <Pressable
+                    key={`car-${brand}`}
+                    style={styles.optionRow}
+                    onPress={() => {
+                      setActiveCarBrand(brand);
+                      setCarBrandOpen(false);
+                    }}>
+                    <Text style={styles.optionName}>{brand}</Text>
+                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      <Modal visible={priceOpen} animationType="slide" transparent onRequestClose={() => setPriceOpen(false)}>
+        <Pressable style={styles.modalBackdrop} onPress={() => setPriceOpen(false)}>
+          <Pressable style={styles.modalSheet} onPress={() => {}}>
+            <Text style={styles.modalTitle}>{t('autoservices.priceRange')}</Text>
+            <ScrollView>
+              <Pressable
+                style={styles.optionRow}
+                onPress={() => {
+                  setActivePriceRangeIndex(null);
+                  setPriceOpen(false);
+                }}>
+                <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
+                {activePriceRangeIndex == null && <Text style={styles.optionCheck}>✓</Text>}
+              </Pressable>
+              {PRICE_RANGES.map((range, i) => {
+                const isActive = activePriceRangeIndex === i;
+                return (
+                  <Pressable
+                    key={`price-${i}`}
+                    style={styles.optionRow}
+                    onPress={() => {
+                      setActivePriceRangeIndex(i);
+                      setPriceOpen(false);
+                    }}>
+                    <Text style={styles.optionName}>{range.label}</Text>
+                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      <Modal visible={ratingOpen} animationType="slide" transparent onRequestClose={() => setRatingOpen(false)}>
+        <Pressable style={styles.modalBackdrop} onPress={() => setRatingOpen(false)}>
+          <Pressable style={styles.modalSheet} onPress={() => {}}>
+            <Text style={styles.modalTitle}>{t('autoservices.rating')}</Text>
+            <ScrollView>
+              <Pressable
+                style={styles.optionRow}
+                onPress={() => {
+                  setActiveRatingMin(null);
+                  setRatingOpen(false);
+                }}>
+                <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
+                {activeRatingMin == null && <Text style={styles.optionCheck}>✓</Text>}
+              </Pressable>
+              {RATING_TIERS.map(tier => {
+                const isActive = activeRatingMin === tier;
+                return (
+                  <Pressable
+                    key={`rating-${tier}`}
+                    style={styles.optionRow}
+                    onPress={() => {
+                      setActiveRatingMin(tier);
+                      setRatingOpen(false);
+                    }}>
+                    <Text style={styles.optionName}>
+                      ⭐ {tier.toFixed(1)}
+                      {tier < 5 ? '+' : ''}
+                    </Text>
+                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      <Modal visible={cityOpen} animationType="slide" transparent onRequestClose={() => setCityOpen(false)}>
+        <Pressable style={styles.modalBackdrop} onPress={() => setCityOpen(false)}>
+          <Pressable style={styles.modalSheet} onPress={() => {}}>
+            <Text style={styles.modalTitle}>{t('autoservices.location')}</Text>
+            <ScrollView>
+              <Pressable
+                style={styles.optionRow}
+                onPress={() => {
+                  setActiveCity(null);
+                  setCityOpen(false);
+                }}>
+                <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
+                {!activeCity && <Text style={styles.optionCheck}>✓</Text>}
+              </Pressable>
+              {AUTO_SERVICE_CITIES.map(city => {
+                const isActive = activeCity === city;
+                return (
+                  <Pressable
+                    key={`city-${city}`}
+                    style={styles.optionRow}
+                    onPress={() => {
+                      setActiveCity(city);
+                      setCityOpen(false);
+                    }}>
+                    <Text style={styles.optionName}>{city}</Text>
                     {isActive && <Text style={styles.optionCheck}>✓</Text>}
                   </Pressable>
                 );
