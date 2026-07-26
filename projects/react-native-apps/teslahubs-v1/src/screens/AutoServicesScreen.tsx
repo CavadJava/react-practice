@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { AutoServicesStackParamList, RootStackParamList } from '../navigation/types';
-import { AUTO_SERVICE_CATEGORIES, AUTO_SERVICE_PROVIDERS, AutoServiceCategory } from '../data/autoServices';
+import { AUTO_SERVICE_CATEGORIES, AUTO_SERVICE_PROVIDERS, AutoServiceCategory, getServiceOption } from '../data/autoServices';
 import { AS_THEME } from '../theme/autoServicesTheme';
 import { useLocale } from '../context/LocaleContext';
 
@@ -12,14 +12,47 @@ type Props = CompositeScreenProps<NativeStackScreenProps<AutoServicesStackParamL
 
 export default function AutoServicesScreen({ navigation }: Props) {
   const { t } = useLocale();
+  const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<AutoServiceCategory | null>(null);
+  const [activeProviderId, setActiveProviderId] = useState<string | null>(null);
+  const [activeServiceId, setActiveServiceId] = useState<string | null>(null);
 
-  const filters: { key: AutoServiceCategory | null; label: string }[] = [
+  const categoryFilters: { key: AutoServiceCategory | null; label: string }[] = [
     { key: null, label: t('charging.filterAll') },
     ...AUTO_SERVICE_CATEGORIES.map(c => ({ key: c.key, label: c.label })),
   ];
 
-  const providers = activeCategory ? AUTO_SERVICE_PROVIDERS.filter(p => p.category === activeCategory) : AUTO_SERVICE_PROVIDERS;
+  const brandFilters = [{ key: null, label: t('charging.filterAll') }, ...AUTO_SERVICE_PROVIDERS.map(p => ({ key: p.id, label: p.name }))];
+
+  const usedServiceIds = useMemo(() => Array.from(new Set(AUTO_SERVICE_PROVIDERS.flatMap(p => p.serviceOptionIds))), []);
+  const serviceFilters = [
+    { key: null, label: t('charging.filterAll') },
+    ...usedServiceIds.map(id => ({ key: id, label: getServiceOption(id)?.name ?? id })),
+  ];
+
+  const query = search.trim().toLowerCase();
+
+  const providers = AUTO_SERVICE_PROVIDERS.filter(p => {
+    if (activeCategory && p.category !== activeCategory) return false;
+    if (activeProviderId && p.id !== activeProviderId) return false;
+    if (activeServiceId && !p.serviceOptionIds.includes(activeServiceId)) return false;
+    if (query) {
+      const serviceNames = p.serviceOptionIds.map(id => getServiceOption(id)?.name ?? '').join(' ');
+      const haystack = `${p.name} ${p.tagline} ${serviceNames}`.toLowerCase();
+      if (!haystack.includes(query)) return false;
+    }
+    return true;
+  });
+
+  const posts = useMemo(
+    () => AUTO_SERVICE_PROVIDERS.flatMap(p => p.sampleWork.map(item => ({ ...item, providerId: p.id, providerName: p.name, providerColor: p.color }))),
+    [],
+  );
+  const filteredPosts = posts.filter(post => {
+    if (activeProviderId && post.providerId !== activeProviderId) return false;
+    if (query && !`${post.providerName} ${post.caption}`.toLowerCase().includes(query)) return false;
+    return true;
+  });
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
@@ -33,12 +66,22 @@ export default function AutoServicesScreen({ navigation }: Props) {
         </Pressable>
       </View>
 
+      <View style={styles.searchWrap}>
+        <TextInput
+          value={search}
+          onChangeText={setSearch}
+          placeholder={t('autoservices.searchPlaceholder')}
+          placeholderTextColor={AS_THEME.textMuted}
+          style={styles.searchInput}
+        />
+      </View>
+
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterList} contentContainerStyle={styles.filterRow}>
-        {filters.map(item => {
+        {categoryFilters.map(item => {
           const isActive = activeCategory === item.key;
           return (
             <Pressable
-              key={String(item.key)}
+              key={`cat-${String(item.key)}`}
               onPress={() => setActiveCategory(item.key)}
               style={[styles.filterChip, isActive && styles.filterChipActive]}>
               <Text style={[styles.filterLabel, isActive && styles.filterLabelActive]}>{item.label}</Text>
@@ -47,19 +90,79 @@ export default function AutoServicesScreen({ navigation }: Props) {
         })}
       </ScrollView>
 
-      <ScrollView contentContainerStyle={styles.grid} showsVerticalScrollIndicator={false}>
-        {providers.map(provider => (
-          <Pressable
-            key={provider.id}
-            style={({ pressed }) => [styles.tile, { borderColor: provider.color }, pressed && styles.tilePressed]}
-            onPress={() => navigation.navigate('AutoServiceProvider', { providerId: provider.id })}>
-            <Text style={styles.tileIcon}>{provider.icon}</Text>
-            <Text style={styles.tileName}>{provider.name}</Text>
-            <Text style={styles.tileTagline} numberOfLines={2}>
-              {provider.tagline}
-            </Text>
-          </Pressable>
-        ))}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterList} contentContainerStyle={styles.filterRow}>
+        {brandFilters.map(item => {
+          const isActive = activeProviderId === item.key;
+          return (
+            <Pressable
+              key={`brand-${String(item.key)}`}
+              onPress={() => setActiveProviderId(item.key)}
+              style={[styles.filterChip, isActive && styles.filterChipActive]}>
+              <Text style={[styles.filterLabel, isActive && styles.filterLabelActive]}>{item.label}</Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterList} contentContainerStyle={styles.filterRow}>
+        {serviceFilters.map(item => {
+          const isActive = activeServiceId === item.key;
+          return (
+            <Pressable
+              key={`svc-${String(item.key)}`}
+              onPress={() => setActiveServiceId(item.key)}
+              style={[styles.filterChip, isActive && styles.filterChipActive]}>
+              <Text style={[styles.filterLabel, isActive && styles.filterLabelActive]}>{item.label}</Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+
+      <ScrollView contentContainerStyle={styles.scrollBody} showsVerticalScrollIndicator={false}>
+        {filteredPosts.length > 0 && (
+          <>
+            <Text style={styles.sectionLabel}>{t('autoservices.recentPosts')}</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.postsRow}>
+              {filteredPosts.map((post, i) => (
+                <Pressable
+                  key={`${post.providerId}-${i}`}
+                  style={styles.postCard}
+                  onPress={() => navigation.navigate('AutoServiceProvider', { providerId: post.providerId })}>
+                  <Image source={{ uri: post.thumbnail }} style={styles.postThumbnail} resizeMode="cover" />
+                  {post.type === 'video' && (
+                    <View style={styles.postPlayBadge}>
+                      <Text style={styles.postPlayBadgeText}>▶</Text>
+                    </View>
+                  )}
+                  <Text style={[styles.postProvider, { color: post.providerColor }]}>{post.providerName}</Text>
+                  <Text style={styles.postCaption} numberOfLines={2}>
+                    {post.caption}
+                  </Text>
+                </Pressable>
+              ))}
+            </ScrollView>
+          </>
+        )}
+
+        <Text style={styles.sectionLabel}>{t('autoservices.providersTitle')}</Text>
+        {providers.length === 0 ? (
+          <Text style={styles.emptyText}>{t('autoservices.noResults')}</Text>
+        ) : (
+          <View style={styles.grid}>
+            {providers.map(provider => (
+              <Pressable
+                key={provider.id}
+                style={({ pressed }) => [styles.tile, { borderColor: provider.color }, pressed && styles.tilePressed]}
+                onPress={() => navigation.navigate('AutoServiceProvider', { providerId: provider.id })}>
+                <Text style={styles.tileIcon}>{provider.icon}</Text>
+                <Text style={styles.tileName}>{provider.name}</Text>
+                <Text style={styles.tileTagline} numberOfLines={2}>
+                  {provider.tagline}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -82,8 +185,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   closeText: { fontSize: 14, color: AS_THEME.text },
+  searchWrap: { paddingHorizontal: 20, paddingBottom: 12 },
+  searchInput: {
+    backgroundColor: AS_THEME.card,
+    borderWidth: 1,
+    borderColor: AS_THEME.border,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    color: AS_THEME.text,
+    fontSize: 14,
+  },
   filterList: { flexGrow: 0, flexShrink: 0 },
-  filterRow: { paddingHorizontal: 20, paddingBottom: 14, gap: 8 },
+  filterRow: { paddingHorizontal: 20, paddingBottom: 10, gap: 8 },
   filterChip: {
     paddingHorizontal: 14,
     paddingVertical: 8,
@@ -96,7 +210,36 @@ const styles = StyleSheet.create({
   filterChipActive: { backgroundColor: AS_THEME.primary, borderColor: AS_THEME.primary },
   filterLabel: { fontSize: 12.5, fontWeight: '600', color: AS_THEME.textMuted },
   filterLabelActive: { color: AS_THEME.white },
-  grid: { paddingHorizontal: 20, paddingBottom: 40, flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  scrollBody: { paddingBottom: 40 },
+  sectionLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: AS_THEME.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    paddingHorizontal: 20,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  emptyText: { fontSize: 13, color: AS_THEME.textMuted, paddingHorizontal: 20 },
+  postsRow: { paddingHorizontal: 20, gap: 12, paddingBottom: 4 },
+  postCard: { width: 150 },
+  postThumbnail: { width: 150, height: 100, borderRadius: 12, backgroundColor: AS_THEME.cardAlt },
+  postPlayBadge: {
+    position: 'absolute',
+    top: 34,
+    left: 60,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  postPlayBadgeText: { color: AS_THEME.white, fontSize: 12 },
+  postProvider: { fontSize: 11, fontWeight: '800', marginTop: 6 },
+  postCaption: { fontSize: 11.5, color: AS_THEME.textMuted, marginTop: 2, lineHeight: 15 },
+  grid: { paddingHorizontal: 20, flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   tile: {
     width: '47%',
     backgroundColor: AS_THEME.card,
