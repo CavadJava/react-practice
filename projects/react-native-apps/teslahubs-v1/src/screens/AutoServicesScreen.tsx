@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { AutoServicesStackParamList, RootStackParamList } from '../navigation/types';
@@ -12,6 +12,7 @@ type Props = CompositeScreenProps<NativeStackScreenProps<AutoServicesStackParamL
 
 export default function AutoServicesScreen({ navigation }: Props) {
   const { t } = useLocale();
+  const insets = useSafeAreaInsets();
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<AutoServiceCategory | null>(null);
   const [activeProviderId, setActiveProviderId] = useState<string | null>(null);
@@ -65,8 +66,8 @@ export default function AutoServicesScreen({ navigation }: Props) {
     .sort((a, b) => (sortAsc ? a.providerName.localeCompare(b.providerName) : b.providerName.localeCompare(a.providerName)));
 
   return (
-    <SafeAreaView style={styles.screen} edges={['top']}>
-      <View style={styles.header}>
+    <SafeAreaView style={styles.screen} edges={[]}>
+      <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
         <View style={styles.headerText}>
           <Text style={styles.brand}>{t('autoservices.entryTitle')}</Text>
           <Text style={styles.tagline}>{t('autoservices.tagline')}</Text>
