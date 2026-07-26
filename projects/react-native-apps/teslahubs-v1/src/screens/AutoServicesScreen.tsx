@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -16,6 +16,10 @@ export default function AutoServicesScreen({ navigation }: Props) {
   const [activeCategory, setActiveCategory] = useState<AutoServiceCategory | null>(null);
   const [activeProviderId, setActiveProviderId] = useState<string | null>(null);
   const [activeServiceId, setActiveServiceId] = useState<string | null>(null);
+  const [sortAsc, setSortAsc] = useState(true);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [brandOpen, setBrandOpen] = useState(false);
+  const [serviceOpen, setServiceOpen] = useState(false);
 
   const categoryFilters: { key: AutoServiceCategory | null; label: string }[] = [
     { key: null, label: t('charging.filterAll') },
@@ -42,7 +46,11 @@ export default function AutoServicesScreen({ navigation }: Props) {
       if (!haystack.includes(query)) return false;
     }
     return true;
-  });
+  }).sort((a, b) => (sortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)));
+
+  const activeBrandLabel = activeProviderId ? brandFilters.find(f => f.key === activeProviderId)?.label : t('autoservices.brand');
+  const activeServiceLabel = activeServiceId ? serviceFilters.find(f => f.key === activeServiceId)?.label : t('autoservices.serviceFilter');
+  const activeFilterCount = (activeCategory ? 1 : 0) + (activeProviderId ? 1 : 0) + (activeServiceId ? 1 : 0);
 
   const posts = useMemo(
     () => AUTO_SERVICE_PROVIDERS.flatMap(p => p.sampleWork.map(item => ({ ...item, providerId: p.id, providerName: p.name, providerColor: p.color }))),
@@ -77,46 +85,107 @@ export default function AutoServicesScreen({ navigation }: Props) {
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterList} contentContainerStyle={styles.filterRow}>
-        {categoryFilters.map(item => {
-          const isActive = activeCategory === item.key;
-          return (
-            <Pressable
-              key={`cat-${String(item.key)}`}
-              onPress={() => setActiveCategory(item.key)}
-              style={[styles.filterChip, isActive && styles.filterChipActive]}>
-              <Text style={[styles.filterLabel, isActive && styles.filterLabelActive]}>{item.label}</Text>
-            </Pressable>
-          );
-        })}
+        <Pressable style={styles.sortBtn} onPress={() => setSortAsc(v => !v)}>
+          <Text style={styles.sortIcon}>{sortAsc ? '↓↑' : '↑↓'}</Text>
+        </Pressable>
+
+        <Pressable style={[styles.dropdownPill, activeFilterCount > 0 && styles.dropdownPillActive]} onPress={() => setFiltersOpen(true)}>
+          <Text style={[styles.dropdownPillIcon, activeFilterCount > 0 && styles.dropdownPillTextActive]}>☰</Text>
+          <Text style={[styles.dropdownPillText, activeFilterCount > 0 && styles.dropdownPillTextActive]}>
+            {t('autoservices.filtersBtn')}
+            {activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+          </Text>
+        </Pressable>
+
+        <Pressable style={[styles.dropdownPill, activeProviderId && styles.dropdownPillActive]} onPress={() => setBrandOpen(true)}>
+          <Text style={[styles.dropdownPillText, !!activeProviderId && styles.dropdownPillTextActive]} numberOfLines={1}>
+            {activeBrandLabel}
+          </Text>
+          <Text style={[styles.dropdownChevronSm, !!activeProviderId && styles.dropdownPillTextActive]}>⌄</Text>
+        </Pressable>
+
+        <Pressable style={[styles.dropdownPill, activeServiceId && styles.dropdownPillActive]} onPress={() => setServiceOpen(true)}>
+          <Text style={[styles.dropdownPillText, !!activeServiceId && styles.dropdownPillTextActive]} numberOfLines={1}>
+            {activeServiceLabel}
+          </Text>
+          <Text style={[styles.dropdownChevronSm, !!activeServiceId && styles.dropdownPillTextActive]}>⌄</Text>
+        </Pressable>
       </ScrollView>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterList} contentContainerStyle={styles.filterRow}>
-        {brandFilters.map(item => {
-          const isActive = activeProviderId === item.key;
-          return (
-            <Pressable
-              key={`brand-${String(item.key)}`}
-              onPress={() => setActiveProviderId(item.key)}
-              style={[styles.filterChip, isActive && styles.filterChipActive]}>
-              <Text style={[styles.filterLabel, isActive && styles.filterLabelActive]}>{item.label}</Text>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
+      <Modal visible={filtersOpen} animationType="slide" transparent onRequestClose={() => setFiltersOpen(false)}>
+        <Pressable style={styles.modalBackdrop} onPress={() => setFiltersOpen(false)}>
+          <Pressable style={styles.modalSheet} onPress={() => {}}>
+            <Text style={styles.modalTitle}>{t('autoservices.filtersBtn')}</Text>
+            <ScrollView>
+              {categoryFilters.map(item => {
+                const isActive = activeCategory === item.key;
+                return (
+                  <Pressable
+                    key={`cat-${String(item.key)}`}
+                    style={styles.optionRow}
+                    onPress={() => {
+                      setActiveCategory(item.key);
+                      setFiltersOpen(false);
+                    }}>
+                    <Text style={styles.optionName}>{item.label}</Text>
+                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      </Modal>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterList} contentContainerStyle={styles.filterRow}>
-        {serviceFilters.map(item => {
-          const isActive = activeServiceId === item.key;
-          return (
-            <Pressable
-              key={`svc-${String(item.key)}`}
-              onPress={() => setActiveServiceId(item.key)}
-              style={[styles.filterChip, isActive && styles.filterChipActive]}>
-              <Text style={[styles.filterLabel, isActive && styles.filterLabelActive]}>{item.label}</Text>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
+      <Modal visible={brandOpen} animationType="slide" transparent onRequestClose={() => setBrandOpen(false)}>
+        <Pressable style={styles.modalBackdrop} onPress={() => setBrandOpen(false)}>
+          <Pressable style={styles.modalSheet} onPress={() => {}}>
+            <Text style={styles.modalTitle}>{t('autoservices.brand')}</Text>
+            <ScrollView>
+              {brandFilters.map(item => {
+                const isActive = activeProviderId === item.key;
+                return (
+                  <Pressable
+                    key={`brand-${String(item.key)}`}
+                    style={styles.optionRow}
+                    onPress={() => {
+                      setActiveProviderId(item.key);
+                      setBrandOpen(false);
+                    }}>
+                    <Text style={styles.optionName}>{item.label}</Text>
+                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      <Modal visible={serviceOpen} animationType="slide" transparent onRequestClose={() => setServiceOpen(false)}>
+        <Pressable style={styles.modalBackdrop} onPress={() => setServiceOpen(false)}>
+          <Pressable style={styles.modalSheet} onPress={() => {}}>
+            <Text style={styles.modalTitle}>{t('autoservices.serviceFilter')}</Text>
+            <ScrollView>
+              {serviceFilters.map(item => {
+                const isActive = activeServiceId === item.key;
+                return (
+                  <Pressable
+                    key={`svc-${String(item.key)}`}
+                    style={styles.optionRow}
+                    onPress={() => {
+                      setActiveServiceId(item.key);
+                      setServiceOpen(false);
+                    }}>
+                    <Text style={styles.optionName}>{item.label}</Text>
+                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      </Modal>
 
       <ScrollView contentContainerStyle={styles.scrollBody} showsVerticalScrollIndicator={false}>
         {filteredPosts.length > 0 && (
@@ -197,19 +266,56 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   filterList: { flexGrow: 0, flexShrink: 0 },
-  filterRow: { paddingHorizontal: 20, paddingBottom: 10, gap: 8 },
-  filterChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 999,
+  filterRow: { paddingHorizontal: 20, paddingBottom: 14, gap: 8, alignItems: 'center' },
+  sortBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     borderWidth: 1,
     borderColor: AS_THEME.border,
     backgroundColor: AS_THEME.card,
-    alignSelf: 'flex-start',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  filterChipActive: { backgroundColor: AS_THEME.primary, borderColor: AS_THEME.primary },
-  filterLabel: { fontSize: 12.5, fontWeight: '600', color: AS_THEME.textMuted },
-  filterLabelActive: { color: AS_THEME.white },
+  sortIcon: { color: AS_THEME.text, fontSize: 15, fontWeight: '700' },
+  dropdownPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    height: 38,
+    borderRadius: 19,
+    borderWidth: 1,
+    borderColor: AS_THEME.border,
+    backgroundColor: AS_THEME.card,
+    gap: 6,
+  },
+  dropdownPillActive: { backgroundColor: AS_THEME.primary, borderColor: AS_THEME.primary },
+  dropdownPillIcon: { fontSize: 13, color: AS_THEME.text },
+  dropdownPillText: { fontSize: 12.5, fontWeight: '600', color: AS_THEME.text, maxWidth: 140 },
+  dropdownPillTextActive: { color: AS_THEME.white },
+  dropdownChevronSm: { fontSize: 13, color: AS_THEME.textMuted },
+  modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+  modalSheet: {
+    backgroundColor: AS_THEME.bg,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '70%',
+    paddingTop: 16,
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+  },
+  modalTitle: { fontSize: 16, fontWeight: '800', color: AS_THEME.text, marginBottom: 10 },
+  optionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: AS_THEME.border,
+    gap: 10,
+  },
+  optionName: { fontSize: 14, fontWeight: '600', color: AS_THEME.text, flex: 1 },
+  optionCheck: { fontSize: 16, fontWeight: '800', color: AS_THEME.primary },
   scrollBody: { paddingBottom: 40 },
   sectionLabel: {
     fontSize: 11,
