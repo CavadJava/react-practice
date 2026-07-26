@@ -4,47 +4,48 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { MainTabParamList } from './types';
 import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
-import { useCart } from '../context/CartContext';
-import LobbyScreen from '../screens/LobbyScreen';
-import ArticlesStackNavigator from './ArticlesStackNavigator';
+import ChargingStationsStackNavigator from './ChargingStationsStackNavigator';
+import ServicesStackNavigator from './ServicesStackNavigator';
 import ProfileScreen from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 const ICONS: Record<keyof MainTabParamList, string> = {
-  Home: '⌂',
-  Articles: '▤',
+  Map: '🗺️',
+  Home: '🛍️',
+  Services: '🛠️',
   Profile: '👤',
 };
 
 const LABEL_KEYS: Record<keyof MainTabParamList, string> = {
-  Home: 'tabs.home',
-  Articles: 'tabs.articles',
+  Map: 'tabs.map',
+  Home: 'shopping.entryTitle',
+  Services: 'tabs.services',
   Profile: 'tabs.profile',
 };
 
-type TabIconProps = { routeName: keyof MainTabParamList; color: string; size: number; count?: number; brand: string; white: string };
+type TabIconProps = { routeName: keyof MainTabParamList; color: string; size: number };
 
-function TabIcon({ routeName, color, size, count, brand, white }: TabIconProps) {
-  return (
-    <View>
-      <Text style={{ fontSize: size, color }}>{ICONS[routeName]}</Text>
-      {!!count && (
-        <View style={[styles.badge, { backgroundColor: brand }]}>
-          <Text style={[styles.badgeText, { color: white }]}>{count}</Text>
-        </View>
-      )}
-    </View>
-  );
+function TabIcon({ routeName, color, size }: TabIconProps) {
+  return <Text style={{ fontSize: size, color }}>{ICONS[routeName]}</Text>;
+}
+
+// Never actually rendered — tapping the "Home" tab is intercepted by the
+// tabPress listener below, which opens the root-level "Shopping" section
+// instead of switching to this tab. Kept only because Tab.Screen requires
+// a component.
+function ShoppingPlaceholder() {
+  const { colors } = useTheme();
+  return <View style={[styles.redirectPlaceholder, { backgroundColor: colors.bg }]} />;
 }
 
 export default function MainTabNavigator() {
   const { colors } = useTheme();
   const { t } = useLocale();
-  const { cartCount } = useCart();
 
   return (
     <Tab.Navigator
+      initialRouteName="Map"
       screenOptions={({ route }) => {
         const routeName = route.name as keyof MainTabParamList;
         return {
@@ -53,36 +54,30 @@ export default function MainTabNavigator() {
           tabBarInactiveTintColor: colors.textFaded,
           tabBarStyle: { backgroundColor: colors.card, borderTopColor: colors.divider },
           tabBarLabel: t(LABEL_KEYS[routeName]),
-          tabBarIcon: ({ color, size }) => (
-            <TabIcon
-              routeName={routeName}
-              color={color}
-              size={size}
-              count={routeName === 'Home' ? cartCount : undefined}
-              brand={colors.brand}
-              white={colors.white}
-            />
-          ),
+          tabBarIcon: ({ color, size }) => <TabIcon routeName={routeName} color={color} size={size} />,
         };
       }}>
-      <Tab.Screen name="Home" component={LobbyScreen} />
-      <Tab.Screen name="Articles" component={ArticlesStackNavigator} />
+      <Tab.Screen name="Map" component={ChargingStationsStackNavigator} />
+      <Tab.Screen
+        name="Home"
+        component={ShoppingPlaceholder}
+        listeners={({ navigation }) => ({
+          tabPress: e => {
+            // Only a real tap should open Shopping — using focus (instead of
+            // tabPress) here would re-fire every time this tab regains focus,
+            // including right after the user backs out of Shopping, making
+            // it impossible to ever leave.
+            e.preventDefault();
+            navigation.getParent()?.navigate('Shopping');
+          },
+        })}
+      />
+      <Tab.Screen name="Services" component={ServicesStackNavigator} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }
 
 const styles = StyleSheet.create({
-  badge: {
-    position: 'absolute',
-    top: -4,
-    right: -8,
-    borderRadius: 999,
-    minWidth: 15,
-    height: 15,
-    paddingHorizontal: 3,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  badgeText: { fontSize: 9, fontWeight: '800' },
+  redirectPlaceholder: { flex: 1 },
 });

@@ -3,8 +3,9 @@ import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MapView, { Marker, Region } from 'react-native-maps';
 import type { CompositeScreenProps } from '@react-navigation/native';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { ChargingStationsStackParamList, RootStackParamList } from '../navigation/types';
+import type { ChargingStationsStackParamList, MainTabParamList, RootStackParamList } from '../navigation/types';
 import {
   CHARGING_NETWORKS,
   ChargingNetwork,
@@ -21,7 +22,7 @@ import LocationActionSheet from '../components/LocationActionSheet';
 
 type Props = CompositeScreenProps<
   NativeStackScreenProps<ChargingStationsStackParamList, 'ChargingStations'>,
-  NativeStackScreenProps<RootStackParamList>
+  CompositeScreenProps<BottomTabScreenProps<MainTabParamList>, NativeStackScreenProps<RootStackParamList>>
 >;
 
 const BAKU_REGION: Region = { latitude: 40.39, longitude: 49.86, latitudeDelta: 0.12, longitudeDelta: 0.12 };
@@ -146,9 +147,6 @@ export default function ChargingStationsScreen({ navigation }: Props) {
 
       <View style={[styles.topOverlay, { paddingTop: insets.top + 8 }]}>
         <View style={styles.searchRow}>
-          <Pressable onPress={() => navigation.getParent()?.goBack()} hitSlop={10} style={styles.backCircle}>
-            <Text style={styles.backCircleText}>←</Text>
-          </Pressable>
           <View style={styles.searchBar}>
             <Text style={styles.searchIcon}>⌕</Text>
             <TextInput
@@ -290,15 +288,6 @@ const makeStyles = (colors: ThemeColors) =>
     screen: { flex: 1, backgroundColor: colors.bg },
     topOverlay: { position: 'absolute', top: 0, left: 0, right: 0, paddingBottom: 10 },
     searchRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: spacing.lg },
-    backCircle: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      backgroundColor: 'rgba(20,20,22,0.82)',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    backCircleText: { color: '#fff', fontSize: 18 },
     searchBar: {
       flex: 1,
       flexDirection: 'row',

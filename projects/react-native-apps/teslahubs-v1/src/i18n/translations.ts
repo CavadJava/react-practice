@@ -15,9 +15,8 @@ const en = {
     cart: 'Cart',
     profile: 'Profile',
     articles: 'Articles',
-  },
-  lobby: {
-    subtitle: 'Choose where you want to go',
+    map: 'Map',
+    services: 'Services',
   },
   shopping: {
     entryTitle: 'Shopping',
@@ -30,6 +29,7 @@ const en = {
   },
   articles: {
     title: 'Articles',
+    gridSubtitle: 'Tips, maintenance guides & news',
     readMinutes: '{{count}} min read',
     empty: 'No articles yet',
   },
@@ -246,9 +246,8 @@ const az: typeof en = {
     cart: 'Səbət',
     profile: 'Profil',
     articles: 'Məqalələr',
-  },
-  lobby: {
-    subtitle: 'Getmək istədiyiniz bölməni seçin',
+    map: 'Xəritə',
+    services: 'Xidmətlər',
   },
   shopping: {
     entryTitle: 'Alış-veriş',
@@ -261,6 +260,7 @@ const az: typeof en = {
   },
   articles: {
     title: 'Məqalələr',
+    gridSubtitle: 'Məsləhətlər, baxım bələdçiləri və xəbərlər',
     readMinutes: '{{count}} dəq oxu',
     empty: 'Hələ məqalə yoxdur',
   },

@@ -5,7 +5,6 @@ import type { RootStackParamList } from './types';
 import { useTheme } from '../context/ThemeContext';
 import MainTabNavigator from './MainTabNavigator';
 import ShoppingTabNavigator from './ShoppingTabNavigator';
-import ChargingStationsStackNavigator from './ChargingStationsStackNavigator';
 import CarWashStackNavigator from './CarWashStackNavigator';
 import TeslaServiceStackNavigator from './TeslaServiceStackNavigator';
 import OrderConfirmScreen from '../screens/OrderConfirmScreen';
@@ -28,7 +27,6 @@ export default function RootNavigator() {
       <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
         <Stack.Screen name="MainTabs" component={MainTabNavigator} />
         <Stack.Screen name="Shopping" component={ShoppingTabNavigator} />
-        <Stack.Screen name="ChargingStations" component={ChargingStationsStackNavigator} options={{ presentation: 'fullScreenModal' }} />
         <Stack.Screen name="CarWash" component={CarWashStackNavigator} options={{ presentation: 'fullScreenModal' }} />
         <Stack.Screen name="TeslaService" component={TeslaServiceStackNavigator} options={{ presentation: 'fullScreenModal' }} />
         <Stack.Screen name="OrderConfirm" component={OrderConfirmScreen} />

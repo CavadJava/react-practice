@@ -41,6 +41,13 @@ export type ChargingStationsStackParamList = {
   ChargingStationDetail: { stationId: string };
 };
 
+// The "Xidmətlər" (Services) tab: a grid landing screen (AvtoYuma/Tesla
+// Service/Articles) with Articles' own screens pushed inline in the same
+// stack — AvtoYuma/Tesla Service still open as their own root-level modals.
+export type ServicesStackParamList = ArticlesStackParamList & {
+  ServicesGrid: undefined;
+};
+
 // The full shopping experience (browsing, cart, wishlist) — presented as its
 // own section from the root, the same way CarWash/TeslaService are, so it
 // reads as a distinct part of the app. This is exactly the previous
@@ -54,18 +61,19 @@ export type ShoppingTabParamList = {
 };
 
 export type MainTabParamList = {
-  // Not product-browsing content itself — a lobby listing the app's
-  // sections (Shopping, Charging Stations, AvtoYuma, Tesla Service) as
-  // equal peer entries (see LobbyScreen).
+  // The Charging Stations map, hosted directly (not a modal) so it's the
+  // app's default, always-visible landing tab.
+  Map: NavigatorScreenParams<ChargingStationsStackParamList> | undefined;
+  // Not a real screen — focusing this tab immediately opens the root-level
+  // "Shopping" section (see ShoppingRedirect in MainTabNavigator).
   Home: undefined;
-  Articles: NavigatorScreenParams<ArticlesStackParamList> | undefined;
+  Services: NavigatorScreenParams<ServicesStackParamList> | undefined;
   Profile: undefined;
 };
 
 export type RootStackParamList = {
   MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
   Shopping: NavigatorScreenParams<ShoppingTabParamList> | undefined;
-  ChargingStations: NavigatorScreenParams<ChargingStationsStackParamList> | undefined;
   CarWash: NavigatorScreenParams<CarWashStackParamList> | undefined;
   TeslaService: NavigatorScreenParams<TeslaServiceStackParamList> | undefined;
   OrderConfirm: {

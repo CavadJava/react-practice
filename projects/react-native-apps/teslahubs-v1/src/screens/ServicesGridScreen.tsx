@@ -1,0 +1,66 @@
+import React, { useMemo } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import type { CompositeScreenProps } from '@react-navigation/native';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { MainTabParamList, RootStackParamList, ServicesStackParamList } from '../navigation/types';
+import { ThemeColors, radius, spacing } from '../theme/theme';
+import { useTheme } from '../context/ThemeContext';
+import { useLocale } from '../context/LocaleContext';
+
+type Props = CompositeScreenProps<
+  NativeStackScreenProps<ServicesStackParamList, 'ServicesGrid'>,
+  CompositeScreenProps<BottomTabScreenProps<MainTabParamList>, NativeStackScreenProps<RootStackParamList>>
+>;
+
+type Tile = { key: string; icon: string; titleKey: string; subtitleKey: string; onPress: (navigation: Props['navigation']) => void };
+
+const TILES: Tile[] = [
+  { key: 'carwash', icon: '🧼', titleKey: 'carwash.entryTitle', subtitleKey: 'carwash.entrySubtitle', onPress: nav => nav.navigate('CarWash') },
+  { key: 'teslaservice', icon: '🔧', titleKey: 'teslaservice.entryTitle', subtitleKey: 'teslaservice.entrySubtitle', onPress: nav => nav.navigate('TeslaService') },
+  { key: 'articles', icon: '▤', titleKey: 'articles.title', subtitleKey: 'articles.gridSubtitle', onPress: nav => nav.navigate('Articles') },
+];
+
+export default function ServicesGridScreen({ navigation }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const { t } = useLocale();
+
+  return (
+    <SafeAreaView style={styles.screen} edges={['top']}>
+      <Text style={styles.title}>{t('tabs.services')}</Text>
+      <ScrollView contentContainerStyle={styles.grid}>
+        {TILES.map(tile => (
+          <Pressable key={tile.key} style={({ pressed }) => [styles.tile, pressed && styles.tilePressed]} onPress={() => tile.onPress(navigation)}>
+            <Text style={styles.tileIcon}>{tile.icon}</Text>
+            <Text style={styles.tileTitle}>{t(tile.titleKey)}</Text>
+            <Text style={styles.tileSubtitle} numberOfLines={2}>
+              {t(tile.subtitleKey)}
+            </Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const makeStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    screen: { flex: 1, backgroundColor: colors.bg },
+    title: { fontSize: 22, fontWeight: '800', color: colors.text, paddingHorizontal: spacing.xl, paddingBottom: spacing.lg },
+    grid: { paddingHorizontal: spacing.xl, paddingBottom: 40, flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+    tile: {
+      width: '47%',
+      backgroundColor: colors.cardAlt,
+      borderRadius: radius.xl,
+      padding: 16,
+      gap: 6,
+      minHeight: 130,
+      justifyContent: 'center',
+    },
+    tilePressed: { opacity: 0.85 },
+    tileIcon: { fontSize: 28 },
+    tileTitle: { fontSize: 14, fontWeight: '700', color: colors.text },
+    tileSubtitle: { fontSize: 11, color: colors.textMuted, lineHeight: 15 },
+  });

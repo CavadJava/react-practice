@@ -7,6 +7,7 @@ import { ARTICLES, getArticleCategoryName } from '../data/articles';
 import { ThemeColors, radius, spacing } from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
+import HeaderBar from '../components/HeaderBar';
 
 type Props = NativeStackScreenProps<ArticlesStackParamList, 'Articles'>;
 
@@ -17,7 +18,7 @@ export default function ArticlesScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
-      <Text style={styles.title}>{t('articles.title')}</Text>
+      <HeaderBar title={t('articles.title')} onBack={() => navigation.goBack()} />
       <FlatList
         data={ARTICLES}
         keyExtractor={item => item.id}
@@ -52,7 +53,6 @@ export default function ArticlesScreen({ navigation }: Props) {
 const makeStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     screen: { flex: 1, backgroundColor: colors.bg },
-    title: { fontSize: 22, fontWeight: '800', color: colors.text, paddingHorizontal: spacing.xl, paddingBottom: spacing.lg },
     list: { paddingHorizontal: spacing.xl, paddingBottom: 40, gap: 14 },
     emptyText: { textAlign: 'center', color: colors.textFaded, fontSize: 14, marginTop: 40 },
     card: {
