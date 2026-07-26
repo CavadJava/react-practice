@@ -40,6 +40,7 @@ export default function AutoServicesScreen({ navigation }: Props) {
   const [activeCity, setActiveCity] = useState<string | null>(null);
   const [sortAsc, setSortAsc] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [expandedSection, setExpandedSection] = useState<string | null>('seller');
   const [brandOpen, setBrandOpen] = useState(false);
   const [serviceOpen, setServiceOpen] = useState(false);
 
@@ -63,6 +64,32 @@ export default function AutoServicesScreen({ navigation }: Props) {
     (activePriceRangeIndex != null ? 1 : 0) +
     (activeRatingMin != null ? 1 : 0) +
     (activeCity ? 1 : 0);
+
+  const toggleSection = (key: string) => setExpandedSection(prev => (prev === key ? null : key));
+
+  const activeChips: { key: string; label: string; onClear: () => void }[] = [];
+  if (activeProviderId) {
+    activeChips.push({ key: 'seller', label: brandFilters.find(f => f.key === activeProviderId)?.label ?? '', onClear: () => setActiveProviderId(null) });
+  }
+  if (activeServiceId) {
+    activeChips.push({ key: 'service', label: serviceFilters.find(f => f.key === activeServiceId)?.label ?? '', onClear: () => setActiveServiceId(null) });
+  }
+  if (activeDiscountMin != null) {
+    const tier = DISCOUNT_TIERS.find(d => d.min === activeDiscountMin);
+    activeChips.push({ key: 'discount', label: tier ? t(tier.labelKey) : '', onClear: () => setActiveDiscountMin(null) });
+  }
+  if (activeCarBrand) {
+    activeChips.push({ key: 'carBrand', label: activeCarBrand, onClear: () => setActiveCarBrand(null) });
+  }
+  if (activePriceRangeIndex != null) {
+    activeChips.push({ key: 'price', label: PRICE_RANGES[activePriceRangeIndex].label, onClear: () => setActivePriceRangeIndex(null) });
+  }
+  if (activeRatingMin != null) {
+    activeChips.push({ key: 'rating', label: `⭐ ${activeRatingMin.toFixed(1)}+`, onClear: () => setActiveRatingMin(null) });
+  }
+  if (activeCity) {
+    activeChips.push({ key: 'city', label: activeCity, onClear: () => setActiveCity(null) });
+  }
 
   const resetAllFilters = () => {
     setActiveProviderId(null);
@@ -168,6 +195,22 @@ export default function AutoServicesScreen({ navigation }: Props) {
         </Pressable>
       </ScrollView>
 
+      {activeChips.length > 0 && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterList} contentContainerStyle={styles.activeChipsRow}>
+          {activeChips.map(chip => (
+            <Pressable key={chip.key} style={styles.activeChip} onPress={chip.onClear}>
+              <Text style={styles.activeChipText} numberOfLines={1}>
+                {chip.label}
+              </Text>
+              <Text style={styles.activeChipClose}>✕</Text>
+            </Pressable>
+          ))}
+          <Pressable style={styles.activeChipClearAll} onPress={resetAllFilters}>
+            <Text style={styles.activeChipClearAllText}>{t('autoservices.resetFilters')}</Text>
+          </Pressable>
+        </ScrollView>
+      )}
+
       <Modal visible={filtersOpen} animationType="slide" transparent onRequestClose={() => setFiltersOpen(false)}>
         <Pressable style={styles.modalBackdrop} onPress={() => setFiltersOpen(false)}>
           <Pressable style={styles.modalSheet} onPress={() => {}}>
@@ -180,105 +223,154 @@ export default function AutoServicesScreen({ navigation }: Props) {
               )}
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
-              <Text style={styles.filterSectionTitle}>{t('autoservices.seller')}</Text>
-              {brandFilters.map(item => {
-                const isActive = activeProviderId === item.key;
-                return (
-                  <Pressable key={`brand-${String(item.key)}`} style={styles.optionRow} onPress={() => setActiveProviderId(item.key)}>
-                    <Text style={styles.optionName}>{item.label}</Text>
-                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
-                  </Pressable>
-                );
-              })}
-
-              <Text style={styles.filterSectionTitle}>{t('autoservices.serviceFilter')}</Text>
-              {serviceFilters.map(item => {
-                const isActive = activeServiceId === item.key;
-                return (
-                  <Pressable key={`svc-${String(item.key)}`} style={styles.optionRow} onPress={() => setActiveServiceId(item.key)}>
-                    <Text style={styles.optionName}>{item.label}</Text>
-                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
-                  </Pressable>
-                );
-              })}
-
-              <Text style={styles.filterSectionTitle}>{t('autoservices.discount')}</Text>
-              <Pressable style={styles.optionRow} onPress={() => setActiveDiscountMin(null)}>
-                <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
-                {activeDiscountMin == null && <Text style={styles.optionCheck}>✓</Text>}
+              <Pressable style={styles.sectionHeaderRow} onPress={() => toggleSection('seller')}>
+                <Text style={styles.filterSectionTitle}>{t('autoservices.seller')}</Text>
+                <Text style={styles.sectionChevron}>{expandedSection === 'seller' ? '⌃' : '⌄'}</Text>
               </Pressable>
-              {DISCOUNT_TIERS.map(tier => {
-                const isActive = activeDiscountMin === tier.min;
-                return (
-                  <Pressable key={`disc-${tier.min}`} style={styles.optionRow} onPress={() => setActiveDiscountMin(tier.min)}>
-                    <Text style={styles.optionName}>{t(tier.labelKey)}</Text>
-                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
-                  </Pressable>
-                );
-              })}
+              {expandedSection === 'seller' && (
+                <View style={styles.sectionChildren}>
+                  {brandFilters.map(item => {
+                    const isActive = activeProviderId === item.key;
+                    return (
+                      <Pressable key={`brand-${String(item.key)}`} style={styles.optionRow} onPress={() => setActiveProviderId(item.key)}>
+                        <Text style={styles.optionName}>{item.label}</Text>
+                        {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              )}
 
-              <Text style={styles.filterSectionTitle}>{t('autoservices.carBrand')}</Text>
-              <Pressable style={styles.optionRow} onPress={() => setActiveCarBrand(null)}>
-                <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
-                {!activeCarBrand && <Text style={styles.optionCheck}>✓</Text>}
+              <Pressable style={styles.sectionHeaderRow} onPress={() => toggleSection('service')}>
+                <Text style={styles.filterSectionTitle}>{t('autoservices.serviceFilter')}</Text>
+                <Text style={styles.sectionChevron}>{expandedSection === 'service' ? '⌃' : '⌄'}</Text>
               </Pressable>
-              {AUTO_SERVICE_CAR_BRANDS.map(brand => {
-                const isActive = activeCarBrand === brand;
-                return (
-                  <Pressable key={`car-${brand}`} style={styles.optionRow} onPress={() => setActiveCarBrand(brand)}>
-                    <Text style={styles.optionName}>{brand}</Text>
-                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
-                  </Pressable>
-                );
-              })}
+              {expandedSection === 'service' && (
+                <View style={styles.sectionChildren}>
+                  {serviceFilters.map(item => {
+                    const isActive = activeServiceId === item.key;
+                    return (
+                      <Pressable key={`svc-${String(item.key)}`} style={styles.optionRow} onPress={() => setActiveServiceId(item.key)}>
+                        <Text style={styles.optionName}>{item.label}</Text>
+                        {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              )}
 
-              <Text style={styles.filterSectionTitle}>{t('autoservices.priceRange')}</Text>
-              <Pressable style={styles.optionRow} onPress={() => setActivePriceRangeIndex(null)}>
-                <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
-                {activePriceRangeIndex == null && <Text style={styles.optionCheck}>✓</Text>}
+              <Pressable style={styles.sectionHeaderRow} onPress={() => toggleSection('discount')}>
+                <Text style={styles.filterSectionTitle}>{t('autoservices.discount')}</Text>
+                <Text style={styles.sectionChevron}>{expandedSection === 'discount' ? '⌃' : '⌄'}</Text>
               </Pressable>
-              {PRICE_RANGES.map((range, i) => {
-                const isActive = activePriceRangeIndex === i;
-                return (
-                  <Pressable key={`price-${i}`} style={styles.optionRow} onPress={() => setActivePriceRangeIndex(i)}>
-                    <Text style={styles.optionName}>{range.label}</Text>
-                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
+              {expandedSection === 'discount' && (
+                <View style={styles.sectionChildren}>
+                  <Pressable style={styles.optionRow} onPress={() => setActiveDiscountMin(null)}>
+                    <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
+                    {activeDiscountMin == null && <Text style={styles.optionCheck}>✓</Text>}
                   </Pressable>
-                );
-              })}
+                  {DISCOUNT_TIERS.map(tier => {
+                    const isActive = activeDiscountMin === tier.min;
+                    return (
+                      <Pressable key={`disc-${tier.min}`} style={styles.optionRow} onPress={() => setActiveDiscountMin(tier.min)}>
+                        <Text style={styles.optionName}>{t(tier.labelKey)}</Text>
+                        {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              )}
 
-              <Text style={styles.filterSectionTitle}>{t('autoservices.rating')}</Text>
-              <Pressable style={styles.optionRow} onPress={() => setActiveRatingMin(null)}>
-                <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
-                {activeRatingMin == null && <Text style={styles.optionCheck}>✓</Text>}
+              <Pressable style={styles.sectionHeaderRow} onPress={() => toggleSection('carBrand')}>
+                <Text style={styles.filterSectionTitle}>{t('autoservices.carBrand')}</Text>
+                <Text style={styles.sectionChevron}>{expandedSection === 'carBrand' ? '⌃' : '⌄'}</Text>
               </Pressable>
-              {RATING_TIERS.map(tier => {
-                const isActive = activeRatingMin === tier;
-                return (
-                  <Pressable key={`rating-${tier}`} style={styles.optionRow} onPress={() => setActiveRatingMin(tier)}>
-                    <Text style={styles.optionName}>
-                      ⭐ {tier.toFixed(1)}
-                      {tier < 5 ? '+' : ''}
-                    </Text>
-                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
+              {expandedSection === 'carBrand' && (
+                <View style={styles.sectionChildren}>
+                  <Pressable style={styles.optionRow} onPress={() => setActiveCarBrand(null)}>
+                    <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
+                    {!activeCarBrand && <Text style={styles.optionCheck}>✓</Text>}
                   </Pressable>
-                );
-              })}
+                  {AUTO_SERVICE_CAR_BRANDS.map(brand => {
+                    const isActive = activeCarBrand === brand;
+                    return (
+                      <Pressable key={`car-${brand}`} style={styles.optionRow} onPress={() => setActiveCarBrand(brand)}>
+                        <Text style={styles.optionName}>{brand}</Text>
+                        {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              )}
 
-              <Text style={styles.filterSectionTitle}>{t('autoservices.location')}</Text>
-              <Pressable style={styles.optionRow} onPress={() => setActiveCity(null)}>
-                <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
-                {!activeCity && <Text style={styles.optionCheck}>✓</Text>}
+              <Pressable style={styles.sectionHeaderRow} onPress={() => toggleSection('price')}>
+                <Text style={styles.filterSectionTitle}>{t('autoservices.priceRange')}</Text>
+                <Text style={styles.sectionChevron}>{expandedSection === 'price' ? '⌃' : '⌄'}</Text>
               </Pressable>
-              {AUTO_SERVICE_CITIES.map(city => {
-                const isActive = activeCity === city;
-                return (
-                  <Pressable key={`city-${city}`} style={styles.optionRow} onPress={() => setActiveCity(city)}>
-                    <Text style={styles.optionName}>{city}</Text>
-                    {isActive && <Text style={styles.optionCheck}>✓</Text>}
+              {expandedSection === 'price' && (
+                <View style={styles.sectionChildren}>
+                  <Pressable style={styles.optionRow} onPress={() => setActivePriceRangeIndex(null)}>
+                    <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
+                    {activePriceRangeIndex == null && <Text style={styles.optionCheck}>✓</Text>}
                   </Pressable>
-                );
-              })}
+                  {PRICE_RANGES.map((range, i) => {
+                    const isActive = activePriceRangeIndex === i;
+                    return (
+                      <Pressable key={`price-${i}`} style={styles.optionRow} onPress={() => setActivePriceRangeIndex(i)}>
+                        <Text style={styles.optionName}>{range.label}</Text>
+                        {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              )}
+
+              <Pressable style={styles.sectionHeaderRow} onPress={() => toggleSection('rating')}>
+                <Text style={styles.filterSectionTitle}>{t('autoservices.rating')}</Text>
+                <Text style={styles.sectionChevron}>{expandedSection === 'rating' ? '⌃' : '⌄'}</Text>
+              </Pressable>
+              {expandedSection === 'rating' && (
+                <View style={styles.sectionChildren}>
+                  <Pressable style={styles.optionRow} onPress={() => setActiveRatingMin(null)}>
+                    <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
+                    {activeRatingMin == null && <Text style={styles.optionCheck}>✓</Text>}
+                  </Pressable>
+                  {RATING_TIERS.map(tier => {
+                    const isActive = activeRatingMin === tier;
+                    return (
+                      <Pressable key={`rating-${tier}`} style={styles.optionRow} onPress={() => setActiveRatingMin(tier)}>
+                        <Text style={styles.optionName}>
+                          ⭐ {tier.toFixed(1)}
+                          {tier < 5 ? '+' : ''}
+                        </Text>
+                        {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              )}
+
+              <Pressable style={styles.sectionHeaderRow} onPress={() => toggleSection('city')}>
+                <Text style={styles.filterSectionTitle}>{t('autoservices.location')}</Text>
+                <Text style={styles.sectionChevron}>{expandedSection === 'city' ? '⌃' : '⌄'}</Text>
+              </Pressable>
+              {expandedSection === 'city' && (
+                <View style={styles.sectionChildren}>
+                  <Pressable style={styles.optionRow} onPress={() => setActiveCity(null)}>
+                    <Text style={styles.optionName}>{t('charging.filterAll')}</Text>
+                    {!activeCity && <Text style={styles.optionCheck}>✓</Text>}
+                  </Pressable>
+                  {AUTO_SERVICE_CITIES.map(city => {
+                    const isActive = activeCity === city;
+                    return (
+                      <Pressable key={`city-${city}`} style={styles.optionRow} onPress={() => setActiveCity(city)}>
+                        <Text style={styles.optionName}>{city}</Text>
+                        {isActive && <Text style={styles.optionCheck}>✓</Text>}
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              )}
             </ScrollView>
             <Pressable style={styles.modalApplyBtn} onPress={() => setFiltersOpen(false)}>
               <Text style={styles.modalApplyBtnText}>
@@ -365,8 +457,9 @@ export default function AutoServicesScreen({ navigation }: Props) {
                         </View>
                       )}
                     </Pressable>
-                    <Pressable onPress={goToProvider}>
+                    <Pressable onPress={goToProvider} style={styles.postProviderRow}>
                       <Text style={[styles.postProvider, { color: post.providerColor }]}>{post.providerName}</Text>
+                      <Text style={styles.postRating}>⭐ {post.providerRating.toFixed(1)}</Text>
                     </Pressable>
                     {post.serviceName && (
                       <Pressable onPress={goToProvider}>
@@ -377,6 +470,10 @@ export default function AutoServicesScreen({ navigation }: Props) {
                     )}
                     <Text style={styles.postCaption} numberOfLines={2}>
                       {post.caption}
+                    </Text>
+                    <Text style={styles.postMetaLine} numberOfLines={1}>
+                      📍 {post.providerCity} · 🚗 {post.providerCarBrands.slice(0, 2).join(', ')}
+                      {post.providerCarBrands.length > 2 ? '…' : ''}
                     </Text>
                     {hasDiscount ? (
                       <View style={styles.postPriceRow}>
@@ -454,6 +551,21 @@ const styles = StyleSheet.create({
   dropdownPillText: { fontSize: 12.5, fontWeight: '600', color: AS_THEME.text, maxWidth: 140 },
   dropdownPillTextActive: { color: AS_THEME.white },
   dropdownChevronSm: { fontSize: 13, color: AS_THEME.textMuted },
+  activeChipsRow: { paddingHorizontal: 20, paddingBottom: 14, gap: 8, alignItems: 'center' },
+  activeChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 12,
+    paddingRight: 8,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: AS_THEME.primaryDark,
+    gap: 6,
+  },
+  activeChipText: { fontSize: 11.5, fontWeight: '600', color: AS_THEME.white, maxWidth: 120 },
+  activeChipClose: { fontSize: 11, color: AS_THEME.white, opacity: 0.85 },
+  activeChipClearAll: { paddingHorizontal: 4, height: 30, justifyContent: 'center' },
+  activeChipClearAllText: { fontSize: 11.5, fontWeight: '700', color: AS_THEME.primary, textDecorationLine: 'underline' },
   modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   modalSheet: {
     backgroundColor: AS_THEME.bg,
@@ -468,14 +580,21 @@ const styles = StyleSheet.create({
   modalHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   modalResetText: { fontSize: 12.5, fontWeight: '700', color: AS_THEME.primary, marginBottom: 10 },
   filterSectionTitle: {
-    fontSize: 11,
+    fontSize: 12.5,
     fontWeight: '800',
-    color: AS_THEME.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginTop: 16,
-    marginBottom: 4,
+    color: AS_THEME.text,
   },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 14,
+    marginTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: AS_THEME.border,
+  },
+  sectionChevron: { fontSize: 14, color: AS_THEME.textMuted },
+  sectionChildren: { paddingLeft: 12, paddingBottom: 4 },
   modalApplyBtn: { marginTop: 14, borderRadius: 12, paddingVertical: 14, alignItems: 'center', backgroundColor: AS_THEME.primary },
   modalApplyBtnText: { fontSize: 14, fontWeight: '700', color: AS_THEME.white },
   optionRow: {
@@ -502,12 +621,12 @@ const styles = StyleSheet.create({
   },
   emptyText: { fontSize: 13, color: AS_THEME.textMuted, paddingHorizontal: 20 },
   postsRow: { paddingHorizontal: 20, gap: 12, paddingBottom: 4 },
-  postCard: { width: 150 },
-  postThumbnail: { width: 150, height: 100, borderRadius: 12, backgroundColor: AS_THEME.cardAlt },
+  postCard: { width: 180 },
+  postThumbnail: { width: 180, height: 110, borderRadius: 12, backgroundColor: AS_THEME.cardAlt },
   postPlayBadge: {
     position: 'absolute',
-    top: 34,
-    left: 60,
+    top: 39,
+    left: 74,
     width: 32,
     height: 32,
     borderRadius: 16,
@@ -526,9 +645,12 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   postDiscountBadgeText: { color: AS_THEME.white, fontSize: 10.5, fontWeight: '800' },
-  postProvider: { fontSize: 11, fontWeight: '800', marginTop: 6 },
+  postProviderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 6 },
+  postProvider: { fontSize: 11, fontWeight: '800' },
+  postRating: { fontSize: 10.5, fontWeight: '700', color: AS_THEME.textMuted },
   postServiceName: { fontSize: 10.5, color: AS_THEME.textMuted, fontWeight: '600', marginTop: 1 },
   postCaption: { fontSize: 11.5, color: AS_THEME.textMuted, marginTop: 2, lineHeight: 15 },
+  postMetaLine: { fontSize: 10.5, color: AS_THEME.textMuted, marginTop: 3 },
   postPriceRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
   postPriceOld: { fontSize: 11, color: AS_THEME.textMuted, textDecorationLine: 'line-through' },
   postPriceNew: { fontSize: 13, fontWeight: '800' },
