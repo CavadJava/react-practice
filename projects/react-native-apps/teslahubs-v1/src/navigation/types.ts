@@ -46,6 +46,11 @@ export type AutoServicesStackParamList = {
   AutoServiceProvider: { providerId: string };
 };
 
+export type DoctorsStackParamList = {
+  Doctors: undefined;
+  DoctorDetail: { doctorId: string };
+};
+
 // The "Xidmətlər" (Services) tab: a grid landing screen (AvtoYuma/Tesla
 // Service/Articles) with Articles' own screens pushed inline in the same
 // stack — AvtoYuma/Tesla Service still open as their own root-level modals.
@@ -82,6 +87,7 @@ export type RootStackParamList = {
   CarWash: NavigatorScreenParams<CarWashStackParamList> | undefined;
   TeslaService: NavigatorScreenParams<TeslaServiceStackParamList> | undefined;
   AutoServices: NavigatorScreenParams<AutoServicesStackParamList> | undefined;
+  Doctors: NavigatorScreenParams<DoctorsStackParamList> | undefined;
   MyPlaces: undefined;
   OrderConfirm: {
     firstName: string;
