@@ -82,6 +82,7 @@ export type RootStackParamList = {
   CarWash: NavigatorScreenParams<CarWashStackParamList> | undefined;
   TeslaService: NavigatorScreenParams<TeslaServiceStackParamList> | undefined;
   AutoServices: NavigatorScreenParams<AutoServicesStackParamList> | undefined;
+  MyPlaces: undefined;
   OrderConfirm: {
     firstName: string;
     fullName: string;

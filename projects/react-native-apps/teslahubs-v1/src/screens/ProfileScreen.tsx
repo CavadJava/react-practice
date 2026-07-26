@@ -1,17 +1,25 @@
 import React, { useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { CompositeScreenProps } from '@react-navigation/native';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { MainTabParamList, RootStackParamList } from '../navigation/types';
 import { ThemeColors, ThemeKey, THEMES, radius, spacing } from '../theme/theme';
 import { LOCALES } from '../i18n/translations';
 import { CURRENCIES } from '../currency/currency';
 import { useTheme } from '../context/ThemeContext';
 import { useLocale } from '../context/LocaleContext';
 import { useCurrency } from '../context/CurrencyContext';
+import { useMyPlaces } from '../context/MyPlacesContext';
 
-export default function ProfileScreen() {
+type Props = CompositeScreenProps<BottomTabScreenProps<MainTabParamList, 'Profile'>, NativeStackScreenProps<RootStackParamList>>;
+
+export default function ProfileScreen({ navigation }: Props) {
   const { colors, themeKey, setThemeKey } = useTheme();
   const { t, locale, setLocale } = useLocale();
   const { currency, setCurrency } = useCurrency();
+  const { places } = useMyPlaces();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   return (
@@ -25,6 +33,19 @@ export default function ProfileScreen() {
           </View>
           <Text style={styles.name}>{t('profile.guest')}</Text>
         </View>
+
+        <Pressable style={styles.moduleRow} onPress={() => navigation.navigate('MyPlaces')}>
+          <View style={styles.moduleIconWrap}>
+            <Text style={styles.moduleIcon}>📍</Text>
+          </View>
+          <View style={styles.moduleTextWrap}>
+            <Text style={styles.moduleTitle}>{t('profile.myPlaces')}</Text>
+            <Text style={styles.moduleSubtitle}>
+              {places.length > 0 ? t('myplaces.countSubtitle', { count: String(places.length) }) : t('myplaces.empty')}
+            </Text>
+          </View>
+          <Text style={styles.moduleChevron}>›</Text>
+        </Pressable>
 
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>{t('profile.language')}</Text>
@@ -102,6 +123,29 @@ const makeStyles = (colors: ThemeColors) =>
     },
     avatarText: { color: colors.white, fontSize: 20, fontWeight: '800' },
     name: { color: colors.text, fontSize: 17, fontWeight: '700' },
+    moduleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+      backgroundColor: colors.card,
+      borderRadius: radius.lg,
+      borderWidth: 1,
+      borderColor: colors.borderLight,
+      padding: 14,
+    },
+    moduleIconWrap: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: colors.brandMuted,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    moduleIcon: { fontSize: 18 },
+    moduleTextWrap: { flex: 1, gap: 2 },
+    moduleTitle: { fontSize: 14.5, fontWeight: '700', color: colors.text },
+    moduleSubtitle: { fontSize: 12, color: colors.textMuted },
+    moduleChevron: { fontSize: 20, color: colors.textFaded },
     section: { gap: spacing.sm },
     sectionLabel: { color: colors.textFaded, fontSize: 11, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase' },
     chipRow: { flexDirection: 'row', gap: spacing.sm },

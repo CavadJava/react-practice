@@ -12,6 +12,7 @@ import { ThemeProvider } from './src/context/ThemeContext';
 import { LocaleProvider } from './src/context/LocaleContext';
 import { CurrencyProvider } from './src/context/CurrencyContext';
 import { WishlistProvider } from './src/context/WishlistContext';
+import { MyPlacesProvider } from './src/context/MyPlacesContext';
 import { CarWashBookingProvider } from './src/context/CarWashBookingContext';
 import RootNavigator from './src/navigation/RootNavigator';
 import AppStatusBar from './src/components/AppStatusBar';
@@ -25,9 +26,11 @@ function App() {
             <AppStatusBar />
             <CartProvider>
               <WishlistProvider>
-                <CarWashBookingProvider>
-                  <RootNavigator />
-                </CarWashBookingProvider>
+                <MyPlacesProvider>
+                  <CarWashBookingProvider>
+                    <RootNavigator />
+                  </CarWashBookingProvider>
+                </MyPlacesProvider>
               </WishlistProvider>
             </CartProvider>
           </CurrencyProvider>
