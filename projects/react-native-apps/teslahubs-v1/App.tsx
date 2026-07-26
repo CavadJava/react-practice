@@ -14,6 +14,7 @@ import { CurrencyProvider } from './src/context/CurrencyContext';
 import { WishlistProvider } from './src/context/WishlistContext';
 import { MyPlacesProvider } from './src/context/MyPlacesContext';
 import { RestaurantFavoritesProvider } from './src/context/RestaurantFavoritesContext';
+import { CoursesProgressProvider } from './src/context/CoursesProgressContext';
 import { CarWashBookingProvider } from './src/context/CarWashBookingContext';
 import RootNavigator from './src/navigation/RootNavigator';
 import AppStatusBar from './src/components/AppStatusBar';
@@ -29,9 +30,11 @@ function App() {
               <WishlistProvider>
                 <MyPlacesProvider>
                   <RestaurantFavoritesProvider>
-                    <CarWashBookingProvider>
-                      <RootNavigator />
-                    </CarWashBookingProvider>
+                    <CoursesProgressProvider>
+                      <CarWashBookingProvider>
+                        <RootNavigator />
+                      </CarWashBookingProvider>
+                    </CoursesProgressProvider>
                   </RestaurantFavoritesProvider>
                 </MyPlacesProvider>
               </WishlistProvider>

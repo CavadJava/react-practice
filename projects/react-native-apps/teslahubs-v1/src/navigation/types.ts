@@ -60,6 +60,12 @@ export type RestaurantsStackParamList = {
   RestaurantList: { mode: RestaurantListMode; category?: FoodCategory; title: string };
 };
 
+export type CoursesStackParamList = {
+  Courses: undefined;
+  CourseDetail: { courseId: string };
+  Lesson: { courseId: string; lessonId: string };
+};
+
 // The "Xidmətlər" (Services) tab: a grid landing screen (AvtoYuma/Tesla
 // Service/Articles) with Articles' own screens pushed inline in the same
 // stack — AvtoYuma/Tesla Service still open as their own root-level modals.
@@ -98,6 +104,7 @@ export type RootStackParamList = {
   AutoServices: NavigatorScreenParams<AutoServicesStackParamList> | undefined;
   Doctors: NavigatorScreenParams<DoctorsStackParamList> | undefined;
   Restaurants: NavigatorScreenParams<RestaurantsStackParamList> | undefined;
+  Courses: NavigatorScreenParams<CoursesStackParamList> | undefined;
   MyPlaces: undefined;
   OrderConfirm: {
     firstName: string;
