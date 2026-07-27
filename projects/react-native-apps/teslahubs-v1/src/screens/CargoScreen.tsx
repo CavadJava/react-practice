@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, Alert, Clipboard, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, Clipboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import type { CompositeScreenProps } from '@react-navigation/native';
@@ -147,10 +147,10 @@ export default function CargoScreen({ navigation }: Props) {
     setFormCompanyColor(company.color);
   };
 
-  const cancelCompanyForm = () => {
-    setEditingCompany(null);
-    setPickerOpen(true);
-  };
+  // Unlike the account form, closing this one does NOT reopen the picker —
+  // it just closes, returning to whichever screen was already visible
+  // behind it (the company grid, or a session if any were open).
+  const cancelCompanyForm = () => setEditingCompany(null);
 
   const saveCompanyForm = () => {
     if (!editingCompany || !formCompanyName.trim() || !formCompanyUrl.trim()) return;
@@ -161,8 +161,6 @@ export default function CargoScreen({ navigation }: Props) {
       updateCompany(editingCompany.id, payload);
     }
     setEditingCompany(null);
-    setPickerCompanyId(null);
-    setPickerOpen(true);
   };
 
   const confirmDeleteCompany = (company: CargoCompany) => {
@@ -407,8 +405,9 @@ export default function CargoScreen({ navigation }: Props) {
 
       {/* Add/edit account form */}
       <Modal visible={!!editingAccount} animationType="slide" transparent onRequestClose={cancelForm}>
-        <Pressable style={styles.modalBackdrop} onPress={cancelForm}>
-          <Pressable style={styles.modalSheet} onPress={() => {}}>
+        <KeyboardAvoidingView style={styles.modalBackdrop} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={cancelForm} />
+          <View style={styles.modalSheet}>
             <Text style={styles.modalTitle}>{editingAccount && 'id' in editingAccount ? t('cargo.editAccount') : t('cargo.addAccount')}</Text>
             <View style={styles.field}>
               <Text style={styles.label}>{t('cargo.label')}</Text>
@@ -445,14 +444,15 @@ export default function CargoScreen({ navigation }: Props) {
                 <Text style={styles.saveBtnText}>{t('cargo.save')}</Text>
               </Pressable>
             </View>
-          </Pressable>
-        </Pressable>
+          </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Add/edit company form */}
       <Modal visible={!!editingCompany} animationType="slide" transparent onRequestClose={cancelCompanyForm}>
-        <Pressable style={styles.modalBackdrop} onPress={cancelCompanyForm}>
-          <Pressable style={styles.modalSheet} onPress={() => {}}>
+        <KeyboardAvoidingView style={styles.modalBackdrop} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={cancelCompanyForm} />
+          <View style={styles.modalSheet}>
             <Text style={styles.modalTitle}>{editingCompany === 'new' ? t('cargo.addCompany') : t('cargo.editCompany')}</Text>
             <View style={styles.field}>
               <Text style={styles.label}>{t('cargo.companyName')}</Text>
@@ -509,8 +509,8 @@ export default function CargoScreen({ navigation }: Props) {
                 <Text style={styles.saveBtnText}>{t('cargo.save')}</Text>
               </Pressable>
             </View>
-          </Pressable>
-        </Pressable>
+          </View>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
