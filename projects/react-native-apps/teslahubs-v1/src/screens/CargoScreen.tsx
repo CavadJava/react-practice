@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Clipboard, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, Clipboard, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import type { CompositeScreenProps } from '@react-navigation/native';
@@ -198,8 +198,36 @@ export default function CargoScreen({ navigation }: Props) {
               if (!account || !company) return null;
               const isActive = activeId === id;
               return (
-                <View key={id} style={[StyleSheet.absoluteFill, !isActive && styles.hiddenWebview]}>
-                  <WebView source={{ uri: company.url }} style={styles.webview} />
+                // Kept mounted at all times (never unmounted, never
+                // display:'none') so switching tabs preserves each site's
+                // state. display:'none' toggling is a known cause of frozen/
+                // unresponsive WebViews on Android — the native surface
+                // doesn't reattach cleanly when it comes back. Stacking with
+                // zIndex + pointerEvents avoids that entirely.
+                <View
+                  key={id}
+                  style={[StyleSheet.absoluteFill, { zIndex: isActive ? 1 : 0 }]}
+                  pointerEvents={isActive ? 'auto' : 'none'}>
+                  <WebView
+                    source={{ uri: company.url }}
+                    style={styles.webview}
+                    javaScriptEnabled
+                    domStorageEnabled
+                    startInLoadingState
+                    renderLoading={() => (
+                      <View style={styles.webviewLoading}>
+                        <ActivityIndicator color={CG_THEME.primary} size="large" />
+                      </View>
+                    )}
+                    originWhitelist={['*']}
+                    cacheEnabled
+                    sharedCookiesEnabled
+                    thirdPartyCookiesEnabled
+                    mixedContentMode="always"
+                    setSupportMultipleWindows={false}
+                    allowsInlineMediaPlayback
+                    onShouldStartLoadWithRequest={() => true}
+                  />
                 </View>
               );
             })}
@@ -378,7 +406,7 @@ const styles = StyleSheet.create({
   copyBtnText: { fontSize: 11, fontWeight: '700', color: CG_THEME.primary },
   webviewStack: { flex: 1 },
   webview: { flex: 1, backgroundColor: CG_THEME.bg },
-  hiddenWebview: { display: 'none' },
+  webviewLoading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: CG_THEME.bg },
   modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   modalSheet: {
     backgroundColor: CG_THEME.bg,
