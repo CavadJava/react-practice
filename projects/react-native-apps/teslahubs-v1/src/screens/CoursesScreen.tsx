@@ -30,7 +30,8 @@ export default function CoursesScreen({ navigation }: Props) {
 
       <ScrollView contentContainerStyle={styles.list} showsVerticalScrollIndicator={false}>
         {COURSES.map(course => {
-          const unlocked = isUnlocked(course.id);
+          const isFree = course.price === 0;
+          const unlocked = isFree || isUnlocked(course.id);
           const totalLessons = getFlattenedLessons(course).length;
           const completedCount = completedLessonIds(course.id).length;
           const progressPct = unlocked && totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
@@ -42,7 +43,7 @@ export default function CoursesScreen({ navigation }: Props) {
               onPress={() => navigation.navigate('CourseDetail', { courseId: course.id })}>
               <Image source={{ uri: course.cover }} style={styles.cardPhoto} resizeMode="cover" />
               <View style={styles.statusBadge}>
-                <Text style={styles.statusBadgeText}>{unlocked ? `✓ ${t('courses.owned')}` : `🔒 ${t('courses.locked')}`}</Text>
+                <Text style={styles.statusBadgeText}>{isFree ? `✨ ${t('courses.free')}` : unlocked ? `✓ ${t('courses.owned')}` : `🔒 ${t('courses.locked')}`}</Text>
               </View>
               <View style={styles.cardBody}>
                 <Text style={styles.cardTitle}>{course.title}</Text>

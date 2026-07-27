@@ -12,7 +12,7 @@ import { useCoursesProgress } from '../context/CoursesProgressContext';
 
 type Props = CompositeScreenProps<NativeStackScreenProps<CoursesStackParamList, 'CourseDetail'>, NativeStackScreenProps<RootStackParamList>>;
 
-const LESSON_ICON: Record<Lesson['type'], string> = { theory: '📖', exercise: '✏️', project: '🚀' };
+const LESSON_ICON: Record<Lesson['type'], string> = { theory: '📖', exercise: '✏️', project: '🚀', 'english-notes': '📝' };
 
 export default function CourseDetailScreen({ navigation, route }: Props) {
   const { t } = useLocale();
@@ -26,7 +26,9 @@ export default function CourseDetailScreen({ navigation, route }: Props) {
 
   if (!course) return null;
 
-  const unlocked = isUnlocked(course.id);
+  // Free courses (price 0, like Daily English Notes) are always unlocked —
+  // no purchase/coupon needed.
+  const unlocked = course.price === 0 || isUnlocked(course.id);
   const flat = getFlattenedLessons(course);
 
   const isLessonUnlocked = (lessonId: string, index: number) => {
@@ -107,7 +109,7 @@ export default function CourseDetailScreen({ navigation, route }: Props) {
             </View>
           </View>
 
-          {unlocked ? (
+          {course.price === 0 ? null : unlocked ? (
             <View style={styles.unlockedBanner}>
               <Text style={styles.unlockedBannerText}>✓ {t('courses.youOwnThis')}</Text>
               <Pressable style={styles.resetBtn} onPress={handleReset}>

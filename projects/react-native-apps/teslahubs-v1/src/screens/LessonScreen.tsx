@@ -9,11 +9,17 @@ import { WHATSAPP_PHONE } from '../data/products';
 import { CO_THEME } from '../theme/coursesTheme';
 import { useLocale } from '../context/LocaleContext';
 import { useCoursesProgress } from '../context/CoursesProgressContext';
+import EnglishNotesPanel from '../components/EnglishNotesPanel';
 
 type Props = CompositeScreenProps<NativeStackScreenProps<CoursesStackParamList, 'Lesson'>, NativeStackScreenProps<RootStackParamList>>;
 
-const LESSON_ICON: Record<Lesson['type'], string> = { theory: '📖', exercise: '✏️', project: '🚀' };
-const LESSON_TYPE_KEY: Record<Lesson['type'], string> = { theory: 'courses.typeTheory', exercise: 'courses.typeExercise', project: 'courses.typeProject' };
+const LESSON_ICON: Record<Lesson['type'], string> = { theory: '📖', exercise: '✏️', project: '🚀', 'english-notes': '📝' };
+const LESSON_TYPE_KEY: Record<Lesson['type'], string> = {
+  theory: 'courses.typeTheory',
+  exercise: 'courses.typeExercise',
+  project: 'courses.typeProject',
+  'english-notes': 'courses.typeEnglishNotes',
+};
 
 export default function LessonScreen({ navigation, route }: Props) {
   const { t } = useLocale();
@@ -31,11 +37,12 @@ export default function LessonScreen({ navigation, route }: Props) {
   const completed = isLessonCompleted(courseId, lessonId);
   const nextEntry = getNextLesson(course, lessonId);
 
-  // Theory lessons have nothing to review, so they can be completed
+  // Theory and english-notes lessons have nothing to review (the latter is
+  // just the student's own personal notebook), so they can be completed
   // directly. Exercise/project lessons require the student's work to be
   // sent to the instructor first — completed-before-this-feature lessons
   // also count as satisfied so old progress isn't blocked retroactively.
-  const requiresSubmission = lesson.type !== 'theory';
+  const requiresSubmission = lesson.type === 'exercise' || lesson.type === 'project';
   const submitted = isLessonSubmitted(courseId, lessonId) || completed;
   const canContinue = !requiresSubmission || submitted;
 
@@ -103,6 +110,8 @@ export default function LessonScreen({ navigation, route }: Props) {
             </View>
           )}
         </View>
+
+        {lesson.type === 'english-notes' && <EnglishNotesPanel />}
 
         {lesson.codeExample && (
           <View style={styles.codeBlock}>

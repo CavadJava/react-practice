@@ -15,6 +15,7 @@ import { WishlistProvider } from './src/context/WishlistContext';
 import { MyPlacesProvider } from './src/context/MyPlacesContext';
 import { RestaurantFavoritesProvider } from './src/context/RestaurantFavoritesContext';
 import { CoursesProgressProvider } from './src/context/CoursesProgressContext';
+import { EnglishNotesProvider } from './src/context/EnglishNotesContext';
 import { CarWashBookingProvider } from './src/context/CarWashBookingContext';
 import { CargoAccountsProvider } from './src/context/CargoAccountsContext';
 import { CargoCompaniesProvider } from './src/context/CargoCompaniesContext';
@@ -33,13 +34,15 @@ function App() {
                 <MyPlacesProvider>
                   <RestaurantFavoritesProvider>
                     <CoursesProgressProvider>
-                      <CarWashBookingProvider>
-                        <CargoCompaniesProvider>
-                          <CargoAccountsProvider>
-                            <RootNavigator />
-                          </CargoAccountsProvider>
-                        </CargoCompaniesProvider>
-                      </CarWashBookingProvider>
+                      <EnglishNotesProvider>
+                        <CarWashBookingProvider>
+                          <CargoCompaniesProvider>
+                            <CargoAccountsProvider>
+                              <RootNavigator />
+                            </CargoAccountsProvider>
+                          </CargoCompaniesProvider>
+                        </CarWashBookingProvider>
+                      </EnglishNotesProvider>
                     </CoursesProgressProvider>
                   </RestaurantFavoritesProvider>
                 </MyPlacesProvider>

@@ -1,4 +1,8 @@
-export type LessonType = 'theory' | 'exercise' | 'project';
+// 'english-notes' is a special interactive lesson type — instead of static
+// content, LessonScreen renders a personal CRUD notebook (word + complex
+// sentence + level) backed by EnglishNotesContext, so it's excluded from the
+// "submit for review" gating that exercise/project lessons require.
+export type LessonType = 'theory' | 'exercise' | 'project' | 'english-notes';
 
 export type Lesson = {
   id: string;
@@ -163,6 +167,33 @@ function advancedCssLessons(): Lesson[] {
 }
 
 export const COURSES: Course[] = [
+  {
+    id: 'daily-english',
+    title: 'Daily English Notes',
+    subtitle: 'Öz sözlərinizi, mürəkkəb cümlələrinizi və səviyyənizi qeyd edin',
+    cover: 'https://images.unsplash.com/photo-1543109740-4bdb38fda756?w=900&q=80',
+    price: 0,
+    rating: 5.0,
+    reviewCount: 0,
+    studentsCount: 0,
+    // Free — always unlocked, no coupon needed (see isCourseUnlocked()).
+    coupons: [],
+    modules: [
+      {
+        id: 'notes',
+        title: 'Qeydlər',
+        lessons: [
+          {
+            id: 'daily-notes',
+            title: 'Daily English Notes',
+            type: 'english-notes',
+            duration: '—',
+            content: 'Hər gün öyrəndiyiniz sözləri, onlarla qurduğunuz mürəkkəb cümlələri və səviyyəsini (A1–C2) burada özünüz əlavə edin, redaktə edin və silin.',
+          },
+        ],
+      },
+    ],
+  },
   {
     id: 'html-css-advanced',
     title: 'Html&CSS&AdvancedCss',
