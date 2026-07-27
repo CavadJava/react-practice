@@ -17,6 +17,7 @@ import { RestaurantFavoritesProvider } from './src/context/RestaurantFavoritesCo
 import { CoursesProgressProvider } from './src/context/CoursesProgressContext';
 import { CarWashBookingProvider } from './src/context/CarWashBookingContext';
 import { CargoAccountsProvider } from './src/context/CargoAccountsContext';
+import { CargoCompaniesProvider } from './src/context/CargoCompaniesContext';
 import RootNavigator from './src/navigation/RootNavigator';
 import AppStatusBar from './src/components/AppStatusBar';
 
@@ -33,9 +34,11 @@ function App() {
                   <RestaurantFavoritesProvider>
                     <CoursesProgressProvider>
                       <CarWashBookingProvider>
-                        <CargoAccountsProvider>
-                          <RootNavigator />
-                        </CargoAccountsProvider>
+                        <CargoCompaniesProvider>
+                          <CargoAccountsProvider>
+                            <RootNavigator />
+                          </CargoAccountsProvider>
+                        </CargoCompaniesProvider>
                       </CarWashBookingProvider>
                     </CoursesProgressProvider>
                   </RestaurantFavoritesProvider>

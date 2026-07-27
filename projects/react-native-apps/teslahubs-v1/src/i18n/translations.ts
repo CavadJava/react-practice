@@ -432,6 +432,15 @@ const en = {
     deleteConfirmMessage: '"{{label}}" will be removed along with its saved credentials.',
     copy: 'Copy',
     copied: 'Copied',
+    addCompany: 'Add company',
+    editCompany: 'Edit company',
+    companyName: 'Company name',
+    companyNamePlaceholder: 'e.g. My Cargo Co.',
+    companyUrlField: 'Website URL',
+    icon: 'Icon',
+    color: 'Color',
+    deleteCompanyConfirmTitle: 'Delete this company?',
+    deleteCompanyConfirmMessage: '"{{name}}" and all of its saved accounts will be removed.',
   },
 };
 
@@ -860,6 +869,15 @@ const az: typeof en = {
     deleteConfirmMessage: '"{{label}}" hesabı və saxlanılan giriş məlumatları silinəcək.',
     copy: 'Kopyala',
     copied: 'Kopyalandı',
+    addCompany: 'Şirkət əlavə et',
+    editCompany: 'Şirkəti redaktə et',
+    companyName: 'Şirkət adı',
+    companyNamePlaceholder: 'məs. Mənim Karqo MMC',
+    companyUrlField: 'Sayt ünvanı (URL)',
+    icon: 'Loqo',
+    color: 'Rəng',
+    deleteCompanyConfirmTitle: 'Bu şirkət silinsin?',
+    deleteCompanyConfirmMessage: '"{{name}}" və onun bütün saxlanılan hesabları silinəcək.',
   },
 };
 

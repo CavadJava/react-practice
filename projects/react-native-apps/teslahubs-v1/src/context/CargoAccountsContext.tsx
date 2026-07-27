@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CARGO_COMPANIES } from '../data/cargo';
+import { DEFAULT_CARGO_COMPANIES } from '../data/cargo';
 
 const STORAGE_KEY = 'teslahubs_cargo_accounts';
 
@@ -13,7 +13,7 @@ export type CargoAccount = {
 };
 
 function seedAccounts(): CargoAccount[] {
-  return CARGO_COMPANIES.flatMap(company =>
+  return DEFAULT_CARGO_COMPANIES.flatMap(company =>
     [1, 2, 3].map(n => ({
       id: `${company.id}-seed-${n}`,
       companyId: company.id,
