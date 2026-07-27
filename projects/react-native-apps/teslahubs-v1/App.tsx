@@ -19,8 +19,11 @@ import { EnglishNotesProvider } from './src/context/EnglishNotesContext';
 import { CarWashBookingProvider } from './src/context/CarWashBookingContext';
 import { CargoAccountsProvider } from './src/context/CargoAccountsContext';
 import { CargoCompaniesProvider } from './src/context/CargoCompaniesContext';
+import { CargoSessionsProvider } from './src/context/CargoSessionsContext';
 import RootNavigator from './src/navigation/RootNavigator';
 import AppStatusBar from './src/components/AppStatusBar';
+import CargoWebViewOverlay from './src/components/CargoWebViewOverlay';
+import CargoResumeButton from './src/components/CargoResumeButton';
 
 function App() {
   return (
@@ -38,7 +41,11 @@ function App() {
                         <CarWashBookingProvider>
                           <CargoCompaniesProvider>
                             <CargoAccountsProvider>
-                              <RootNavigator />
+                              <CargoSessionsProvider>
+                                <RootNavigator />
+                                <CargoWebViewOverlay />
+                                <CargoResumeButton />
+                              </CargoSessionsProvider>
                             </CargoAccountsProvider>
                           </CargoCompaniesProvider>
                         </CarWashBookingProvider>

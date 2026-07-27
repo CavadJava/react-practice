@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { ActivityIndicator, Alert, Clipboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, BackHandler, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { WebView } from 'react-native-webview';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { CargoStackParamList, RootStackParamList } from '../navigation/types';
 import { CargoCompany } from '../data/cargo';
 import { CargoAccount, useCargoAccounts } from '../context/CargoAccountsContext';
 import { useCargoCompanies } from '../context/CargoCompaniesContext';
+import { useCargoSessions } from '../context/CargoSessionsContext';
 import { CG_THEME } from '../theme/cargoTheme';
 import { useLocale } from '../context/LocaleContext';
 
@@ -19,15 +19,9 @@ const COLOR_CHOICES = ['#2F8FE0', '#E0632F', '#22C55E', '#8B5CF6', '#EAB308', '#
 export default function CargoScreen({ navigation }: Props) {
   const { t } = useLocale();
   const insets = useSafeAreaInsets();
-  const { accountsForCompany, getAccount, addAccount, updateAccount, removeAccount } = useCargoAccounts();
+  const { accountsForCompany, addAccount, updateAccount, removeAccount } = useCargoAccounts();
   const { companies, getCompany, addCompany, updateCompany, removeCompany } = useCargoCompanies();
-
-  // Open WebView "tabs" — kept as local state on this single always-mounted
-  // screen (not separate navigator routes) specifically so switching
-  // between accounts never unmounts an already-open session: every WebView
-  // in `sessionIds` stays mounted, only the active one is made visible.
-  const [sessionIds, setSessionIds] = useState<string[]>([]);
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const { sessionIds, openSession: openSessionContext, closeSession, showOverlay, buttonEnabled, setButtonEnabled } = useCargoSessions();
 
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerCompanyId, setPickerCompanyId] = useState<string | null>(null);
@@ -35,8 +29,6 @@ export default function CargoScreen({ navigation }: Props) {
   const [formLabel, setFormLabel] = useState('');
   const [formUsername, setFormUsername] = useState('');
   const [formPassword, setFormPassword] = useState('');
-  const [copiedField, setCopiedField] = useState<'username' | 'password' | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
 
   const [editingCompany, setEditingCompany] = useState<CargoCompany | 'new' | null>(null);
   const [formCompanyName, setFormCompanyName] = useState('');
@@ -44,28 +36,15 @@ export default function CargoScreen({ navigation }: Props) {
   const [formCompanyIcon, setFormCompanyIcon] = useState(ICON_CHOICES[0]);
   const [formCompanyColor, setFormCompanyColor] = useState(COLOR_CHOICES[0]);
 
-  const activeAccount = activeId ? getAccount(activeId) : undefined;
-  const activeCompany = activeAccount ? getCompany(activeAccount.companyId) : undefined;
-
   const openPicker = (companyId?: string) => {
     setPickerCompanyId(companyId ?? null);
     setPickerOpen(true);
   };
 
   const openSession = (account: CargoAccount) => {
-    setSessionIds(prev => (prev.includes(account.id) ? prev : [...prev, account.id]));
-    setActiveId(account.id);
+    openSessionContext(account.id);
     setPickerOpen(false);
-  };
-
-  const closeSession = (accountId: string) => {
-    setSessionIds(prev => {
-      const next = prev.filter(id => id !== accountId);
-      if (activeId === accountId) {
-        setActiveId(next.length ? next[next.length - 1] : null);
-      }
-      return next;
-    });
+    navigation.getParent()?.goBack();
   };
 
   const startAdd = (companyId: string) => {
@@ -96,11 +75,11 @@ export default function CargoScreen({ navigation }: Props) {
     setPickerOpen(true);
   };
 
-  const cancelForm = () => {
+  const cancelForm = useCallback(() => {
     const companyId = editingAccount?.companyId;
     setEditingAccount(null);
     if (companyId) returnToPicker(companyId);
-  };
+  }, [editingAccount]);
 
   const saveForm = () => {
     if (!editingAccount || !formLabel.trim()) return;
@@ -150,7 +129,7 @@ export default function CargoScreen({ navigation }: Props) {
   // Unlike the account form, closing this one does NOT reopen the picker —
   // it just closes, returning to whichever screen was already visible
   // behind it (the company grid, or a session if any were open).
-  const cancelCompanyForm = () => setEditingCompany(null);
+  const cancelCompanyForm = useCallback(() => setEditingCompany(null), []);
 
   const saveCompanyForm = () => {
     if (!editingCompany || !formCompanyName.trim() || !formCompanyUrl.trim()) return;
@@ -181,12 +160,32 @@ export default function CargoScreen({ navigation }: Props) {
     ]);
   };
 
-  const copy = (text: string, field: 'username' | 'password') => {
-    if (!text) return;
-    Clipboard.setString(text);
-    setCopiedField(field);
-    setTimeout(() => setCopiedField(null), 1500);
-  };
+  // Android hardware back button: step back through open modals one level
+  // at a time (account list → company list → close picker) instead of
+  // immediately exiting the whole Cargo module — only falls through to the
+  // default (closing Cargo) once nothing is open.
+  useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (editingAccount) {
+        cancelForm();
+        return true;
+      }
+      if (editingCompany) {
+        cancelCompanyForm();
+        return true;
+      }
+      if (pickerOpen && pickerCompanyId) {
+        setPickerCompanyId(null);
+        return true;
+      }
+      if (pickerOpen) {
+        setPickerOpen(false);
+        return true;
+      }
+      return false;
+    });
+    return () => sub.remove();
+  }, [editingAccount, editingCompany, pickerOpen, pickerCompanyId, cancelForm, cancelCompanyForm]);
 
   return (
     <SafeAreaView style={styles.screen} edges={[]}>
@@ -202,139 +201,55 @@ export default function CargoScreen({ navigation }: Props) {
         </View>
       </View>
 
-      {sessionIds.length === 0 ? (
-        <ScrollView contentContainerStyle={styles.companyGrid} showsVerticalScrollIndicator={false}>
-          <Text style={styles.emptyHint}>{t('cargo.emptyHint')}</Text>
-          {companies.map(company => (
-            <View key={company.id} style={[styles.companyCard, { borderColor: company.color }]}>
-              <Pressable style={styles.companyCardMain} onPress={() => openPicker(company.id)}>
-                <Text style={styles.companyIcon}>{company.icon}</Text>
-                <View style={styles.companyTextWrap}>
-                  <Text style={styles.companyName}>{company.name}</Text>
-                  <Text style={styles.companyUrl} numberOfLines={1}>
-                    {company.url}
-                  </Text>
-                  <Text style={styles.companyAccountsCount}>
-                    {t('cargo.accountsCount', { count: String(accountsForCompany(company.id).length) })}
-                  </Text>
-                </View>
-                <Text style={styles.companyChevron}>›</Text>
-              </Pressable>
-              <View style={styles.companyCardActions}>
-                <Pressable style={styles.accountActionBtn} onPress={() => startEditCompany(company)} hitSlop={8}>
-                  <Text style={styles.accountActionText}>✎</Text>
-                </Pressable>
-                <Pressable style={styles.accountActionBtn} onPress={() => confirmDeleteCompany(company)} hitSlop={8}>
-                  <Text style={styles.accountActionText}>🗑</Text>
-                </Pressable>
-              </View>
-            </View>
-          ))}
-          <Pressable style={styles.addAccountBtn} onPress={startAddCompany}>
-            <Text style={styles.addAccountBtnText}>+ {t('cargo.addCompany')}</Text>
-          </Pressable>
-        </ScrollView>
-      ) : (
-        <>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabsList} contentContainerStyle={styles.tabsRow}>
-            {sessionIds.map(id => {
-              const account = getAccount(id);
-              const company = account ? getCompany(account.companyId) : undefined;
-              if (!account || !company) return null;
-              const isActive = activeId === id;
-              return (
-                <Pressable key={id} style={[styles.tabChip, isActive && { borderColor: company.color, backgroundColor: CG_THEME.cardAlt }]} onPress={() => setActiveId(id)}>
-                  <Text style={styles.tabChipIcon}>{company.icon}</Text>
-                  <Text style={[styles.tabChipLabel, isActive && styles.tabChipLabelActive]} numberOfLines={1}>
-                    {account.label}
-                  </Text>
-                  <Pressable onPress={() => closeSession(id)} hitSlop={8}>
-                    <Text style={styles.tabChipClose}>✕</Text>
-                  </Pressable>
-                </Pressable>
-              );
-            })}
-            <Pressable style={styles.tabAddChip} onPress={() => openPicker()}>
-              <Text style={styles.tabAddChipText}>+</Text>
+      <ScrollView contentContainerStyle={styles.companyGrid} showsVerticalScrollIndicator={false}>
+        <Text style={styles.emptyHint}>{t('cargo.emptyHint')}</Text>
+        {sessionIds.length > 0 && (
+          <>
+            <Pressable style={styles.resumeSessionsBtn} onPress={showOverlay}>
+              <Text style={styles.resumeSessionsBtnText}>
+                {t('cargo.resumeSessions', { count: String(sessionIds.length) })}
+              </Text>
             </Pressable>
-          </ScrollView>
-
-          {activeAccount && activeCompany && (
-            <View style={styles.credentialsBar}>
-              <View style={styles.credentialRow}>
-                <Text style={styles.credentialLabel}>{t('cargo.username')}</Text>
-                <Text style={styles.credentialValue} numberOfLines={1}>
-                  {activeAccount.username || t('cargo.notSet')}
-                </Text>
-                <Pressable style={styles.copyBtn} onPress={() => copy(activeAccount.username, 'username')} disabled={!activeAccount.username}>
-                  <Text style={styles.copyBtnText}>{copiedField === 'username' ? `✓ ${t('cargo.copied')}` : t('cargo.copy')}</Text>
-                </Pressable>
-              </View>
-              <View style={styles.credentialRow}>
-                <Text style={styles.credentialLabel}>{t('cargo.password')}</Text>
-                <Text style={styles.credentialValue} numberOfLines={1}>
-                  {activeAccount.password ? (showPassword ? activeAccount.password : '••••••••') : t('cargo.notSet')}
-                </Text>
-                {!!activeAccount.password && (
-                  <Pressable onPress={() => setShowPassword(v => !v)} hitSlop={8} style={styles.eyeBtn}>
-                    <Text style={styles.eyeBtnText}>{showPassword ? '🙈' : '👁️'}</Text>
-                  </Pressable>
-                )}
-                <Pressable style={styles.copyBtn} onPress={() => copy(activeAccount.password, 'password')} disabled={!activeAccount.password}>
-                  <Text style={styles.copyBtnText}>{copiedField === 'password' ? `✓ ${t('cargo.copied')}` : t('cargo.copy')}</Text>
-                </Pressable>
-              </View>
+            <View style={styles.floatingButtonToggleRow}>
+              <Text style={styles.floatingButtonToggleLabel}>{t('cargo.floatingButtonToggle')}</Text>
+              <Switch
+                value={buttonEnabled}
+                onValueChange={setButtonEnabled}
+                trackColor={{ false: CG_THEME.border, true: CG_THEME.primary }}
+                thumbColor={CG_THEME.white}
+              />
             </View>
-          )}
-
-          <View style={styles.webviewStack}>
-            {sessionIds.map(id => {
-              const account = getAccount(id);
-              const company = account ? getCompany(account.companyId) : undefined;
-              if (!account || !company) return null;
-              const isActive = activeId === id;
-              return (
-                // Kept mounted at all times (never unmounted, never
-                // display:'none') so switching tabs preserves each site's
-                // state. display:'none' toggling is a known cause of frozen/
-                // unresponsive WebViews on Android — the native surface
-                // doesn't reattach cleanly when it comes back. Stacking with
-                // zIndex + pointerEvents avoids that entirely.
-                <View
-                  key={id}
-                  style={[StyleSheet.absoluteFill, { zIndex: isActive ? 1 : 0 }]}
-                  pointerEvents={isActive ? 'auto' : 'none'}>
-                  <WebView
-                    // Each session gets its own incognito (non-persistent)
-                    // storage/cookie jar so different accounts of the same
-                    // company don't end up sharing one login session — this
-                    // is what "sessiyalar fərqli olsun" needs, since a
-                    // shared cookie store would log every tab in as
-                    // whichever account logged in most recently.
-                    incognito
-                    source={{ uri: company.url }}
-                    style={styles.webview}
-                    javaScriptEnabled
-                    domStorageEnabled
-                    startInLoadingState
-                    renderLoading={() => (
-                      <View style={styles.webviewLoading}>
-                        <ActivityIndicator color={CG_THEME.primary} size="large" />
-                      </View>
-                    )}
-                    originWhitelist={['*']}
-                    cacheEnabled
-                    mixedContentMode="always"
-                    setSupportMultipleWindows={false}
-                    allowsInlineMediaPlayback
-                    onShouldStartLoadWithRequest={() => true}
-                  />
-                </View>
-              );
-            })}
+          </>
+        )}
+        {companies.map(company => (
+          <View key={company.id} style={[styles.companyCard, { borderColor: company.color }]}>
+            <Pressable style={styles.companyCardMain} onPress={() => openPicker(company.id)}>
+              <Text style={styles.companyIcon}>{company.icon}</Text>
+              <View style={styles.companyTextWrap}>
+                <Text style={styles.companyName}>{company.name}</Text>
+                <Text style={styles.companyUrl} numberOfLines={1}>
+                  {company.url}
+                </Text>
+                <Text style={styles.companyAccountsCount}>
+                  {t('cargo.accountsCount', { count: String(accountsForCompany(company.id).length) })}
+                </Text>
+              </View>
+              <Text style={styles.companyChevron}>›</Text>
+            </Pressable>
+            <View style={styles.companyCardActions}>
+              <Pressable style={styles.accountActionBtn} onPress={() => startEditCompany(company)} hitSlop={8}>
+                <Text style={styles.accountActionText}>✎</Text>
+              </Pressable>
+              <Pressable style={styles.accountActionBtn} onPress={() => confirmDeleteCompany(company)} hitSlop={8}>
+                <Text style={styles.accountActionText}>🗑</Text>
+              </Pressable>
+            </View>
           </View>
-        </>
-      )}
+        ))}
+        <Pressable style={styles.addAccountBtn} onPress={startAddCompany}>
+          <Text style={styles.addAccountBtnText}>+ {t('cargo.addCompany')}</Text>
+        </Pressable>
+      </ScrollView>
 
       {/* Account picker: company grid → account list (with inline CRUD) */}
       <Modal visible={pickerOpen} animationType="slide" transparent onRequestClose={() => setPickerOpen(false)}>
@@ -551,46 +466,23 @@ const styles = StyleSheet.create({
   companyUrl: { fontSize: 11.5, color: CG_THEME.textMuted },
   companyAccountsCount: { fontSize: 11, color: CG_THEME.primary, fontWeight: '600', marginTop: 2 },
   companyChevron: { fontSize: 20, color: CG_THEME.textMuted },
-  tabsList: { flexGrow: 0, flexShrink: 0 },
-  tabsRow: { paddingHorizontal: 20, paddingVertical: 10, gap: 8 },
-  tabChip: {
+  resumeSessionsBtn: {
+    backgroundColor: CG_THEME.primary,
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  resumeSessionsBtnText: { fontSize: 13.5, fontWeight: '800', color: CG_THEME.white },
+  floatingButtonToggleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    maxWidth: 160,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    borderRadius: 999,
-    borderWidth: 1.5,
-    borderColor: CG_THEME.border,
+    justifyContent: 'space-between',
     backgroundColor: CG_THEME.card,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
   },
-  tabChipIcon: { fontSize: 13 },
-  tabChipLabel: { fontSize: 12, fontWeight: '600', color: CG_THEME.textMuted, maxWidth: 80 },
-  tabChipLabelActive: { color: CG_THEME.text, fontWeight: '700' },
-  tabChipClose: { fontSize: 11, color: CG_THEME.textMuted, marginLeft: 2 },
-  tabAddChip: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: CG_THEME.border,
-    backgroundColor: CG_THEME.card,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tabAddChipText: { fontSize: 16, color: CG_THEME.text, fontWeight: '700' },
-  credentialsBar: { paddingHorizontal: 20, paddingBottom: 10, gap: 6, borderBottomWidth: 1, borderBottomColor: CG_THEME.border },
-  credentialRow: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: CG_THEME.card, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8 },
-  credentialLabel: { fontSize: 11, color: CG_THEME.textMuted, fontWeight: '700', width: 60 },
-  credentialValue: { flex: 1, fontSize: 12.5, color: CG_THEME.text, fontWeight: '600' },
-  eyeBtn: { paddingHorizontal: 4 },
-  eyeBtnText: { fontSize: 13 },
-  copyBtn: { backgroundColor: CG_THEME.cardAlt, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5 },
-  copyBtnText: { fontSize: 11, fontWeight: '700', color: CG_THEME.primary },
-  webviewStack: { flex: 1 },
-  webview: { flex: 1, backgroundColor: CG_THEME.bg },
-  webviewLoading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: CG_THEME.bg },
+  floatingButtonToggleLabel: { fontSize: 12.5, fontWeight: '600', color: CG_THEME.textMuted, flex: 1, marginRight: 8 },
   modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   modalSheet: {
     backgroundColor: CG_THEME.bg,
