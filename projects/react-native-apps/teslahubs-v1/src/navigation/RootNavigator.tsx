@@ -13,6 +13,7 @@ import RestaurantsStackNavigator from './RestaurantsStackNavigator';
 import CoursesStackNavigator from './CoursesStackNavigator';
 import OrderConfirmScreen from '../screens/OrderConfirmScreen';
 import MyPlacesScreen from '../screens/MyPlacesScreen';
+import CargoStackNavigator from './CargoStackNavigator';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -38,6 +39,7 @@ export default function RootNavigator() {
         <Stack.Screen name="Doctors" component={DoctorsStackNavigator} options={{ presentation: 'fullScreenModal' }} />
         <Stack.Screen name="Restaurants" component={RestaurantsStackNavigator} options={{ presentation: 'fullScreenModal' }} />
         <Stack.Screen name="Courses" component={CoursesStackNavigator} options={{ presentation: 'fullScreenModal' }} />
+        <Stack.Screen name="Cargo" component={CargoStackNavigator} options={{ presentation: 'fullScreenModal' }} />
         <Stack.Screen name="MyPlaces" component={MyPlacesScreen} />
         <Stack.Screen name="OrderConfirm" component={OrderConfirmScreen} />
       </Stack.Navigator>

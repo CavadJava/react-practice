@@ -16,6 +16,7 @@ import { MyPlacesProvider } from './src/context/MyPlacesContext';
 import { RestaurantFavoritesProvider } from './src/context/RestaurantFavoritesContext';
 import { CoursesProgressProvider } from './src/context/CoursesProgressContext';
 import { CarWashBookingProvider } from './src/context/CarWashBookingContext';
+import { CargoAccountsProvider } from './src/context/CargoAccountsContext';
 import RootNavigator from './src/navigation/RootNavigator';
 import AppStatusBar from './src/components/AppStatusBar';
 
@@ -32,7 +33,9 @@ function App() {
                   <RestaurantFavoritesProvider>
                     <CoursesProgressProvider>
                       <CarWashBookingProvider>
-                        <RootNavigator />
+                        <CargoAccountsProvider>
+                          <RootNavigator />
+                        </CargoAccountsProvider>
                       </CarWashBookingProvider>
                     </CoursesProgressProvider>
                   </RestaurantFavoritesProvider>

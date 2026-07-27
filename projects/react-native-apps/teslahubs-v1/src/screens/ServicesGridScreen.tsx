@@ -24,6 +24,7 @@ const TILES: Tile[] = [
   { key: 'doctors', icon: '🩺', titleKey: 'doctors.entryTitle', subtitleKey: 'doctors.entrySubtitle', onPress: nav => nav.navigate('Doctors') },
   { key: 'restaurants', icon: '🍕', titleKey: 'restaurants.entryTitle', subtitleKey: 'restaurants.entrySubtitle', onPress: nav => nav.navigate('Restaurants') },
   { key: 'courses', icon: '🎓', titleKey: 'courses.entryTitle', subtitleKey: 'courses.entrySubtitle', onPress: nav => nav.navigate('Courses') },
+  { key: 'cargo', icon: '📦', titleKey: 'cargo.entryTitle', subtitleKey: 'cargo.entrySubtitle', onPress: nav => nav.navigate('Cargo') },
   { key: 'articles', icon: '▤', titleKey: 'articles.title', subtitleKey: 'articles.gridSubtitle', onPress: nav => nav.navigate('Articles') },
 ];
 
