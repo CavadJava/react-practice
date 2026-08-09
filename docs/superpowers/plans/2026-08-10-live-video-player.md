@@ -30,11 +30,19 @@
 **Interfaces:**
 - Produces: a runnable `npm run dev` (Vite dev server) and `npm test` (vitest) at the project root, matching this monorepo's existing convention (`admin-panel`, `exercise-typescript-app-01`).
 
-- [ ] **Step 1: Create the project directory and package.json**
+- [ ] **Step 1: Create the project directory, package.json, and .gitignore**
 
 ```bash
 mkdir -p /Users/frontend/workspace/react-native-practices/live-video-player/src
 cd /Users/frontend/workspace/react-native-practices/live-video-player
+```
+
+`.gitignore` (create this before Step 6's `npm install` / Step 7's `git add -A` — otherwise `node_modules`, `dist`, and `.tsbuildinfo` files get committed):
+```
+node_modules
+dist
+*.tsbuildinfo
+.DS_Store
 ```
 
 `package.json`:
