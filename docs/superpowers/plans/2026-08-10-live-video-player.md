@@ -1305,7 +1305,7 @@ git commit -m "feat: WebSocket and WebTransport transport implementations"
 
 ---
 
-## Task 7: Demo server (ffmpeg mock live source)
+## Task 7: Demo server (real ffmpeg camera/mic capture)
 
 **Spec reference:** §10.
 
@@ -1315,7 +1315,9 @@ git commit -m "feat: WebSocket and WebTransport transport implementations"
 - Create: `demo-server/README.md`
 
 **Interfaces:**
-- Produces: a WebSocket server on `ws://localhost:8765` that frames an ffmpeg-generated H.264 test-pattern stream per the Task 2 wire protocol (video type=0, one NAL-unit-aligned chunk per frame, keyframe flag set on IDR frames) plus a synthetic Opus audio tone (type=1), so Task 1's app has something real to connect to end-to-end.
+- Produces: a WebSocket server on `ws://localhost:8765` that frames a **real** ffmpeg capture of this Mac's built-in camera and microphone (not a synthetic test pattern) per the Task 2 wire protocol — video (type=0, one NAL-unit-aligned chunk per frame, keyframe flag set on IDR frames) and raw PCM audio (type=1) — so Task 1's app connects to a genuinely live source end-to-end, not a canned loop.
+- macOS-specific: captures via ffmpeg's `avfoundation` input (`FaceTime HD Camera` / `MacBook Pro Microphone`, confirmed present on this machine via `ffmpeg -f avfoundation -list_devices true -i ""`). Swapping to a different OS's dev machine means swapping this input for `v4l2` (Linux) or `dshow` (Windows) — the wire protocol, the browser client, and every other task are fully platform-agnostic; only this Node script assumes macOS.
+- Requires the terminal/Node process to have camera and microphone permission (System Settings → Privacy & Security → Camera/Microphone) — first run will prompt for this; deny it and ffmpeg fails to open the device.
 
 - [ ] **Step 1: Create the demo server package**
 
@@ -1395,14 +1397,16 @@ wss.on('connection', (socket) => {
   console.log('Client connected');
   const startUs = Date.now() * 1000;
 
-  // --- Video: H.264 Annex-B over stdout, framed per-NAL-unit ---
+  // --- Video: real FaceTime HD Camera capture (avfoundation device 0), H.264 Annex-B over
+  // stdout, framed per-NAL-unit. No -re here - a live capture device is already real-time,
+  // unlike reading a file/lavfi source faster than playback speed.
   const ffmpegVideo = spawn('ffmpeg', [
-    '-re',
-    '-f', 'lavfi', '-i', 'testsrc=size=1280x720:rate=30',
+    '-f', 'avfoundation',
+    '-framerate', '30',
+    '-i', '0:none', // video device 0 (FaceTime HD Camera), audio disabled on this input
     '-c:v', 'libx264', '-preset', 'ultrafast', '-tune', 'zerolatency',
     '-x264-params', 'keyint=60:scenecut=0',
     '-pix_fmt', 'yuv420p',
-    '-an',
     '-f', 'h264', 'pipe:1',
   ]);
 
@@ -1429,13 +1433,14 @@ wss.on('connection', (socket) => {
     console.error('Failed to start video ffmpeg - is it installed and on PATH?', err);
   });
 
-  // --- Audio: raw interleaved f32le PCM over stdout, chunked to 20ms and framed directly -
-  // this matches the client's 'pcm-f32' AudioDecoder config (see codecs.ts), which sidesteps
-  // needing an Opus encoder just to exercise the real decode -> AudioWorklet -> sync pipeline
-  // end-to-end in this demo. Swap to a real Opus-encoding backend for production.
+  // --- Audio: real MacBook Pro Microphone capture (avfoundation device 0), resampled to
+  // raw interleaved f32le PCM over stdout, chunked to 20ms and framed directly - this matches
+  // the client's 'pcm-f32' AudioDecoder config (see codecs.ts), which sidesteps needing an
+  // Opus encoder just to exercise the real decode -> AudioWorklet -> sync pipeline end-to-end
+  // in this demo. Swap to a real Opus-encoding backend for production.
   const ffmpegAudio = spawn('ffmpeg', [
-    '-re',
-    '-f', 'lavfi', '-i', `sine=frequency=440:sample_rate=${AUDIO_SAMPLE_RATE}`,
+    '-f', 'avfoundation',
+    '-i', 'none:0', // audio device 0 (MacBook Pro Microphone), video disabled on this input
     '-f', 'f32le',
     '-ar', String(AUDIO_SAMPLE_RATE),
     '-ac', String(AUDIO_CHANNELS),
@@ -1478,13 +1483,22 @@ wss.on('connection', (socket) => {
 ```markdown
 # Demo live source
 
-Streams a synthetic H.264 test-pattern video (via ffmpeg) plus a 440Hz sine-wave audio tone
-(raw f32le PCM, matching the client's 'pcm-f32' AudioDecoder config), both framed per the
-project's wire protocol (see `docs/superpowers/specs/2026-08-10-live-video-player-design.md`
-§4) over WebSocket - so the client app has a real audio+video live stream to connect to
-without needing any real backend.
+Captures **this Mac's real built-in camera and microphone** via ffmpeg (not a synthetic
+test pattern) and streams them - H.264 video, raw f32le PCM audio (matching the client's
+`'pcm-f32'` AudioDecoder config) - framed per the project's wire protocol (see
+`docs/superpowers/specs/2026-08-10-live-video-player-design.md` §4) over WebSocket. Point
+your webcam at something that moves and talk into the mic to get a meaningful end-to-end
+verification in Task 14's checklist.
 
-Requires the system `ffmpeg` binary (with `libx264`) on PATH.
+**macOS only** (uses ffmpeg's `avfoundation` input against device `0` for both video and
+audio - confirmed as `FaceTime HD Camera` / `MacBook Pro Microphone` via
+`ffmpeg -f avfoundation -list_devices true -i ""`). On Linux swap the `avfoundation` input
+for `v4l2`; on Windows, `dshow`. Nothing else in this project is platform-specific.
+
+Requires the system `ffmpeg` binary (with `libx264`) on PATH, and camera/microphone
+permission granted to whatever terminal/process runs `npm start` (System Settings → Privacy
+& Security → Camera / Microphone - macOS prompts for this on first run; if ffmpeg exits
+immediately with an "Input/output error" opening the device, permission was denied).
 
     npm install
     npm start
@@ -1504,11 +1518,12 @@ npm start
 
 Expected: logs `Demo live source listening on ws://localhost:8765` and, once a client connects (Task 13 will provide one; for now verify manually with a scratch script), streams binary frames continuously without erroring. Stop with Ctrl-C.
 
-Manual verification without a client yet - confirm ffmpeg itself produces output:
+Manual verification without a client yet - confirm ffmpeg can actually open the real camera and mic (this is also where a macOS permission prompt will appear the first time):
 ```bash
-ffmpeg -f lavfi -i testsrc=size=1280x720:rate=30 -c:v libx264 -preset ultrafast -t 2 -f h264 /tmp/test.h264 && ls -la /tmp/test.h264 && rm /tmp/test.h264
+ffmpeg -f avfoundation -framerate 30 -i "0:none" -t 2 -f h264 -c:v libx264 -preset ultrafast /tmp/test-video.h264 && ls -la /tmp/test-video.h264 && rm /tmp/test-video.h264
+ffmpeg -f avfoundation -i "none:0" -t 2 -ar 48000 -ac 2 -f f32le /tmp/test-audio.pcm && ls -la /tmp/test-audio.pcm && rm /tmp/test-audio.pcm
 ```
-Expected: a non-empty file is created.
+Expected: both commands create a non-empty file with no "Input/output error". If either errors, grant camera/microphone permission to the terminal app (System Settings → Privacy & Security) and retry.
 
 - [ ] **Step 4: Commit**
 
@@ -2833,15 +2848,18 @@ Terminal 2:
     npm install
     npm run dev
 
-Open the printed Vite URL. You should see a live test-pattern video within a second or two.
+Open the printed Vite URL. You should see your own webcam feed, live, within a second or two
+(the demo server captures this Mac's real camera and mic - see `demo-server/README.md` -
+there is no synthetic test pattern anywhere in this project).
 
 ## Manual verification checklist
 
 - [ ] Open browser DevTools → Elements. Confirm there is no `<video>` and no `<audio>` tag
       anywhere in the DOM - only one `<canvas>`.
-- [ ] Video plays smoothly with no visible stutter, and you can continuously hear the
-      440Hz tone with no gaps, clicks, or crackling (confirms the AudioWorklet ring buffer
-      is neither starving nor overflowing).
+- [ ] Video plays smoothly with no visible stutter, and moving in front of the camera / making
+      noise near the mic is audible/visible with low, consistent latency - no gaps, clicks, or
+      crackling in the audio (confirms the AudioWorklet ring buffer is neither starving nor
+      overflowing).
 - [ ] Click Pause. The last frame stays frozen on screen and audio stops immediately (no
       trailing buffered audio playing after pause).
 - [ ] Wait 5 seconds, click Play. Playback resumes from the paused frame (not from live) with
@@ -2923,4 +2941,4 @@ git commit -m "docs: package the live-video engine pattern as a reusable skill"
 
 - **Spec coverage:** §3 architecture → Tasks 9–12; §4 protocol → Task 2; §5 render path → Task 9; §6 audio/sync → Tasks 4, 10; §7 pause/resume/DVR → Tasks 3, 11; §8 seek/quality → Task 5 (state) + Task 11 (wiring, quality flagged as backend-dependent no-op per spec); §9 structure → all tasks follow it; §10 demo server → Task 7; §11 libraries → Task 1's `package.json` (no extra libraries beyond `ws` in the demo server); §12 compatibility → documented in README (Task 14) and inline fallback code (Tasks 6, 9); §14 skill packaging → Task 15.
 - **Type consistency verified:** `DvrFrame`, `PlayerState`/`PlayerEvent`, `Transport`/`TransportEvents`, `Renderer`, `MainToWorkerMessage`/`WorkerToMainMessage` are each defined exactly once (Tasks 2–5, 11) and imported by name (not redefined) everywhere else they're used.
-- **Audio is exercised end-to-end by the bundled demo**, not just unit-tested in isolation: Task 7's demo server streams a real 440Hz PCM tone alongside the video, using the `'pcm-f32'` WebCodecs passthrough codec (Task 8) specifically so the full decode → `AudioWorklet` → `AudioContext` → sync (Tasks 4, 10, 11) path runs for real in Task 14's manual checklist, without needing an Opus encoder in the demo server. Swapping to a production backend that encodes Opus only requires changing `AUDIO_CODEC_CONFIG.codec` (Task 8) — the rest of the pipeline is codec-agnostic.
+- **Audio is exercised end-to-end by the bundled demo**, not just unit-tested in isolation: Task 7's demo server captures this Mac's real microphone alongside its real camera, using the `'pcm-f32'` WebCodecs passthrough codec (Task 8) specifically so the full decode → `AudioWorklet` → `AudioContext` → sync (Tasks 4, 10, 11) path runs for real in Task 14's manual checklist, without needing an Opus encoder in the demo server. Swapping to a production backend that encodes Opus only requires changing `AUDIO_CODEC_CONFIG.codec` (Task 8) — the rest of the pipeline is codec-agnostic.
