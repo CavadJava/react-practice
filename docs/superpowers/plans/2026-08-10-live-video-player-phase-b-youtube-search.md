@@ -1430,10 +1430,16 @@ interface UseJsmpegPlayerOptions {
 /**
  * Owns a JSMpeg.Player's lifecycle against a canvas ref and a /ws/mpeg1 URL. JSMpeg manages its
  * own WebSocket internally (constructed from the URL string), decoding the muxed video+audio
- * MPEG1-TS stream and rendering via WebGL directly onto the canvas - no <video>/<audio> element,
- * see spec §6. Reconnects on stall/end using Phase A's exponential-backoff delay function,
- * since JSMpeg itself has no built-in reconnect (confirmed via its onStalled/onEnded hooks,
- * verified present in jsmpeg.min.js - see Task 7).
+ * MPEG1-TS stream and rendering directly onto the canvas - no <video>/<audio> element, see
+ * spec §6. Reconnects on stall/end using Phase A's exponential-backoff delay function, since
+ * JSMpeg itself has no built-in reconnect (confirmed via its onStalled/onEnded hooks, verified
+ * present in jsmpeg.min.js - see Task 7).
+ *
+ * No-GPU machines: jsmpeg.min.js feature-detects WebGL itself at construction time and falls
+ * back to its own Canvas2D renderer automatically when WebGL is unavailable (confirmed in its
+ * source: `this.renderer = !options.disableGl && WebGL.IsSupported() ? new WebGL(...) : new
+ * Canvas2D(...)`) - still the same <canvas> element, no option needed here to enable it, see
+ * spec §6.
  */
 export function useJsmpegPlayer({ canvasRef, wsUrl }: UseJsmpegPlayerOptions): { status: JsmpegStatus } {
   const [status, setStatus] = useState<JsmpegStatus>('connecting');
