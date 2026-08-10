@@ -1960,7 +1960,7 @@ git commit -m "feat: WebGPU and WebGL2 direct-texture-upload renderers"
 - Create: `src/player/audio/audioOutput.ts`
 
 **Interfaces:**
-- Produces: `AudioOutput` class (`constructor(sampleRate)`, `init(workletUrl): Promise<void>`, `push(channelData: Float32Array[]): void`, `currentTimeUs(): number`, `setVolume(volume: number): void`, `setMuted(muted: boolean): void`, `close(): void`). Task 12 (`workerClient.ts`, main thread) is the consumer.
+- Produces: `AudioOutput` class (`constructor(sampleRate)`, `init(workletUrl): Promise<void>`, `push(channelData: Float32Array[], ptsUs: number): void`, `currentTimeUs(): number | null` (null until the first `push()`), `setVolume(volume: number): void`, `setMuted(muted: boolean): void`, `resume(): Promise<void>` (unlocks the AudioContext if suspended by autoplay policy — call from a user-gesture handler), `close(): void`). Task 12 (`workerClient.ts`, main thread) is the consumer. Note: this signature reflects fixes applied during Task 11's review cycle (originally `push(channelData)`/`currentTimeUs(): number`/no `resume()`) — see the ledger for why.
 - No automated tests: `AudioContext`/`AudioWorklet` are not available in jsdom. Verified manually in Task 14.
 
 - [ ] **Step 1: Implement the AudioWorklet processor**
@@ -2378,7 +2378,7 @@ export class WorkerClient {
       if (message.kind === 'state') {
         for (const listener of this.listeners) listener(message.state);
       } else if (message.kind === 'audioFrame') {
-        this.audioOutput?.push(message.channelData);
+        this.audioOutput?.push(message.channelData, message.ptsUs);
       }
     };
   }
@@ -2394,11 +2394,19 @@ export class WorkerClient {
     await this.audioOutput.init(workletUrl.toString());
 
     this.audioClockTimer = setInterval(() => {
-      if (!this.audioOutput) return;
+      // currentTimeUs() is null until the first audio chunk has actually been pushed - skip
+      // sending an anchor update until then, so the Worker's sync gate stays disengaged
+      // (present everything) rather than anchoring on a bogus 0 and holding every frame
+      // (see Task 11 fix rounds 2-3 for why this matters).
+      const audioTimeUs = this.audioOutput?.currentTimeUs();
+      if (audioTimeUs == null) return;
       this.post({
         kind: 'audioClockUpdate',
-        audioTimeUs: this.audioOutput.currentTimeUs(),
-        wallTimeMs: performance.now(),
+        audioTimeUs,
+        // Must be Date.now()-based, not performance.now() - a Worker gets its own
+        // performance.now() time origin, different from the main document's (see Task 11
+        // fix round 1). Date.now() has a consistent epoch across both contexts.
+        wallTimeMs: Date.now(),
       });
     }, AUDIO_CLOCK_UPDATE_MS);
 
@@ -2411,6 +2419,10 @@ export class WorkerClient {
   }
 
   resume(): void {
+    // Resuming is always triggered by a user gesture (a Play/Resume button click), so this
+    // is also the right, spec-compliant moment to unlock the AudioContext if the browser's
+    // autoplay policy left it suspended (see Task 10's resume() method).
+    void this.audioOutput?.resume();
     this.post({ kind: 'resume' });
   }
 
