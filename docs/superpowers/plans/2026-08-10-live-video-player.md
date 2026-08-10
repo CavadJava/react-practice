@@ -1411,6 +1411,9 @@ wss.on('connection', (socket) => {
   const ffmpegVideo = spawn('ffmpeg', [
     '-f', 'avfoundation',
     '-framerate', '30',
+    '-video_size', '1280x720', // pin explicitly - this camera's unconstrained default (1552x1552
+                                // on the machine this was verified on) confuses avfoundation's
+                                // frame-rate negotiation and produces massive duplicate-frame counts
     '-i', '0:none', // video device 0 (FaceTime HD Camera), audio disabled on this input
     '-c:v', 'libx264', '-preset', 'ultrafast', '-tune', 'zerolatency',
     '-x264-params', 'keyint=60:scenecut=0',
@@ -1528,7 +1531,7 @@ Expected: logs `Demo live source listening on ws://localhost:8765` and, once a c
 
 Manual verification without a client yet - confirm ffmpeg can actually open the real camera and mic (this is also where a macOS permission prompt will appear the first time):
 ```bash
-ffmpeg -f avfoundation -framerate 30 -i "0:none" -t 2 -f h264 -c:v libx264 -preset ultrafast /tmp/test-video.h264 && ls -la /tmp/test-video.h264 && rm /tmp/test-video.h264
+ffmpeg -f avfoundation -framerate 30 -video_size 1280x720 -i "0:none" -t 2 -f h264 -c:v libx264 -preset ultrafast /tmp/test-video.h264 && ls -la /tmp/test-video.h264 && rm /tmp/test-video.h264
 ffmpeg -f avfoundation -i "none:0" -t 2 -ar 48000 -ac 2 -f f32le /tmp/test-audio.pcm && ls -la /tmp/test-audio.pcm && rm /tmp/test-audio.pcm
 ```
 Expected: both commands create a non-empty file with no "Input/output error". If either errors, grant camera/microphone permission to the terminal app (System Settings → Privacy & Security) and retry.
