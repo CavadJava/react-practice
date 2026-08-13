@@ -20,6 +20,7 @@ It replaces and extends the "Qulaq As" HTML artifact: same core idea (read the p
 - Progress persistence via `localStorage`
 - A built-in spaced-repetition system (own SM-2-lite scheduling — Anki becomes optional/legacy)
 - Course Mode: Word → Collocation → Sentence → Question/Answer, all self-checking, no audio recording/submission
+- Söz İstifadə Tövsiyələri: per-word cross-referenced usage (which topics/sentences a word appears in across the whole 42-file corpus), derived from existing data, no new content authoring
 - Local development only (`npm run dev`); no deployment
 
 **Out of scope (this iteration):**
@@ -43,7 +44,8 @@ qulaq-as/
 │   │   ├── parseVocab.js         ← parses the 33 vocab/register files (word/gloss/sentences)
 │   │   ├── parseProduction.js    ← parses the 9 Active Production files (Situasiya/Cavab/Fokuslu Bank)
 │   │   ├── srs.js                ← SM-2-lite scheduling
-│   │   └── falseAnswerGen.js     ← generates the "yanlış" (wrong) Q&A pairs for Course Mode by cross-pairing
+│   │   ├── falseAnswerGen.js     ← generates the "yanlış" (wrong) Q&A pairs for Course Mode by cross-pairing
+│   │   └── wordIndex.js          ← cross-references every word against the whole 42-file corpus (usage recommendations)
 │   ├── hooks/
 │   │   ├── useContent.js         ← switches between build-time glob import and runtime fetch
 │   │   ├── useProgress.js        ← reads/writes the localStorage progress+SRS blob
@@ -55,7 +57,7 @@ qulaq-as/
 │   │   ├── Course.jsx            ← new: Word → Collocation → Sentence → Q&A flow, per topic
 │   │   └── Settings.jsx          ← data-mode toggle, voice/rate defaults, reset progress
 │   └── components/
-│       (WordCard, TopicRail, PlayButton, ProgressBadge, CourseStep, TrueFalseCard, ...)
+│       (WordCard, TopicRail, PlayButton, ProgressBadge, CourseStep, TrueFalseCard, WordUsagePanel, ...)
 ```
 
 ## 4. Data Flow
@@ -113,17 +115,28 @@ This mix (50% real pairs, 50% generated mismatches, shuffled) becomes the stage-
 
 **Distractor generation for stages 1-3** (multiple choice / fill-in-blank wrong options): pull 2-3 other words from the *same topic* as distractors — plausible enough to require real recognition, not so similar they're unfair (e.g. avoid picking near-synonyms as distractors unless the topic is small).
 
-## 8. Error Handling
+## 8. Söz İstifadə Tövsiyələri (Cross-Referenced Usage)
+
+Hər sözün öz "ev faylında" cəmi 2 nümunə cümləsi var — bu, harada başqa işlədildiyini görmək üçün kifayət deyil. Bunun üçün **yeni məzmun yazmağa ehtiyac yoxdur**: 42 fayl artıq tam parse olunub (1433 söz, 2866 nümunə cümlə, 327 situasiya/cavab) — sadəcə bu korpusu bir dəfə indeksləyib **cross-reference** aparmaq kifayətdir.
+
+**Necə işləyir:** Browse və Course rejimlərində hər söz kartının yanında genişlənən "🔍 Harada Keçir?" paneli olur:
+- Bu sözün (və ya çox oxşar formasının) **başqa hansı mövzularda** keçdiyini göstərir — istər başqa faylda öz başlıq sözü kimi, istərsə başqa bir sözün nümunə cümləsi daxilində, istərsə də Active Production (34-42) situasiya/cavab mətnində
+- Hər keçid üçün: konkret cümlə (EN+AZ) və həmin mövzuya keçid
+- Nəticə: "bu sözü hansı cümlələrdə, hansı mövzularda işlədə bilərəm" sualına — ev faylındakı 2 cümlə əvəzinə — **bütün korpusdan yığılmış real nümunələr** cavab verir
+
+**Texniki tərəfi:** `lib/wordIndex.js` — yükləmə zamanı bir dəfə qurulan `Map<lowercased word, [{topicId, topicName, sentence, mənbə: 'başlıq-söz'|'nümunə-cümlə'|'production'}]>` indeksi. Tam client-side, server/AI-çağırış yoxdur — mövcud parse olunmuş datanın üzərində sadə axtarışdır.
+
+## 9. Error Handling
 
 - No TTS voice available → banner (already proven in the artifact)
 - Runtime-fetch mode: network/file-not-found → "Yenidən cəhd et" retry button
 - `localStorage` unavailable or corrupted JSON → catch, log to console, fall back to fresh empty state (with a one-time notice, not a silent data-loss)
 - Markdown parse failure on a given file (malformed content) → skip that file, log which one, don't crash the whole app
 
-## 9. Testing
+## 10. Testing
 
 Matching this repo's existing convention (no formal tests in sibling exercises) — no test suite. Verification is manual: after building, spot-check parser output against known totals (1433 vocab words, 327 production prompts) the same way the Python extraction scripts were self-verified earlier in this project (entry counts, corruption grep equivalent isn't needed here since content is copied verbatim from already-verified source files).
 
-## 10. Deployment
+## 11. Deployment
 
 Local only (`npm run dev`) for this iteration. No hosting decision needed yet.
