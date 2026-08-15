@@ -214,6 +214,7 @@ The three-layer shape is constant across modules; each module's `domain/` is onl
 
 - **Phase 2:** Public tenant self-signup, subscription plans, billing/payment integration.
 - **Phase 3:** Full Tenant Admin suite (product CRUD, order management) and Platform Super-Admin UI (tenant provisioning, cross-tenant oversight).
+- **Phase 4:** AI shopping-assistant chatbot on the storefront (product Q&A, order status, recommendations) — one chatbot capability shared across tenants, tenant-scoped to that tenant's own catalog/orders like everything else in §3. Scope, model choice, and conversation UX need their own brainstorming session before a plan; not designed here.
 
 Each gets its own spec when it's time to build it.
 
