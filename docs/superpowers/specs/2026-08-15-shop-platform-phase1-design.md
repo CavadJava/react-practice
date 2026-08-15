@@ -32,7 +32,8 @@ This is a large product (self-signup, billing, tenant admin, platform admin, sto
 - Migrating `texnogallery.az` onto the platform as the first tenant
 
 **Out of scope (deferred to later phases):**
-- **Tenant** self-signup (a *shop owner* onboarding onto the platform), subscription plans, billing/payment for platform usage (Phase 2) — not to be confused with *customer* registration/login above, which is a Phase 1 shopper-facing feature, on the storefront, per tenant
+- **Tenant** self-signup (a *shop owner* onboarding onto the platform), subscription plans, billing/payment for **platform usage** (Phase 2) — not to be confused with *customer* registration/login above, which is a Phase 1 shopper-facing feature, on the storefront, per tenant
+- **Online payment-gateway integration** for customer purchases (card processing) — also Phase 2, but a separate concern from platform billing above: this is about a shopper paying a tenant's shop, not a tenant paying the platform. Phase 1 ships the `payments`/`payment_transactions` tables (§5) and cash-on-delivery/manual only.
 - Full Tenant Admin suite (product CRUD, order management dashboard) and Platform Super-Admin UI (Phase 3) — Phase 1 ships only the minimal Layout Editor needed to prove the template-swapping value prop, plus bare-bones product seeding
 - Drag-and-drop visual page builder (explicitly rejected for now — settings form is enough)
 - Per-tenant custom domains (subdomain only in Phase 1)
@@ -121,10 +122,14 @@ Organized as **domain-based Postgres schemas**, mirroring the code's module boun
 - `customers.*` — `customers` (`tenant_id`, name, surname, address, email, phone nullable, password_hash, role, type) — unique on `(tenant_id, email)`
 - `catalog.*` — `products`, `categories` (`parent_id` self-reference for subcategories), `tags`, `product_tags` (join table), `product_images` (ordered, for the gallery slider)
 - `cart.*` — `carts`, `cart_items`
-- `orders.*` — `orders` (includes `customer_id` FK, `phone` captured at order time), `order_items`
+- `orders.*` — `orders` (`customer_id` FK, `phone` captured at order time, `status` — see below), `order_items`, `payments` (method, amount, status per order), `payment_transactions` (append-only log of payment attempts/status changes)
 - `engagement.*` — `favorites` (`customer_id` + `product_id`), `reviews` (`customer_id`, `product_id`, `rating` 1-5, `comment`, `created_at`)
 
 Every table in `customers`, `catalog`, `cart`, `orders`, and `engagement` carries `tenant_id`; RLS policies enforce it can't be queried across tenants even if application code has a bug.
+
+**Order status** — `orders.status` is one of: `draft → in_progress → prepare → checking → approved → on_way → delivered`. In Phase 1, status is advanced manually (no tenant order-management UI yet — that's Phase 3); the field and its full value set exist now so "My Orders"/"View Order" can display real progress from day one instead of a placeholder later.
+
+**Payment (Phase 1 scope note):** `payments`/`payment_transactions` exist as data structures now — a payment method (Phase 1: cash-on-delivery/manual only) and its status per order, plus an append-only transaction log. Real online payment-gateway integration is still Phase 2 (§7's Adapter pattern is reserved for exactly that) — Phase 1 doesn't process card payments, it just has the tables shaped so a gateway adapter can write into `payment_transactions` later without a schema change.
 
 An **order is the transaction record** for Phase 1 — `orders`/`order_items` (§ above) already double as the order/transaction detail view shown in "My Orders" and "View Order". A separate ledger-style transaction history (balance top-ups, bonus credits/debits — as opposed to the purchases themselves) belongs to the deferred Loyalty & Promotions phase below, since it doesn't exist without balance/bonus existing first.
 
