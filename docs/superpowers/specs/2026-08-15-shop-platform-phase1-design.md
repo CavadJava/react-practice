@@ -8,6 +8,8 @@
 
 A **multi-tenant e-commerce SaaS platform**: one shared deployment that can host many independent online shops ("tenants"), each with its own catalog, branding, and page layout, without a separate codebase or deployment per shop. The core idea driving Phase 1: every visible piece of a storefront (header, product grid, footer, etc.) is a **swappable, template-based component**, and each tenant controls which template variant is used where via a simple settings UI — not by editing code.
 
+Built as a single **mono-repo** (`projects/shop-platform/`, npm workspaces) holding the backend API, storefront, admin app, and a shared-types package — see §7 for the full layout.
+
 This is a large product (self-signup, billing, tenant admin, platform admin, storefront). This spec covers **only Phase 1**: the multi-tenant skeleton and the component/template system. Later phases (self-signup + billing, full admin suites) are separate specs, summarized in §9 for context.
 
 ## 2. Scope
@@ -91,6 +93,7 @@ Every table in `catalog`, `cart`, and `orders` carries `tenant_id`; RLS policies
 | Layout Editor / minimal admin | **Vite + React** SPA | No SEO need; matches the pattern already used for this user's other admin panels (`taobao-v1-admin`, `service-admin`) |
 | Backend API | **Express + Node**, `pg` (raw SQL via repository layer, no ORM) | Extends `bk_texnogallery.az/backend`, which already exists and already anticipates a Next.js frontend (its CORS config names `localhost:3000`) |
 | Database | Postgres, shared, `tenant_id` + RLS | See §3 |
+| Repo layout | **Mono-repo**, npm workspaces | One repo, one `npm install`, shared types across all three apps — see §7 |
 
 Both the storefront and the Layout Editor call the same Express API.
 
