@@ -98,20 +98,97 @@ Both the storefront and the Layout Editor call the same Express API.
 
 **Local development script** — a single command (e.g. `npm run dev` from a root script, or a shell script under `scripts/`) starts the full local stack: Postgres (if not already running), the Express API, the Next.js storefront, and the Vite admin app together, so a fresh checkout is runnable without manually starting four things by hand. Exact tooling (concurrently/turborepo/plain shell script) is an implementation detail for the plan.
 
-## 7. Code Organization Principle
+## 7. Repo Structure
 
-**Module-based (domain-based) structure**, not type-based — code for one domain lives together instead of being split across global `components/`, `hooks/`, `services/` folders:
+**Mono-repo, npm workspaces** (not pnpm/Turborepo/Nx — those are additive later if build times ever justify them, not needed to start):
 
 ```
-/modules
-  /catalog        (products, categories: components, hooks, api, types)
-  /cart
-  /orders
-  /tenants
-  /page-builder   (Component Registry, PageRenderer, Layout Editor)
+projects/shop-platform/
+├── package.json                    (workspaces: ["backend","storefront","admin","packages/*"])
+│
+├── backend/                        (Express API — single app, module-based internally)
+│   ├── package.json
+│   └── src/
+│       ├── server.ts
+│       ├── middleware/             (tenant-resolve, auth, error-handler)
+│       ├── db/                     (pool, migrations)
+│       └── modules/
+│           ├── tenants/
+│           ├── catalog/
+│           ├── cart/
+│           ├── orders/
+│           └── page-builder/
+│
+├── storefront/                     (Next.js App Router)
+│   ├── package.json
+│   ├── middleware.ts               (subdomain → tenant resolve)
+│   ├── app/                        (routes: home, products/[slug], search, cart, checkout, [cmsSlug])
+│   └── modules/
+│       ├── catalog/ , cart/
+│       ├── page-builder/           (Component Registry + variants + PageRenderer)
+│       └── theme/
+│
+├── admin/                          (Vite + React — Layout Editor)
+│   ├── package.json
+│   └── src/modules/
+│       ├── page-builder/           (slot list + variant picker UI)
+│       ├── tenants/                (tenant switcher)
+│       └── auth/
+│
+└── packages/
+    └── shared-types/               (Tenant/Product/LayoutConfig TS types + zod schemas — imported by all three apps)
+        ├── package.json
+        └── src/{tenant,product,layoutConfig}.ts
 ```
 
-Each module is self-contained; cross-module communication happens only through explicitly exported interfaces. The Postgres schema boundaries in §5 mirror these modules 1:1.
+Each of `backend`, `storefront`, `admin` is a self-contained npm workspace package; the only intentional cross-package dependency is all three importing `packages/shared-types`. Module names (`tenants`, `catalog`, `cart`, `page-builder`) repeat identically across `backend/`, `storefront/`, and the Postgres schemas in §5 — the same domain boundary mirrored through every layer of the stack.
+
+### Backend module internals — Clean Architecture (domain / infrastructure / presentation)
+
+Dependencies point inward only: `presentation` → `domain` ← `infrastructure`. `domain/` never imports Express or `pg` — this is what makes tenant-scoping logic unit-testable without a DB, and what keeps the §3 migration-to-isolated-DB path cheap (only `infrastructure/` changes).
+
+```
+backend/src/modules/catalog/
+├── domain/
+│   ├── product.ts              (Product, Category entities — plain TS, zero dependencies)
+│   ├── productRepository.ts    (interface: findAll(tenantId, filters), findBySlug(tenantId, slug))
+│   └── productService.ts       (business rules: price formatting, availability)
+├── infrastructure/
+│   └── pgProductRepository.ts  (implements productRepository — raw `pg` queries, tenant_id in every WHERE)
+└── presentation/
+    ├── productRoutes.ts, productController.ts, productDto.ts (zod)
+
+backend/src/modules/cart/        ← heaviest domain: real calculation logic
+├── domain/
+│   ├── cart.ts, cartItem.ts
+│   ├── cartRepository.ts
+│   └── cartService.ts          (total calculation, discount rules, stock check on add) — pure, DB-free, highest unit-test value
+├── infrastructure/pgCartRepository.ts
+└── presentation/cartRoutes.ts, cartController.ts
+
+backend/src/modules/tenants/     ← lightest domain: mostly CRUD, no separate *Service file (YAGNI)
+├── domain/
+│   ├── tenant.ts
+│   └── tenantRepository.ts     (findBySubdomain(slug), findById(id))
+├── infrastructure/pgTenantRepository.ts
+└── presentation/tenantRoutes.ts, tenantController.ts  (subdomain→tenant Factory logic lives here)
+
+backend/src/modules/page-builder/  ← config + validation only; rendering itself lives in storefront's page-builder module
+├── domain/
+│   ├── layoutConfig.ts         (slot, variant, settings types)
+│   ├── layoutConfigRepository.ts
+│   └── layoutConfigService.ts  (rule: every slot's variant must exist in the Component Registry)
+├── infrastructure/pgLayoutConfigRepository.ts
+└── presentation/layoutConfigRoutes.ts   (called by the admin app's Layout Editor)
+```
+
+The three-layer shape is constant across modules; each module's `domain/` is only as "thick" as its real business logic — `tenants` has no standalone service file because it has no business rule beyond lookup, `cart` has the richest one because it does real calculation.
+
+**Alternatives considered and deferred, not adopted:**
+- **Feature-Sliced Design** for the frontend apps (`storefront`/`admin`) — stricter than the plain `modules/` folders above, valuable at larger team/codebase scale; unnecessary ceremony for Phase 1.
+- **Vertical Slice Architecture** for the backend (one file per use-case, no domain/infra/presentation split) — rejected because it erodes the Repository-pattern discipline that tenant-isolation safety depends on.
+- **CQRS** (separate read/write models) for `catalog` — deferred until read load actually demands it.
+- **Turborepo/Nx** on top of npm workspaces — purely additive for build caching later; not needed to start.
 
 **Design patterns used deliberately**, applied where they fit naturally rather than forced everywhere:
 
