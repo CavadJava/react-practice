@@ -22,7 +22,11 @@ This is a large product (self-signup, billing, tenant admin, platform admin, sto
 - **Image sliders**: homepage Hero/Banner as a multi-slide carousel; Product detail page image gallery as a carousel (prev/next)
 - **Favorites (wishlist)**: mark/unmark a product as favorite, plus a Favorites page listing them
 - **Reviews**: comments + star ratings on products, shown on the Product detail page
-- **Profile page**: aggregates the logged-in customer's own data — My Comments, My Favorites, My Orders (§ above), Address (edit the one address on the customer record — a full multi-address book is not in Phase 1), Account settings
+- **Profile page**: aggregates the logged-in customer's own data — My Comments, My Favorites, My Orders (§ above), My Requests (inquiries, below), Address (edit the one address on the customer record — a full multi-address book is not in Phase 1), Account settings
+- **Branches**: a tenant can have one or more physical locations (name, address, phone). Single branch = trivial case of the same model, not a special case.
+- **Stock (per branch)**: a plain quantity per `(product, branch)`. Out-of-stock display is a tenant setting: hide the product, or show it with a "Tezliklə" (coming soon) badge.
+- **Delivery method at checkout**: self-pickup (customer picks a branch) or courier (generic choice — no real Bolt/Uber/Yango dispatch yet, see Out of Scope)
+- **Product Inquiry ("Müraciət")**: a customer can send a request about a product (e.g. it's out of stock) to the tenant; visible in the customer's own Profile → My Requests with a status. Tenant-side response/management is Phase 3.
 - Component Registry + Template Variant system (multiple templates per component type)
 - Layout Config system: per-tenant, per-page slot arrangement, editable via a simple settings form (dropdown + reorder — no drag-and-drop)
 - Tenant-aware theming (colors/fonts/logo) via CSS custom properties
@@ -38,7 +42,10 @@ This is a large product (self-signup, billing, tenant admin, platform admin, sto
 - Drag-and-drop visual page builder (explicitly rejected for now — settings form is enough)
 - Per-tenant custom domains (subdomain only in Phase 1)
 - Schema-per-tenant / DB-per-tenant isolation (Approach B) — the shared-DB design keeps this door open (see §3) but it isn't built now
-- i18n/multi-language, product reviews/ratings, recommendation/ML features
+- i18n/multi-language, recommendation/ML features
+- Real courier API integration (Bolt/Uber/Yango dispatch/tracking/pricing) — Phase 1 offers delivery-method *selection* only (self-pickup vs. generic courier); real dispatch is a Phase 2/3 Adapter, alongside the payment gateway
+- Tenant-side inquiry management/response UI — part of Phase 3's Tenant Admin suite; Phase 1 only lets a customer create an inquiry and see its status
+- Advanced inventory (stock reservation/locking during checkout, low-stock alerts, inter-branch transfer) — Phase 1 keeps per-branch stock to a plain quantity column, decremented on order approval, no locking
 
 ## 3. Tenancy Model
 
@@ -89,9 +96,10 @@ This is the headline feature: components are pluggable, and their placement is t
 |---|---|
 | Navigation | Header+Navigation (renders category/subcategory as a nav menu — see below), Footer, Breadcrumb |
 | Discovery | Hero/Banner (multi-slide carousel), Product category menu, Category/filter panel (left-side layout slot by default; filters by category), **Tag Filter Bar** (its own slot-able component — clickable tag chips, filters the Product Grid slot below it when clicked), Product search, Search results |
-| Product | **Product Grid** (grid-layout listing, one of the registered `productGrid` variants — sits below the Tag Filter Bar and reacts to its selection), Product Card (shows tag badges overlaid on the card, e.g. "New"/"Sale"), Product detail page (image gallery carousel, reviews: comments + star ratings, favorite toggle) |
-| Account | Register, Login, Profile (My Comments, My Favorites, My Orders, Address, Account settings), Favorites page |
-| Shopping | Cart, Checkout flow (requires login + phone), My Orders (read-only history/detail), View Order (email+orderId lookup, no login) |
+| Product | **Product Grid** (grid-layout listing, one of the registered `productGrid` variants — sits below the Tag Filter Bar and reacts to its selection), Product Card (shows tag badges overlaid on the card, e.g. "New"/"Sale"; hidden or "Tezliklə"-badged per the tenant's out-of-stock setting), Product detail page (image gallery carousel, reviews: comments + star ratings, favorite toggle, stock/branch availability, "send inquiry" when out of stock) |
+| Account | Register, Login, Profile (My Comments, My Favorites, My Orders, My Requests, Address, Account settings), Favorites page |
+| Shopping | Cart, Checkout flow (requires login + phone; delivery-method step: self-pickup branch picker or generic courier), My Orders (read-only history/detail, shows order status), View Order (email+orderId lookup, no login) |
+| Location | Branches list/detail (name, address, phone) — shown on Contact/Footer, and reused by the checkout self-pickup picker |
 | Content | Generic CMS Page (About/Contact/Terms — one template, tenant-supplied content) |
 | Theme | Color/font/logo override (CSS custom properties) |
 
@@ -105,8 +113,8 @@ A new tenant's default Layout Config ships a short **core MVP set** — everythi
 
 | | Components |
 |---|---|
-| **Core (on by default)** | Header+Navigation, Footer, Breadcrumb, Product category menu, Product search + Search results, Product Grid, Product Card (no tag badges), Product detail page (single image, no gallery/reviews/favorite), Cart, Checkout, Register/Login, Generic CMS Page |
-| **Optional (off by default, tenant enables)** | Hero/Banner slider, Category/filter panel, Tag Filter Bar (+ tags on Product Card), Product image gallery, Favorites/Wishlist (+ Favorites page), Reviews (comments + ratings), Profile sections beyond My Orders (My Comments, My Favorites — since they depend on the optional features above) |
+| **Core (on by default)** | Header+Navigation, Footer, Breadcrumb, Product category menu, Product search + Search results, Product Grid, Product Card (no tag badges), Product detail page (single image, no gallery/reviews/favorite), Cart, Checkout with self-pickup delivery (a tenant always has ≥1 branch), stock-aware display (out-of-stock hidden by default), Register/Login, Generic CMS Page |
+| **Optional (off by default, tenant enables)** | Hero/Banner slider, Category/filter panel, Tag Filter Bar (+ tags on Product Card), Product image gallery, Favorites/Wishlist (+ Favorites page), Reviews (comments + ratings), Product Inquiry ("Müraciət"), courier as a second delivery-method choice (self-pickup alone is enough to launch), "coming soon" out-of-stock display (vs. the core hide default), Profile sections beyond My Orders (My Comments, My Favorites, My Requests — since they depend on the optional features above) |
 
 This split doesn't change what gets built in Phase 1 (§2 already lists all of it) — it only changes each new tenant's starting Layout Config.
 
@@ -118,12 +126,12 @@ This split doesn't change what gets built in Phase 1 (§2 already lists all of i
 
 Organized as **domain-based Postgres schemas**, mirroring the code's module boundaries (see §7):
 
-- `tenants.*` — `tenants`, `page_layouts` (slot config), `theme_settings`
+- `tenants.*` — `tenants`, `page_layouts` (slot config), `theme_settings`, `branches` (name, address, phone)
 - `customers.*` — `customers` (`tenant_id`, name, surname, address, email, phone nullable, password_hash, role, type) — unique on `(tenant_id, email)`
-- `catalog.*` — `products`, `categories` (`parent_id` self-reference for subcategories), `tags`, `product_tags` (join table), `product_images` (ordered, for the gallery slider)
+- `catalog.*` — `products` (includes `out_of_stock_display: hide | coming_soon` tenant-level setting, read from `tenants`), `categories` (`parent_id` self-reference for subcategories), `tags`, `product_tags` (join table), `product_images` (ordered, for the gallery slider), `product_stock` (`product_id` + `branch_id` + plain `quantity` — no reservation/locking in Phase 1, decremented on order approval)
 - `cart.*` — `carts`, `cart_items`
-- `orders.*` — `orders` (`customer_id` FK, `phone` captured at order time, `status` — see below), `order_items`, `payments` (method, amount, status per order), `payment_transactions` (append-only log of payment attempts/status changes)
-- `engagement.*` — `favorites` (`customer_id` + `product_id`), `reviews` (`customer_id`, `product_id`, `rating` 1-5, `comment`, `created_at`)
+- `orders.*` — `orders` (`customer_id` FK, `phone` captured at order time, `status` — see below, `delivery_method`: `self_pickup` + chosen `branch_id`, or `courier` generic), `order_items`, `payments` (method, amount, status per order), `payment_transactions` (append-only log of payment attempts/status changes)
+- `engagement.*` — `favorites` (`customer_id` + `product_id`), `reviews` (`customer_id`, `product_id`, `rating` 1-5, `comment`, `created_at`), `inquiries` (`customer_id`, `product_id`, `message`, `status`, `created_at` — the "Müraciət"/My Requests record; tenant-side response is Phase 3)
 
 Every table in `customers`, `catalog`, `cart`, `orders`, and `engagement` carries `tenant_id`; RLS policies enforce it can't be queried across tenants even if application code has a bug.
 
@@ -164,19 +172,20 @@ projects/shop-platform/
 │       ├── middleware/             (tenant-resolve, auth, error-handler)
 │       ├── db/                     (pool, migrations)
 │       └── modules/
-│           ├── tenants/
+│           ├── tenants/            (includes branches — same lightweight CRUD shape as tenants)
 │           ├── customers/          (registration, login, password hashing, JWT issuance)
-│           ├── catalog/
+│           ├── catalog/            (products, categories, tags, stock — see §7 module internals)
 │           ├── cart/
-│           ├── orders/
+│           ├── orders/             (order status, delivery method, payments/payment_transactions)
+│           ├── engagement/         (favorites, reviews, inquiries)
 │           └── page-builder/
 │
 ├── storefront/                     (Next.js App Router)
 │   ├── package.json
 │   ├── middleware.ts               (subdomain → tenant resolve)
-│   ├── app/                        (routes: home, products/[slug], search, cart, checkout, register, login, orders (My Orders + View Order), [cmsSlug])
+│   ├── app/                        (routes: home, products/[slug], search, cart, checkout, register, login, orders (My Orders + View Order), profile (favorites/reviews/requests/address), [cmsSlug])
 │   └── modules/
-│       ├── catalog/ , cart/ , customers/
+│       ├── catalog/ , cart/ , customers/ , engagement/
 │       ├── page-builder/           (Component Registry + variants + PageRenderer)
 │       └── theme/
 │
