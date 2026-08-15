@@ -19,6 +19,10 @@ This is a large product (self-signup, billing, tenant admin, platform admin, sto
 - **Customer registration/login** (per tenant — see §3a) — replaces the earlier "guest + email lookup" idea; a customer must have an account to check out
 - Customer order history: a read-only "my orders" list/detail view for the logged-in customer (no status changes, no tenant-side management — that's Phase 3)
 - **View Order** page: look up a single order by `email + orderId`, no login required — a convenience lookup distinct from "My Orders" (which needs login and shows full history)
+- **Image sliders**: homepage Hero/Banner as a multi-slide carousel; Product detail page image gallery as a carousel (prev/next)
+- **Favorites (wishlist)**: mark/unmark a product as favorite, plus a Favorites page listing them
+- **Reviews**: comments + star ratings on products, shown on the Product detail page
+- **Profile page**: aggregates the logged-in customer's own data — My Comments, My Favorites, My Orders (§ above), Address (edit the one address on the customer record — a full multi-address book is not in Phase 1), Account settings
 - Component Registry + Template Variant system (multiple templates per component type)
 - Layout Config system: per-tenant, per-page slot arrangement, editable via a simple settings form (dropdown + reorder — no drag-and-drop)
 - Tenant-aware theming (colors/fonts/logo) via CSS custom properties
@@ -82,13 +86,17 @@ This is the headline feature: components are pluggable, and their placement is t
 
 | Category | Components |
 |---|---|
-| Navigation | Header+Navigation, Footer, Breadcrumb |
-| Discovery | Hero/Banner, Product category menu, Category/filter panel (left-side layout slot by default; filters by category), **Tag Filter Bar** (its own slot-able component — clickable tag chips, filters the Product Grid slot below it when clicked), Product search, Search results |
-| Product | **Product Grid** (grid-layout listing, one of the registered `productGrid` variants — sits below the Tag Filter Bar and reacts to its selection), Product Card (shows tag badges overlaid on the card, e.g. "New"/"Sale"), Product detail page |
-| Account | Register, Login |
+| Navigation | Header+Navigation (renders category/subcategory as a nav menu — see below), Footer, Breadcrumb |
+| Discovery | Hero/Banner (multi-slide carousel), Product category menu, Category/filter panel (left-side layout slot by default; filters by category), **Tag Filter Bar** (its own slot-able component — clickable tag chips, filters the Product Grid slot below it when clicked), Product search, Search results |
+| Product | **Product Grid** (grid-layout listing, one of the registered `productGrid` variants — sits below the Tag Filter Bar and reacts to its selection), Product Card (shows tag badges overlaid on the card, e.g. "New"/"Sale"), Product detail page (image gallery carousel, reviews: comments + star ratings, favorite toggle) |
+| Account | Register, Login, Profile (My Comments, My Favorites, My Orders, Address, Account settings), Favorites page |
 | Shopping | Cart, Checkout flow (requires login + phone), My Orders (read-only history/detail), View Order (email+orderId lookup, no login) |
 | Content | Generic CMS Page (About/Contact/Terms — one template, tenant-supplied content) |
 | Theme | Color/font/logo override (CSS custom properties) |
+
+**Categories are hierarchical (category → subcategory)**: `categories.parent_id` self-references (nullable — `NULL` means top-level). A product is assigned to exactly one category row, which may itself be a subcategory (its own `category_id` field, not two separate category/subcategory fields on the product) — the hierarchy lives in `categories`, not on `products`. Header+Navigation and the Product category menu both render this tree (top-level items with a subcategory dropdown/flyout).
+
+All of the above — sliders, favorites, reviews, profile sections — are Registry components like everything in §4, toggleable per tenant via Layout Config; nothing here is hardcoded always-on.
 
 **Tags:** tenant-defined labels (e.g. "Yeni", "Endirim", "Top Satış") attached to products many-to-many — a product can have several, a tag can apply to many products.
 - **Tag Filter Bar** — a standalone component (own Registry entry, own slot), typically placed just above the Product Grid. Clicking a tag chip filters the Grid slot to products carrying that tag. This is separate from the left-side Category/filter panel, not merged into it.
@@ -100,11 +108,14 @@ Organized as **domain-based Postgres schemas**, mirroring the code's module boun
 
 - `tenants.*` — `tenants`, `page_layouts` (slot config), `theme_settings`
 - `customers.*` — `customers` (`tenant_id`, name, surname, address, email, phone nullable, password_hash, role, type) — unique on `(tenant_id, email)`
-- `catalog.*` — `products`, `categories`, `tags`, `product_tags` (join table, `product_id` + `tag_id`)
+- `catalog.*` — `products`, `categories` (`parent_id` self-reference for subcategories), `tags`, `product_tags` (join table), `product_images` (ordered, for the gallery slider)
 - `cart.*` — `carts`, `cart_items`
 - `orders.*` — `orders` (includes `customer_id` FK, `phone` captured at order time), `order_items`
+- `engagement.*` — `favorites` (`customer_id` + `product_id`), `reviews` (`customer_id`, `product_id`, `rating` 1-5, `comment`, `created_at`)
 
-Every table in `customers`, `catalog`, `cart`, and `orders` carries `tenant_id`; RLS policies enforce it can't be queried across tenants even if application code has a bug.
+Every table in `customers`, `catalog`, `cart`, `orders`, and `engagement` carries `tenant_id`; RLS policies enforce it can't be queried across tenants even if application code has a bug.
+
+An **order is the transaction record** for Phase 1 — `orders`/`order_items` (§ above) already double as the order/transaction detail view shown in "My Orders" and "View Order". A separate ledger-style transaction history (balance top-ups, bonus credits/debits — as opposed to the purchases themselves) belongs to the deferred Loyalty & Promotions phase below, since it doesn't exist without balance/bonus existing first.
 
 ## 6. Architecture & Tech Stack
 
@@ -237,6 +248,7 @@ The three-layer shape is constant across modules; each module's `domain/` is onl
 - **Phase 2:** Public tenant self-signup, subscription plans, billing/payment integration.
 - **Phase 3:** Full Tenant Admin suite (product CRUD, order management) and Platform Super-Admin UI (tenant provisioning, cross-tenant oversight).
 - **Phase 4:** AI shopping-assistant chatbot on the storefront (product Q&A, order status, recommendations) — one chatbot capability shared across tenants, tenant-scoped to that tenant's own catalog/orders like everything else in §3. Scope, model choice, and conversation UX need their own brainstorming session before a plan; not designed here.
+- **Phase 5 (Loyalty & Promotions):** customer account balance, bonus/loyalty points, coupons, and tenant campaigns — plus the ledger-style transaction history/detail view (balance top-ups, bonus credits/debits) that only makes sense once balance/bonus exist. Deliberately kept out of Phase 1: this is its own subsystem (earning rules, redemption rules, how a coupon applies at checkout) with real design questions, not an extension of the skeleton.
 
 Each gets its own spec when it's time to build it.
 
