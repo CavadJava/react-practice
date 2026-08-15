@@ -76,20 +76,23 @@ This is the headline feature: components are pluggable, and their placement is t
 - **PageRenderer** — a generic component that reads a tenant's Layout Config and renders the registered variant for each slot, passing `settings` as props.
 - **Layout Editor** (minimal, Phase 1) — a settings form (not drag-and-drop): pick a variant per slot from a dropdown, reorder slots with up/down controls. Ships as part of the Phase 1 admin app (see §6) so the core value prop is actually demonstrable, even though the full Tenant Admin suite is Phase 3.
 - **Theming** — CSS custom properties (`--primary-color`, `--font-family`, `--logo-url`, …) generated from the tenant's theme row and injected at the root; components consume the variables, so no rebuild is needed to restyle a tenant.
+- **Slots aren't fully isolated when one filters another** — the default is that slots don't know about each other, but Tag Filter Bar → Product Grid is a real exception: selecting a tag must be readable by the Grid slot on the same page. Handled via shared page-level filter state (e.g. URL query params, so it's also shareable/bookmarkable and works without client-side-only state) rather than a direct component-to-component reference — keeps the Registry/PageRenderer mechanism generic instead of hardcoding this one pair's coupling.
 
 **Component list (Phase 1):**
 
 | Category | Components |
 |---|---|
 | Navigation | Header+Navigation, Footer, Breadcrumb |
-| Discovery | Hero/Banner, Product category menu, Category/filter panel (left-side layout slot by default; filters by category **and** tag), Product search, Search results |
-| Product | **Product Grid** (grid-layout listing, one of the registered `productGrid` variants), Product Card (shows tag badges overlaid on the card, e.g. "New"/"Sale"), Product detail page |
+| Discovery | Hero/Banner, Product category menu, Category/filter panel (left-side layout slot by default; filters by category), **Tag Filter Bar** (its own slot-able component — clickable tag chips, filters the Product Grid slot below it when clicked), Product search, Search results |
+| Product | **Product Grid** (grid-layout listing, one of the registered `productGrid` variants — sits below the Tag Filter Bar and reacts to its selection), Product Card (shows tag badges overlaid on the card, e.g. "New"/"Sale"), Product detail page |
 | Account | Register, Login |
 | Shopping | Cart, Checkout flow (requires login + phone), My Orders (read-only history/detail), View Order (email+orderId lookup, no login) |
 | Content | Generic CMS Page (About/Contact/Terms — one template, tenant-supplied content) |
 | Theme | Color/font/logo override (CSS custom properties) |
 
-**Tags:** tenant-defined labels (e.g. "Yeni", "Endirim", "Top Satış") attached to products many-to-many — a product can have several, a tag can apply to many products. Rendered as small badges on the Product Card in the grid, and usable as a filter facet alongside category in the left-side filter panel.
+**Tags:** tenant-defined labels (e.g. "Yeni", "Endirim", "Top Satış") attached to products many-to-many — a product can have several, a tag can apply to many products.
+- **Tag Filter Bar** — a standalone component (own Registry entry, own slot), typically placed just above the Product Grid. Clicking a tag chip filters the Grid slot to products carrying that tag. This is separate from the left-side Category/filter panel, not merged into it.
+- **Product Card** — shows the same tags as small badges overlaid on the card, purely for display there (clicking a badge on a card is not required to also filter — that's the Tag Filter Bar's job).
 
 ## 5. Data Model (high level)
 
