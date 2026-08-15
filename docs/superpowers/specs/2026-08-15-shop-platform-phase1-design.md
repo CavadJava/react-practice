@@ -98,6 +98,17 @@ This is the headline feature: components are pluggable, and their placement is t
 
 All of the above — sliders, favorites, reviews, profile sections — are Registry components like everything in §4, toggleable per tenant via Layout Config; nothing here is hardcoded always-on.
 
+### Core (default MVP) vs. optional components
+
+A new tenant's default Layout Config ships a short **core MVP set** — everything needed for a working shop and nothing more. Every other Phase 1 component still gets built, but starts **off**, and the tenant turns it on later via the Layout Editor. This is what "a new customer gets offered a short MVP first" (in Phase 2's self-signup flow) actually means mechanically — it's just which components a fresh tenant's Layout Config seed includes.
+
+| | Components |
+|---|---|
+| **Core (on by default)** | Header+Navigation, Footer, Breadcrumb, Product category menu, Product search + Search results, Product Grid, Product Card (no tag badges), Product detail page (single image, no gallery/reviews/favorite), Cart, Checkout, Register/Login, Generic CMS Page |
+| **Optional (off by default, tenant enables)** | Hero/Banner slider, Category/filter panel, Tag Filter Bar (+ tags on Product Card), Product image gallery, Favorites/Wishlist (+ Favorites page), Reviews (comments + ratings), Profile sections beyond My Orders (My Comments, My Favorites — since they depend on the optional features above) |
+
+This split doesn't change what gets built in Phase 1 (§2 already lists all of it) — it only changes each new tenant's starting Layout Config.
+
 **Tags:** tenant-defined labels (e.g. "Yeni", "Endirim", "Top Satış") attached to products many-to-many — a product can have several, a tag can apply to many products.
 - **Tag Filter Bar** — a standalone component (own Registry entry, own slot), typically placed just above the Product Grid. Clicking a tag chip filters the Grid slot to products carrying that tag. This is separate from the left-side Category/filter panel, not merged into it.
 - **Product Card** — shows the same tags as small badges overlaid on the card, purely for display there (clicking a badge on a card is not required to also filter — that's the Tag Filter Bar's job).
