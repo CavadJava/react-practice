@@ -29,7 +29,7 @@ This is a large product (self-signup, billing, tenant admin, platform admin, sto
 - Full Tenant Admin suite (product CRUD, order management dashboard) and Platform Super-Admin UI (Phase 3) — Phase 1 ships only the minimal Layout Editor needed to prove the template-swapping value prop, plus bare-bones product seeding
 - Drag-and-drop visual page builder (explicitly rejected for now — settings form is enough)
 - Per-tenant custom domains (subdomain only in Phase 1)
-- Schema-per-tenant / DB-per-tenant isolation (Approach B) — the shared-DB design keeps this door open (see §4) but it isn't built now
+- Schema-per-tenant / DB-per-tenant isolation (Approach B) — the shared-DB design keeps this door open (see §3) but it isn't built now
 - i18n/multi-language, product reviews/ratings, recommendation/ML features
 
 ## 3. Tenancy Model
