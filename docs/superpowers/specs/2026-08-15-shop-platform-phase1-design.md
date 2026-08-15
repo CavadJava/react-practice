@@ -16,6 +16,7 @@ This is a large product (self-signup, billing, tenant admin, platform admin, sto
 
 **In scope (Phase 1):**
 - Multi-tenant storefront: product browsing, product detail, search, cart, checkout, generic content pages (About/Contact/etc.)
+- Customer order history: a read-only "my orders" list/detail view for the customer who placed them (no status changes, no tenant-side management — that's Phase 3)
 - Component Registry + Template Variant system (multiple templates per component type)
 - Layout Config system: per-tenant, per-page slot arrangement, editable via a simple settings form (dropdown + reorder — no drag-and-drop)
 - Tenant-aware theming (colors/fonts/logo) via CSS custom properties
@@ -70,7 +71,7 @@ This is the headline feature: components are pluggable, and their placement is t
 | Navigation | Header+Navigation, Footer, Breadcrumb |
 | Discovery | Hero/Banner, Product category menu, Category/filter panel, Product search, Search results |
 | Product | Product Card, Product detail page |
-| Shopping | Cart, Checkout flow |
+| Shopping | Cart, Checkout flow, My Orders (read-only history/detail) |
 | Content | Generic CMS Page (About/Contact/Terms — one template, tenant-supplied content) |
 | Theme | Color/font/logo override (CSS custom properties) |
 
@@ -232,3 +233,4 @@ The project needs a README (setup/local-run instructions), a Postman collection,
 
 - Exact auth mechanism for the Phase 1 Layout Editor (shared internal credential vs. lightweight per-tenant login) — can default to a simple internal login and revisit in Phase 3's full admin auth design.
 - Where Phase 1's manual tenant/product seeding lives (SQL script vs. tiny internal CLI) — implementation detail, decide during planning.
+- **How a customer is identified for "My Orders" without full customer accounts** (Phase 1 has no customer auth/signup): candidates are order lookup by email + order ID (no session needed), or a lightweight email magic-link session. Decide during planning — this determines whether `orders` needs a `customer_email` lookup index or a real session mechanism.
