@@ -55,7 +55,7 @@ This is a large product (self-signup, billing, tenant admin, platform admin, sto
 Customer accounts are **tenant-scoped**, like everything else in this model — a customer registers with one specific shop (subdomain), not the platform as a whole; the same email can exist as separate customers under different tenants (`(tenant_id, email)` unique, not `email` alone).
 
 - **Registration:** name, surname, address, email, phone (optional), password. Password stored hashed (bcrypt/argon2), never plaintext.
-- **Login:** email + password → session token (JWT, stateless — no server-side session store needed for Phase 1).
+- **Login:** email + password → JWT (stateless — no server-side session store needed for Phase 1). **Delivery is not locked to one mechanism:** httpOnly cookie by default (storefront browser use, safer against XSS), with `Authorization: Bearer` header also supported on the same endpoint for non-browser/future clients (mobile app, third-party integration) — the backend accepts the JWT from either place, cookie and header aren't mutually exclusive.
 - **`role`:** `user` for Phase 1 (every registered customer). The field exists (not hardcoded) so tenant-side staff roles can be added later without a schema change.
 - **`type`:** `physical` for Phase 1 (an individual person, as opposed to a future `legal`/corporate buyer type — kept as an explicit field for the same forward-compatibility reason as `role`).
 - **Checkout requires login** — no anonymous/guest checkout in Phase 1. Email + order-ID lookup still exists, but only as the separate **View Order** page (below) for post-purchase convenience, not as a checkout substitute.
