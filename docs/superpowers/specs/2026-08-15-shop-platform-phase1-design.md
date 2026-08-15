@@ -16,7 +16,9 @@ This is a large product (self-signup, billing, tenant admin, platform admin, sto
 
 **In scope (Phase 1):**
 - Multi-tenant storefront: product browsing, product detail, search, cart, checkout, generic content pages (About/Contact/etc.)
-- Customer order history: a read-only "my orders" list/detail view for the customer who placed them (no status changes, no tenant-side management — that's Phase 3)
+- **Customer registration/login** (per tenant — see §3a) — replaces the earlier "guest + email lookup" idea; a customer must have an account to check out
+- Customer order history: a read-only "my orders" list/detail view for the logged-in customer (no status changes, no tenant-side management — that's Phase 3)
+- **View Order** page: look up a single order by `email + orderId`, no login required — a convenience lookup distinct from "My Orders" (which needs login and shows full history)
 - Component Registry + Template Variant system (multiple templates per component type)
 - Layout Config system: per-tenant, per-page slot arrangement, editable via a simple settings form (dropdown + reorder — no drag-and-drop)
 - Tenant-aware theming (colors/fonts/logo) via CSS custom properties
@@ -26,7 +28,7 @@ This is a large product (self-signup, billing, tenant admin, platform admin, sto
 - Migrating `texnogallery.az` onto the platform as the first tenant
 
 **Out of scope (deferred to later phases):**
-- Public self-signup, subscription plans, billing/payment for platform usage (Phase 2)
+- **Tenant** self-signup (a *shop owner* onboarding onto the platform), subscription plans, billing/payment for platform usage (Phase 2) — not to be confused with *customer* registration/login above, which is a Phase 1 shopper-facing feature, on the storefront, per tenant
 - Full Tenant Admin suite (product CRUD, order management dashboard) and Platform Super-Admin UI (Phase 3) — Phase 1 ships only the minimal Layout Editor needed to prove the template-swapping value prop, plus bare-bones product seeding
 - Drag-and-drop visual page builder (explicitly rejected for now — settings form is enough)
 - Per-tenant custom domains (subdomain only in Phase 1)
@@ -47,6 +49,17 @@ This is a large product (self-signup, billing, tenant admin, platform admin, sto
 2. Every tenant-owned table has `tenant_id`; no cross-tenant joins.
 3. File/image storage is namespaced by tenant.
 4. Migrations are written to be replayable against an arbitrary target DB.
+
+### 3a. Customer Accounts
+
+Customer accounts are **tenant-scoped**, like everything else in this model — a customer registers with one specific shop (subdomain), not the platform as a whole; the same email can exist as separate customers under different tenants (`(tenant_id, email)` unique, not `email` alone).
+
+- **Registration:** name, surname, address, email, phone (optional), password. Password stored hashed (bcrypt/argon2), never plaintext.
+- **Login:** email + password → session token (JWT, stateless — no server-side session store needed for Phase 1).
+- **`role`:** `user` for Phase 1 (every registered customer). The field exists (not hardcoded) so tenant-side staff roles can be added later without a schema change.
+- **`type`:** `physical` for Phase 1 (an individual person, as opposed to a future `legal`/corporate buyer type — kept as an explicit field for the same forward-compatibility reason as `role`).
+- **Checkout requires login** — no anonymous/guest checkout in Phase 1. Email + order-ID lookup still exists, but only as the separate **View Order** page (below) for post-purchase convenience, not as a checkout substitute.
+- **Order placement requires a phone number** even though phone is optional at registration — a customer with no phone on file must supply one when placing an order (delivery necessity). Enforced in `orderService`, not at the DB column level, since the same `customers.phone` column stays optional.
 
 ## 4. Component / Template System
 
@@ -71,7 +84,8 @@ This is the headline feature: components are pluggable, and their placement is t
 | Navigation | Header+Navigation, Footer, Breadcrumb |
 | Discovery | Hero/Banner, Product category menu, Category/filter panel, Product search, Search results |
 | Product | Product Card, Product detail page |
-| Shopping | Cart, Checkout flow, My Orders (read-only history/detail) |
+| Account | Register, Login |
+| Shopping | Cart, Checkout flow (requires login + phone), My Orders (read-only history/detail), View Order (email+orderId lookup, no login) |
 | Content | Generic CMS Page (About/Contact/Terms — one template, tenant-supplied content) |
 | Theme | Color/font/logo override (CSS custom properties) |
 
@@ -80,11 +94,12 @@ This is the headline feature: components are pluggable, and their placement is t
 Organized as **domain-based Postgres schemas**, mirroring the code's module boundaries (see §7):
 
 - `tenants.*` — `tenants`, `page_layouts` (slot config), `theme_settings`
+- `customers.*` — `customers` (`tenant_id`, name, surname, address, email, phone nullable, password_hash, role, type) — unique on `(tenant_id, email)`
 - `catalog.*` — `products`, `categories`
 - `cart.*` — `carts`, `cart_items`
-- `orders.*` — `orders`, `order_items`
+- `orders.*` — `orders` (includes `customer_id` FK, `phone` captured at order time), `order_items`
 
-Every table in `catalog`, `cart`, and `orders` carries `tenant_id`; RLS policies enforce it can't be queried across tenants even if application code has a bug.
+Every table in `customers`, `catalog`, `cart`, and `orders` carries `tenant_id`; RLS policies enforce it can't be queried across tenants even if application code has a bug.
 
 ## 6. Architecture & Tech Stack
 
@@ -118,6 +133,7 @@ projects/shop-platform/
 │       ├── db/                     (pool, migrations)
 │       └── modules/
 │           ├── tenants/
+│           ├── customers/          (registration, login, password hashing, JWT issuance)
 │           ├── catalog/
 │           ├── cart/
 │           ├── orders/
@@ -126,9 +142,9 @@ projects/shop-platform/
 ├── storefront/                     (Next.js App Router)
 │   ├── package.json
 │   ├── middleware.ts               (subdomain → tenant resolve)
-│   ├── app/                        (routes: home, products/[slug], search, cart, checkout, [cmsSlug])
+│   ├── app/                        (routes: home, products/[slug], search, cart, checkout, register, login, orders (My Orders + View Order), [cmsSlug])
 │   └── modules/
-│       ├── catalog/ , cart/
+│       ├── catalog/ , cart/ , customers/
 │       ├── page-builder/           (Component Registry + variants + PageRenderer)
 │       └── theme/
 │
@@ -186,7 +202,7 @@ backend/src/modules/page-builder/  ← config + validation only; rendering itsel
 └── presentation/layoutConfigRoutes.ts   (called by the admin app's Layout Editor)
 ```
 
-The three-layer shape is constant across modules; each module's `domain/` is only as "thick" as its real business logic — `tenants` has no standalone service file because it has no business rule beyond lookup, `cart` has the richest one because it does real calculation.
+The three-layer shape is constant across modules; each module's `domain/` is only as "thick" as its real business logic — `tenants` has no standalone service file because it has no business rule beyond lookup, `cart` has the richest one because it does real calculation. `customers` sits in between: `customerService` owns password hashing, duplicate-email-per-tenant checks, and JWT issuance — real rules, but narrower than `cart`'s.
 
 **Alternatives considered and deferred, not adopted:**
 - **Feature-Sliced Design** for the frontend apps (`storefront`/`admin`) — stricter than the plain `modules/` folders above, valuable at larger team/codebase scale; unnecessary ceremony for Phase 1.
@@ -233,4 +249,4 @@ The project needs a README (setup/local-run instructions), a Postman collection,
 
 - Exact auth mechanism for the Phase 1 Layout Editor (shared internal credential vs. lightweight per-tenant login) — can default to a simple internal login and revisit in Phase 3's full admin auth design.
 - Where Phase 1's manual tenant/product seeding lives (SQL script vs. tiny internal CLI) — implementation detail, decide during planning.
-- **How a customer is identified for "My Orders" without full customer accounts** (Phase 1 has no customer auth/signup): candidates are order lookup by email + order ID (no session needed), or a lightweight email magic-link session. Decide during planning — this determines whether `orders` needs a `customer_email` lookup index or a real session mechanism.
+- ~~How a customer is identified for "My Orders" without full customer accounts~~ — resolved: real registration/login (§3a) for "My Orders", plus a separate email+orderId "View Order" lookup for guests checking a specific order.
