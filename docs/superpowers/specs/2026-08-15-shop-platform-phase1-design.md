@@ -94,6 +94,10 @@ Every table in `catalog`, `cart`, and `orders` carries `tenant_id`; RLS policies
 
 Both the storefront and the Layout Editor call the same Express API.
 
+**Single API, module-based internally** — this is one Express application (not one microservice per module). §7's `/modules` folder structure lives inside this single API; modules never become separate deployable services in Phase 1. Splitting into real microservices, if ever needed, is a future-phase decision, not a Phase 1 concern.
+
+**Local development script** — a single command (e.g. `npm run dev` from a root script, or a shell script under `scripts/`) starts the full local stack: Postgres (if not already running), the Express API, the Next.js storefront, and the Vite admin app together, so a fresh checkout is runnable without manually starting four things by hand. Exact tooling (concurrently/turborepo/plain shell script) is an implementation detail for the plan.
+
 ## 7. Code Organization Principle
 
 **Module-based (domain-based) structure**, not type-based — code for one domain lives together instead of being split across global `components/`, `hooks/`, `services/` folders:
@@ -139,7 +143,11 @@ Each gets its own spec when it's time to build it.
 - Component Registry / PageRenderer: given a fixture Layout Config, renders the expected variant in the expected order.
 - Integration: full page render for a seeded tenant (subdomain → middleware → API → PageRenderer → HTML).
 
-## 11. Open Questions
+## 11. Documentation & API Artifacts
+
+The project needs a README (setup/local-run instructions), a Postman collection, and a Swagger/OpenAPI spec for the API. These are **not produced now** — per the user's instruction, they get asked about and added once Phase 1's implementation is actually complete and the API surface has stopped moving, so they document the real thing instead of a moving target. The implementation plan should end with a task to circle back on this rather than skip it silently.
+
+## 12. Open Questions
 
 - Exact auth mechanism for the Phase 1 Layout Editor (shared internal credential vs. lightweight per-tenant login) — can default to a simple internal login and revisit in Phase 3's full admin auth design.
 - Where Phase 1's manual tenant/product seeding lives (SQL script vs. tiny internal CLI) — implementation detail, decide during planning.
