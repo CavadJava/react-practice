@@ -82,12 +82,14 @@ This is the headline feature: components are pluggable, and their placement is t
 | Category | Components |
 |---|---|
 | Navigation | Header+Navigation, Footer, Breadcrumb |
-| Discovery | Hero/Banner, Product category menu, Category/filter panel, Product search, Search results |
-| Product | Product Card, Product detail page |
+| Discovery | Hero/Banner, Product category menu, Category/filter panel (left-side layout slot by default; filters by category **and** tag), Product search, Search results |
+| Product | **Product Grid** (grid-layout listing, one of the registered `productGrid` variants), Product Card (shows tag badges overlaid on the card, e.g. "New"/"Sale"), Product detail page |
 | Account | Register, Login |
 | Shopping | Cart, Checkout flow (requires login + phone), My Orders (read-only history/detail), View Order (email+orderId lookup, no login) |
 | Content | Generic CMS Page (About/Contact/Terms — one template, tenant-supplied content) |
 | Theme | Color/font/logo override (CSS custom properties) |
+
+**Tags:** tenant-defined labels (e.g. "Yeni", "Endirim", "Top Satış") attached to products many-to-many — a product can have several, a tag can apply to many products. Rendered as small badges on the Product Card in the grid, and usable as a filter facet alongside category in the left-side filter panel.
 
 ## 5. Data Model (high level)
 
@@ -95,7 +97,7 @@ Organized as **domain-based Postgres schemas**, mirroring the code's module boun
 
 - `tenants.*` — `tenants`, `page_layouts` (slot config), `theme_settings`
 - `customers.*` — `customers` (`tenant_id`, name, surname, address, email, phone nullable, password_hash, role, type) — unique on `(tenant_id, email)`
-- `catalog.*` — `products`, `categories`
+- `catalog.*` — `products`, `categories`, `tags`, `product_tags` (join table, `product_id` + `tag_id`)
 - `cart.*` — `carts`, `cart_items`
 - `orders.*` — `orders` (includes `customer_id` FK, `phone` captured at order time), `order_items`
 
