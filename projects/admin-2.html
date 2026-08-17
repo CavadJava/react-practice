@@ -1,0 +1,403 @@
+<html lang="en"><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/content/location/location.js" id="eppiocemhmnlbhjplcgkofciiegomcon"></script><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/libs/extend-native-history-api.js"></script><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/libs/requests.js"></script><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TESERY - Super Admin Dashboard</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+        body { background-color: #f4f6f9; color: #333; overflow-x: hidden; }
+
+        /* --- SIDEBAR --- */
+        .sidebar { width: 260px; background-color: #111; color: #fff; min-height: 100vh; position: fixed; z-index: 1000; overflow-y: auto; }
+        .sidebar-header { padding: 20px; font-size: 20px; font-weight: 900; letter-spacing: 2px; text-align: center; border-bottom: 1px solid #333; font-style: italic; }
+        .sidebar-header span { display: block; font-size: 11px; font-weight: normal; color: #888; letter-spacing: 1px; font-style: normal; margin-top: 5px; }
+        .nav-menu { list-style: none; padding: 20px 0; margin: 0; }
+        .nav-item { padding: 0 15px; margin-bottom: 5px; cursor: pointer; }
+        .nav-link { color: #bbb; text-decoration: none; display: flex; align-items: center; padding: 12px 15px; border-radius: 6px; transition: all 0.2s; font-size: 14px; }
+        .nav-link i { margin-right: 12px; font-size: 18px; }
+        .nav-link:hover, .nav-link.active { background-color: #3a82f6; color: #fff; }
+
+        /* Submenu Styles */
+        .sub-menu { padding-left: 15px; margin-top: 5px; }
+        .sub-menu .nav-link { padding: 8px 15px; font-size: 13px; }
+        .sub-menu .nav-link i { font-size: 14px; margin-right: 8px; }
+
+        /* --- MAIN CONTENT & TOPBAR --- */
+        .main-content { margin-left: 260px; width: calc(100% - 260px); min-height: 100vh; }
+        .topbar { background-color: #fff; height: 70px; padding: 0 30px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eaeaea; position: sticky; top: 0; z-index: 999; }
+        .search-bar { position: relative; width: 300px; }
+        .search-bar input { width: 100%; padding: 8px 15px 8px 35px; border-radius: 20px; border: 1px solid #ddd; outline: none; font-size: 13px; }
+        .search-bar i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #888; }
+        .topbar-right { display: flex; align-items: center; gap: 20px; }
+        .icon-btn { position: relative; color: #555; font-size: 20px; cursor: pointer; transition: color 0.2s; }
+        .icon-btn:hover { color: #3a82f6; }
+        .badge-alert { position: absolute; top: -5px; right: -5px; background: #e23b2b; color: #fff; font-size: 9px; padding: 2px 5px; border-radius: 50%; font-weight: bold; }
+        .user-profile { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 5px 10px; border-radius: 6px; transition: background 0.2s; }
+        .user-profile:hover { background: #f0f0f0; }
+        .user-avatar { width: 35px; height: 35px; border-radius: 50%; background: #3a82f6; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
+        .user-info { display: flex; flex-direction: column; }
+        .user-name { font-size: 13px; font-weight: 600; }
+        .user-role { font-size: 11px; color: #888; }
+
+        /* --- PAGE VIEWS & CARDS --- */
+        .page-container { padding: 30px; }
+        .page-title { font-size: 22px; font-weight: 700; margin-bottom: 25px; color: #111; display: flex; justify-content: space-between; align-items: center; }
+
+        .stat-card { background: #fff; border-radius: 10px; padding: 20px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #eaeaea; }
+        .stat-info h6 { font-size: 12px; color: #666; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; }
+        .stat-info h3 { font-size: 24px; font-weight: 700; color: #111; margin: 0; }
+        .stat-icon { width: 45px; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .bg-blue-light { background: #eef2ff; color: #3a82f6; }
+        .bg-green-light { background: #ecfdf5; color: #10b981; }
+        .bg-purple-light { background: #f3e8ff; color: #8b5cf6; }
+        .bg-orange-light { background: #fff7ed; color: #f97316; }
+
+        /* --- TABLES --- */
+        .card-box { background: #fff; border-radius: 10px; border: 1px solid #eaeaea; overflow: hidden; margin-top: 20px; padding: 20px; }
+        .table th { font-size: 12px; color: #666; text-transform: uppercase; padding: 15px; background-color: #f8f9fa; border-bottom: none; }
+        .table td { vertical-align: middle; padding: 15px; font-size: 13px; border-bottom: 1px solid #f0f0f0; }
+        .badge-status { padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+        .status-completed { background: #ecfdf5; color: #10b981; }
+        .status-pending { background: #fff7ed; color: #f97316; }
+        .status-active { background: #eef2ff; color: #3a82f6; }
+
+        .action-btn { background: transparent; border: 1px solid #ddd; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; color: #555; transition: 0.2s; }
+        .action-btn:hover { background: #f0f0f0; color: #111; }
+
+        /* Notification Items */
+        .notif-item { padding: 15px; border-bottom: 1px solid #eee; display: flex; gap: 15px; align-items: flex-start; }
+        .notif-item:last-child { border-bottom: none; }
+        .notif-icon { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .notif-content h6 { font-size: 14px; margin-bottom: 3px; font-weight: 600; }
+        .notif-content p { font-size: 12px; color: #666; margin-bottom: 5px; }
+        .notif-time { font-size: 11px; color: #999; }
+
+        /* Settings Form */
+        .settings-group { max-width: 600px; margin-bottom: 30px; }
+        .form-label { font-size: 13px; font-weight: 600; color: #555; }
+        .form-control { font-size: 14px; padding: 10px 15px; }
+    </style>
+<style id="monica-reading-highlight-style">
+        .monica-reading-highlight {
+          animation: fadeInOut 1.5s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+          0%, 100% { background-color: transparent; }
+          30%, 70% { background-color: rgba(2, 118, 255, 0.20); }
+        }
+      </style></head>
+<body cz-shortcut-listen="true">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-header">TESERY<span>SUPER ADMIN</span></div>
+    <ul class="nav-menu" id="sidebar-menu">
+        <li class="nav-item" onclick="switchPage('dashboard', this)"><div class="nav-link active"><i class="bi bi-grid-1x2-fill"></i> Dashboard</div></li>
+        <li class="nav-item" onclick="switchPage('vendors', this)"><div class="nav-link"><i class="bi bi-shop"></i> Vendors</div></li>
+        <li class="nav-item" onclick="switchPage('products', this)"><div class="nav-link"><i class="bi bi-box-seam"></i> Products</div></li>
+        <li class="nav-item" onclick="switchPage('orders', this)"><div class="nav-link"><i class="bi bi-cart3"></i> Orders</div></li>
+        <li class="nav-item" onclick="switchPage('customers', this)"><div class="nav-link"><i class="bi bi-people"></i> Customers</div></li>
+        <li class="nav-item" onclick="switchPage('livechat', this)"><div class="nav-link"><i class="bi bi-chat-dots"></i> Live Chat Leads</div></li>
+        <li class="nav-item" onclick="switchPage('settings', this)"><div class="nav-link"><i class="bi bi-gear"></i> Settings</div></li>
+
+        <!-- YENİ ƏLAVƏ EDİLƏN ALT MENYU (SUB MENU) -->
+        <li class="nav-item mt-3">
+            <div class="nav-link" data-bs-toggle="collapse" href="#testSubMenu" role="button" aria-expanded="false" aria-controls="testSubMenu">
+                <i class="bi bi-list-nested"></i> Test Menu
+                <i class="bi bi-chevron-down ms-auto" style="font-size: 10px;"></i>
+            </div>
+            <div class="collapse sub-menu" id="testSubMenu">
+                <ul class="nav flex-column">
+                    <li class="nav-item mb-1" onclick="switchPage('test1', this, false); event.stopPropagation();">
+                        <div class="nav-link"><i class="bi bi-dash"></i> Sub Item 1</div>
+                    </li>
+                    <li class="nav-item mb-1" onclick="switchPage('test2', this, false); event.stopPropagation();">
+                        <div class="nav-link"><i class="bi bi-dash"></i> Sub Item 2</div>
+                    </li>
+                </ul>
+            </div>
+        </li>
+
+    </ul>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+    <!-- TOPBAR -->
+    <nav class="topbar">
+        <div class="search-bar">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Search orders, vendors, or products...">
+        </div>
+        <div class="topbar-right">
+            <div class="icon-btn" onclick="switchPage('notifications', null, true)" title="Notifications">
+                <i class="bi bi-bell"></i>
+                <span class="badge-alert">3</span>
+            </div>
+            <div class="user-profile" onclick="switchPage('profile', null, true)" title="My Profile">
+                <div class="user-avatar">SA</div>
+                <div class="user-info">
+                    <span class="user-name">System Admin</span>
+                    <span class="user-role">Super Admin</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ================= PAGE 1: DASHBOARD ================= -->
+    <div id="page-dashboard" class="page-container">
+        <h1 class="page-title">Platform Overview</h1>
+        <div class="row g-4">
+            <div class="col-md-3"><div class="stat-card"><div class="stat-info"><h6>Total Marketplace Sales</h6><h3>$245,800</h3></div><div class="stat-icon bg-blue-light"><i class="bi bi-currency-dollar"></i></div></div></div>
+            <div class="col-md-3"><div class="stat-card"><div class="stat-info"><h6>Platform Revenue (10%)</h6><h3>$24,580</h3></div><div class="stat-icon bg-green-light"><i class="bi bi-graph-up-arrow"></i></div></div></div>
+            <div class="col-md-3"><div class="stat-card"><div class="stat-info"><h6>Total Orders</h6><h3>1,284</h3></div><div class="stat-icon bg-purple-light"><i class="bi bi-cart-check"></i></div></div></div>
+            <div class="col-md-3"><div class="stat-card"><div class="stat-info"><h6>Active Vendors</h6><h3>42</h3></div><div class="stat-icon bg-orange-light"><i class="bi bi-shop-window"></i></div></div></div>
+        </div>
+        <div class="card-box p-0 mt-4">
+            <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="m-0" style="font-size:16px; font-weight:600;">Recent Transactions</h5>
+                <button class="btn btn-sm btn-outline-dark" onclick="switchPage('orders', document.querySelectorAll('.nav-item')[3])">View All Orders</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover m-0">
+                    <thead><tr><th>Order ID</th><th>Vendor Store</th><th>Customer</th><th>Total Amount</th><th>Commission (10%)</th><th>Status</th><th>Date</th></tr></thead>
+                    <tbody>
+                    <tr><td><a href="#" class="text-primary fw-bold">#ORD-0091</a></td><td>AutoParts Pro</td><td>John Doe</td><td>$450.00</td><td class="text-success fw-bold">+$45.00</td><td><span class="badge-status status-completed">Completed</span></td><td>Jun 24, 2026</td></tr>
+                    <tr><td><a href="#" class="text-primary fw-bold">#ORD-0092</a></td><td>TeslaMods Inc.</td><td>Sarah Smith</td><td>$1,200.00</td><td class="text-success fw-bold">+$120.00</td><td><span class="badge-status status-pending">Pending</span></td><td>Jun 24, 2026</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= PAGE 2: VENDORS ================= -->
+    <div id="page-vendors" class="page-container d-none">
+        <h1 class="page-title">Vendors Management <button class="btn btn-primary btn-sm">+ Add New Vendor</button></h1>
+        <div class="card-box p-0">
+            <div class="table-responsive">
+                <table class="table table-hover m-0">
+                    <thead><tr><th>Store Name</th><th>Vendor Admin</th><th>Total Sales</th><th>Platform Comms (10%)</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody>
+                    <tr><td><strong>AutoParts Pro</strong></td><td>admin@autopartspro.com</td><td>$45,000</td><td>$4,500</td><td><span class="badge-status status-active">Active</span></td><td><button class="action-btn">Edit</button> <button class="action-btn text-danger">Suspend</button></td></tr>
+                    <tr><td><strong>TeslaMods Inc.</strong></td><td>vendor@teslamods.com</td><td>$82,500</td><td>$8,250</td><td><span class="badge-status status-active">Active</span></td><td><button class="action-btn">Edit</button> <button class="action-btn text-danger">Suspend</button></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= PAGE 3: PRODUCTS ================= -->
+    <div id="page-products" class="page-container d-none">
+        <h1 class="page-title">Automobile Accessories <button class="btn btn-primary btn-sm">+ Add New Product</button></h1>
+        <div class="card-box p-0">
+            <div class="table-responsive">
+                <table class="table table-hover m-0">
+                    <thead><tr><th>Product Name</th><th>Vendor</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody>
+                    <tr>
+                        <td><div class="d-flex align-items-center"><img src="https://placehold.co/40" class="me-2 rounded"> <span>Yoke Steering Wheel</span></div></td>
+                        <td>TeslaMods Inc.</td><td>Interior</td><td>$269.00</td><td>45</td><td><span class="badge-status status-completed">Published</span></td><td><button class="action-btn">Edit</button></td>
+                    </tr>
+                    <tr>
+                        <td><div class="d-flex align-items-center"><img src="https://placehold.co/40" class="me-2 rounded"> <span>Dragon Scale Tail Lights</span></div></td>
+                        <td>AutoParts Pro</td><td>Exterior</td><td>$689.00</td><td>12</td><td><span class="badge-status status-completed">Published</span></td><td><button class="action-btn">Edit</button></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= PAGE 4: ORDERS ================= -->
+    <div id="page-orders" class="page-container d-none">
+        <h1 class="page-title">Order History</h1>
+        <div class="card-box p-0">
+            <div class="table-responsive">
+                <table class="table table-hover m-0">
+                    <thead><tr><th>Order ID</th><th>Customer</th><th>Vendor Store</th><th>Items</th><th>Total Amount</th><th>Commission (10%)</th><th>Status</th></tr></thead>
+                    <tbody>
+                    <tr><td><a href="#" class="text-primary fw-bold">#ORD-0091</a></td><td>John Doe</td><td>AutoParts Pro</td><td>2x Tail Lights</td><td>$1,378.00</td><td class="text-success fw-bold">+$137.80</td><td><span class="badge-status status-completed">Shipped</span></td></tr>
+                    <tr><td><a href="#" class="text-primary fw-bold">#ORD-0092</a></td><td>Sarah Smith</td><td>TeslaMods Inc.</td><td>1x Yoke Wheel</td><td>$269.00</td><td class="text-success fw-bold">+$26.90</td><td><span class="badge-status status-pending">Processing</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= PAGE 5: CUSTOMERS ================= -->
+    <div id="page-customers" class="page-container d-none">
+        <h1 class="page-title">Registered Customers</h1>
+        <div class="card-box p-0">
+            <div class="table-responsive">
+                <table class="table table-hover m-0">
+                    <thead><tr><th>Customer Name</th><th>Email</th><th>Total Orders</th><th>Total Spent</th><th>Join Date</th><th>Actions</th></tr></thead>
+                    <tbody>
+                    <tr><td>John Doe</td><td>john.doe@example.com</td><td>5</td><td>$2,450.00</td><td>Jan 12, 2026</td><td><button class="action-btn">View Profile</button></td></tr>
+                    <tr><td>Sarah Smith</td><td>sarah.s@example.com</td><td>2</td><td>$489.00</td><td>Mar 05, 2026</td><td><button class="action-btn">View Profile</button></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= PAGE 6: LIVE CHAT LEADS ================= -->
+    <div id="page-livechat" class="page-container d-none">
+        <h1 class="page-title">Live Chat Leads</h1>
+        <div class="card-box p-0">
+            <div class="table-responsive">
+                <table class="table table-hover m-0">
+                    <thead><tr><th>Name</th><th>Email</th><th>User Type</th><th>Last Message</th><th>Date</th><th>Status</th></tr></thead>
+                    <tbody>
+                    <tr><td>Anonymous Guest</td><td>guest_102@mail.com</td><td><span class="badge bg-secondary">Guest</span></td><td>"Do these mats fit?"</td><td>Jun 24, 2026 14:30</td><td><button class="btn btn-sm btn-outline-primary">Reply</button></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= PAGE 7: SETTINGS ================= -->
+    <div id="page-settings" class="page-container d-none">
+        <h1 class="page-title">Platform Settings</h1>
+        <div class="card-box">
+            <div class="settings-group">
+                <h5 class="mb-4 pb-2 border-bottom">Monetization Strategy</h5>
+                <div class="mb-3">
+                    <label class="form-label">Sales Commission Rate (%)</label>
+                    <input type="number" class="form-control" value="10" readonly="">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= PAGE 8: NOTIFICATIONS ================= -->
+    <div id="page-notifications" class="page-container d-none">
+        <h1 class="page-title">Notifications</h1>
+        <div class="card-box p-0">
+            <div class="notif-item">
+                <div class="notif-icon bg-blue-light"><i class="bi bi-shop"></i></div>
+                <div class="notif-content">
+                    <h6>New Vendor Registration</h6>
+                    <p>"Elite Carbon" has applied to become a vendor. Requires review.</p>
+                    <span class="notif-time">2 hours ago</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= PAGE 9: PROFILE ================= -->
+    <div id="page-profile" class="page-container d-none">
+        <h1 class="page-title">My Profile</h1>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card-box text-center">
+                    <div class="user-avatar mx-auto mb-3" style="width:100px; height:100px; font-size:36px;">SA</div>
+                    <h4>System Admin</h4>
+                    <p class="text-muted mb-1">Super Admin Role</p>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card-box">
+                    <h5 class="mb-4">Edit Details</h5>
+                    <form>
+                        <div class="row">
+                            <div class="col-md-6 mb-3"><label class="form-label">First Name</label><input type="text" class="form-control" value="System"></div>
+                            <div class="col-md-6 mb-3"><label class="form-label">Last Name</label><input type="text" class="form-control" value="Admin"></div>
+                        </div>
+                        <button type="button" class="btn btn-primary mt-3">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= YENİ: SUB ITEM 1 PAGE ================= -->
+    <div id="page-test1" class="page-container d-none">
+        <h1 class="page-title">Sub Item 1 Page</h1>
+        <div class="card-box">
+            <p>Bu, sol menyudan "Test Menu" altında yerləşən "Sub Item 1" üçün yaradılmış test səhifəsidir.</p>
+        </div>
+    </div>
+
+    <!-- ================= YENİ: SUB ITEM 2 PAGE ================= -->
+    <div id="page-test2" class="page-container d-none">
+        <h1 class="page-title">Sub Item 2 Page</h1>
+        <div class="card-box">
+            <p>Bu, sol menyudan "Test Menu" altında yerləşən "Sub Item 2" üçün yaradılmış test səhifəsidir.</p>
+        </div>
+    </div>
+
+</main>
+
+<!-- JS Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // SPA Routing Logic
+    function switchPage(pageId, navElement, fromTopbar = false) {
+        // Səhifələri gizlət
+        document.querySelectorAll('.page-container').forEach(page => {
+            page.classList.add('d-none');
+        });
+
+        // Hədəf səhifəni göstər
+        const targetPage = document.getElementById('page-' + pageId);
+        if (targetPage) {
+            targetPage.classList.remove('d-none');
+        }
+
+        // Aktiv elementlərin class-larını təmizlə
+        document.querySelectorAll('#sidebar-menu .nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+
+        // Kliklənən elementi aktivləşdir
+        if (navElement) {
+            let linkNode = navElement.querySelector('.nav-link') || navElement;
+            if(linkNode.classList.contains('nav-link')) {
+                linkNode.classList.add('active');
+            }
+        }
+    }
+</script>
+
+<script>
+(function() {
+  var ws = new WebSocket('ws://' + window.location.host + 
+             '/jb-server-page?reloadMode=RELOAD_ON_SAVE&'+
+             'referrer=' + encodeURIComponent(window.location.pathname));
+  ws.onmessage = function (msg) {
+      if (msg.data === 'reload') {
+          window.location.reload();
+      }
+      if (msg.data.startsWith('update-css ')) {
+          var messageId = msg.data.substring(11);
+          var links = document.getElementsByTagName('link');
+          for (var i = 0; i < links.length; i++) {
+              var link = links[i];
+              if (link.rel !== 'stylesheet') continue;
+              var clonedLink = link.cloneNode(true);
+              var newHref = link.href.replace(/(&|\?)jbUpdateLinksId=\d+/, "$1jbUpdateLinksId=" + messageId);
+              if (newHref !== link.href) {
+                clonedLink.href = newHref;
+              }
+              else {
+                var indexOfQuest = newHref.indexOf('?');
+                if (indexOfQuest >= 0) {
+                  // to support ?foo#hash 
+                  clonedLink.href = newHref.substring(0, indexOfQuest + 1) + 'jbUpdateLinksId=' + messageId + '&' + 
+                                    newHref.substring(indexOfQuest + 1);
+                }
+                else {
+                  clonedLink.href += '?' + 'jbUpdateLinksId=' + messageId;
+                }
+              }
+              link.replaceWith(clonedLink);
+          }
+      }
+  };
+})();
+</script><div id="monica-content-root" class="monica-widget" style="pointer-events: auto;"></div></body></html>

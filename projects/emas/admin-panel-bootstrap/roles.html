@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EMAS — Rol İdarəetməsi</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .role-card {
+      border-radius: 12px; padding: 20px; border: 2px solid transparent;
+      background: #fff; border-color: var(--border);
+      transition: border-color .2s, box-shadow .2s;
+      cursor: pointer;
+    }
+    .role-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,.08); }
+    .role-card.selected { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(21,101,192,.12); }
+    .role-card-icon { width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px; }
+    .perm-table td, .perm-table th { vertical-align: middle; padding:10px 14px; }
+    .perm-table thead th { font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);background:#f8f9fb; }
+    .perm-table td:first-child { font-weight:600; font-size:13px; }
+    .perm-check { width:18px;height:18px;cursor:pointer; }
+  </style>
+</head>
+<body>
+
+<aside id="sidebar" class="sidebar"></aside>
+
+<div class="main-wrapper">
+  <header class="topbar">
+    <div>
+      <div class="tb-title"><i class="bi bi-shield-half text-primary me-2"></i>Rol İdarəetməsi</div>
+      <div class="tb-crumb">Sistem / Rolllar &amp; İcazələr</div>
+    </div>
+    <div class="tb-search">
+      <i class="bi bi-search"></i>
+      <input type="text" placeholder="Rol axtar...">
+    </div>
+    <div class="tb-right">
+      <div class="tb-clock">
+        <div class="tb-date" id="live-date"></div>
+        <div class="tb-time" id="live-time"></div>
+      </div>
+      <div class="tb-divider"></div>
+      <div class="tb-icon"><i class="bi bi-bell"></i><span class="tb-dot"></span></div>
+      <div class="tb-divider"></div>
+      <a href="profile.html" class="tb-user">
+        <div class="tb-avatar">İH</div>
+        <div><div class="tb-uname">İlham Həsənov</div><div class="tb-urole">Baş Admin</div></div>
+      </a>
+    </div>
+  </header>
+
+  <main class="content">
+    <div class="page-header d-flex align-items-center justify-content-between">
+      <div>
+        <h2>Rol İdarəetməsi</h2>
+        <p>Sistem rollarını və icazələrini idarə edin</p>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="users.html" class="btn btn-outline-secondary btn-sm"><i class="bi bi-person-badge me-1"></i>İstifadəçilər</a>
+        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalRole" onclick="openAddRole()">
+          <i class="bi bi-plus-lg me-1"></i>Yeni Rol
+        </button>
+      </div>
+    </div>
+
+    <!-- ROLE CARDS -->
+    <div class="row g-3 mb-4" id="roleCards"></div>
+
+    <!-- PERMISSION MATRIX -->
+    <div class="panel mb-4">
+      <div class="panel-header">
+        <h5><i class="bi bi-grid-3x3 me-2 text-primary"></i>İcazə Matrisi</h5>
+        <div class="d-flex gap-2">
+          <small class="text-muted align-self-center">Dəyişiklik avtomatik saxlanır</small>
+          <button class="btn btn-sm btn-success" onclick="savePerms()"><i class="bi bi-check-lg me-1"></i>Yadda Saxla</button>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="data-table perm-table" id="permTable"></table>
+      </div>
+    </div>
+
+    <!-- USER COUNT PER ROLE -->
+    <div class="panel">
+      <div class="panel-header"><h5><i class="bi bi-people me-2 text-success"></i>Rol Üzrə İstifadəçi Sayı</h5></div>
+      <div class="p-3" id="roleUserBars"></div>
+    </div>
+  </main>
+
+  <footer class="main-footer">
+    <small>© 2026 EMAS — Elektron Sosial Müavinət İdarəetmə Sistemi</small>
+    <small>Versiya 3.1.4 · <a href="profile.html">Profil</a></small>
+  </footer>
+</div>
+
+<!-- ADD/EDIT ROLE MODAL -->
+<div class="modal fade" id="modalRole" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="roleModalTitle">Yeni Rol</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="rEditId">
+        <div class="mb-3">
+          <label class="form-label">Rol Adı *</label>
+          <input class="form-control" id="rName" placeholder="məs. Auditor">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Təsvir</label>
+          <textarea class="form-control" id="rDesc" rows="2" placeholder="Bu rolun vəzifəsini qısaca yazın..."></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Rəng</label>
+          <select class="form-select" id="rColor">
+            <option value="role-admin">Qırmızı (Admin)</option>
+            <option value="role-manager">Mavi (Manager)</option>
+            <option value="role-operator">Yaşıl (Operator)</option>
+            <option value="role-viewer">Bənövşəyi (Viewer)</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Ləğv Et</button>
+        <button class="btn btn-primary" onclick="saveRole()"><i class="bi bi-check-lg me-1"></i>Yadda Saxla</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE ROLE MODAL -->
+<div class="modal fade" id="modalDelRole" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title text-danger"><i class="bi bi-shield-x me-2"></i>Rolu Sil</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body"><p>Bu rolu silmək istədiyinizə əminsiniz?</p><p class="text-muted small" id="del-rname"></p></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Ləğv Et</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmDelRole()"><i class="bi bi-trash me-1"></i>Sil</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/sidebar.js"></script>
+<script>
+initSidebar('users');
+
+const MODULES = [
+  'İdarəetmə Paneli','Müraciətlər','Benefisiarlar','Ödənişlər',
+  'Müştərilər','İstifadəçilər','Hesabatlar','Parametrlər'
+];
+const PERMS = ['Bax','Əlavə Et','Redaktə Et','Sil'];
+
+let roles = [
+  {
+    id:1, name:'Admin', desc:'Tam sistem idarəetməsi, bütün icazələr aktivdir.', cls:'role-admin',
+    icon:'bi-shield-fill-check', iconBg:'#ffebee', iconColor:'#b71c1c',
+    userCount: 1,
+    perms: Object.fromEntries(MODULES.map(m=>[m, Object.fromEntries(PERMS.map(p=>[p,true]))]))
+  },
+  {
+    id:2, name:'Manager', desc:'Modul idarəetməsi. Sistem parametrlərinə giriş yoxdur.', cls:'role-manager',
+    icon:'bi-person-fill-gear', iconBg:'#e3f2fd', iconColor:'#0d47a1',
+    userCount: 2,
+    perms: Object.fromEntries(MODULES.map(m=>[m, Object.fromEntries(PERMS.map(p=>[p, p!=='Sil' && m!=='Parametrlər' && m!=='İstifadəçilər']))]))
+  },
+  {
+    id:3, name:'Operator', desc:'Məlumat daxil etmə və redaktə. Silmə hüququ yoxdur.', cls:'role-operator',
+    icon:'bi-person-fill-up', iconBg:'#e8f5e9', iconColor:'#1b5e20',
+    userCount: 3,
+    perms: Object.fromEntries(MODULES.map(m=>[m, Object.fromEntries(PERMS.map(p=>[p, p==='Bax'||(p==='Əlavə Et'&&['Müraciətlər','Benefisiarlar','Müştərilər'].includes(m))||(p==='Redaktə Et'&&['Müraciətlər','Benefisiarlar','Müştərilər'].includes(m))]))]))
+  },
+  {
+    id:4, name:'Viewer', desc:'Yalnız oxuma hüququ. Heç bir dəyişiklik edə bilməz.', cls:'role-viewer',
+    icon:'bi-eye-fill', iconBg:'#f3e5f5', iconColor:'#4a148c',
+    userCount: 2,
+    perms: Object.fromEntries(MODULES.map(m=>[m, Object.fromEntries(PERMS.map(p=>[p, p==='Bax']))]))
+  },
+];
+let nextRoleId = 5;
+let delRoleId = null;
+let selectedRoleId = 1;
+
+function renderRoleCards() {
+  const container = document.getElementById('roleCards');
+  container.innerHTML = roles.map(r => `
+    <div class="col-sm-6 col-lg-3">
+      <div class="role-card ${r.id===selectedRoleId?'selected':''}" onclick="selectRole(${r.id})">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="role-card-icon" style="background:${r.iconBg};color:${r.iconColor};">
+            <i class="bi ${r.icon}"></i>
+          </div>
+          <div class="d-flex gap-1">
+            <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size:11px;"
+              onclick="event.stopPropagation();openEditRole(${r.id})" data-bs-toggle="modal" data-bs-target="#modalRole">
+              <i class="bi bi-pencil"></i>
+            </button>
+            ${r.id > 4 ? `<button class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size:11px;"
+              onclick="event.stopPropagation();openDelRole(${r.id})" data-bs-toggle="modal" data-bs-target="#modalDelRole">
+              <i class="bi bi-trash"></i>
+            </button>` : ''}
+          </div>
+        </div>
+        <div style="font-size:15px;font-weight:700;">${r.name}</div>
+        <div style="font-size:12px;color:#666;margin:4px 0 10px;">${r.desc}</div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="role-badge ${r.cls}">${r.name}</span>
+          <small class="text-muted">${r.userCount} istifadəçi</small>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderPermMatrix() {
+  const role = roles.find(r=>r.id===selectedRoleId);
+  if(!role) return;
+  const table = document.getElementById('permTable');
+  let html = `<thead><tr>
+    <th style="min-width:160px;">Modul</th>
+    ${PERMS.map(p=>`<th class="text-center">${p}</th>`).join('')}
+  </tr></thead><tbody>`;
+  MODULES.forEach(mod => {
+    html += `<tr><td>${mod}</td>`;
+    PERMS.forEach(perm => {
+      const checked = role.perms[mod]?.[perm] ? 'checked' : '';
+      const disabled = (role.id <= 4 && role.name === 'Admin') ? '' : '';
+      html += `<td class="text-center">
+        <input type="checkbox" class="perm-check form-check-input" ${checked}
+          onchange="togglePerm(${role.id},'${mod}','${perm}',this.checked)"
+          ${role.name==='Admin'?'disabled title="Admin daima tam icazəyə sahibdir"':''}>
+      </td>`;
+    });
+    html += `</tr>`;
+  });
+  html += `</tbody>`;
+  table.innerHTML = html;
+}
+
+function renderUserBars() {
+  const total = roles.reduce((s,r)=>s+r.userCount,0);
+  const el = document.getElementById('roleUserBars');
+  el.innerHTML = roles.map(r=>`
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <div style="min-width:90px;"><span class="role-badge ${r.cls}">${r.name}</span></div>
+      <div class="prog-bar flex-grow-1" style="height:8px;">
+        <div class="prog-fill" style="width:${Math.round(r.userCount/total*100)}%;background:${r.iconColor};"></div>
+      </div>
+      <small style="min-width:80px;font-weight:600;">${r.userCount} istifadəçi</small>
+    </div>
+  `).join('');
+}
+
+function selectRole(id) {
+  selectedRoleId = id;
+  renderRoleCards();
+  renderPermMatrix();
+}
+
+function togglePerm(roleId, mod, perm, val) {
+  const r = roles.find(x=>x.id===roleId);
+  if(r && r.perms[mod]) r.perms[mod][perm] = val;
+}
+
+function savePerms() {
+  const btn = event.target;
+  btn.textContent = '✓ Saxlanıldı!';
+  btn.classList.replace('btn-success','btn-outline-success');
+  setTimeout(()=>{ btn.innerHTML='<i class="bi bi-check-lg me-1"></i>Yadda Saxla'; btn.classList.replace('btn-outline-success','btn-success'); },2000);
+}
+
+function openAddRole() {
+  document.getElementById('roleModalTitle').textContent='Yeni Rol';
+  document.getElementById('rEditId').value='';
+  document.getElementById('rName').value='';
+  document.getElementById('rDesc').value='';
+  document.getElementById('rColor').value='role-viewer';
+}
+function openEditRole(id) {
+  const r=roles.find(x=>x.id===id);if(!r)return;
+  document.getElementById('roleModalTitle').textContent='Rolu Redaktə Et';
+  document.getElementById('rEditId').value=id;
+  document.getElementById('rName').value=r.name;
+  document.getElementById('rDesc').value=r.desc;
+  document.getElementById('rColor').value=r.cls;
+}
+function saveRole() {
+  const name=document.getElementById('rName').value.trim();
+  if(!name){alert('Rol adı mütləqdir.');return;}
+  const editId=document.getElementById('rEditId').value;
+  if(editId){
+    const r=roles.find(x=>x.id===+editId);
+    if(r){r.name=name;r.desc=document.getElementById('rDesc').value;r.cls=document.getElementById('rColor').value;}
+  } else {
+    const newPerms=Object.fromEntries(MODULES.map(m=>[m,Object.fromEntries(PERMS.map(p=>[p,p==='Bax']))]));
+    roles.push({id:nextRoleId++,name,desc:document.getElementById('rDesc').value,cls:document.getElementById('rColor').value,icon:'bi-person-fill',iconBg:'#f0f2f5',iconColor:'#555',userCount:0,perms:newPerms});
+  }
+  bootstrap.Modal.getInstance(document.getElementById('modalRole')).hide();
+  renderAll();
+}
+function openDelRole(id) {
+  delRoleId=id;
+  const r=roles.find(x=>x.id===id);
+  document.getElementById('del-rname').textContent=r?r.name:'';
+}
+function confirmDelRole() {
+  roles=roles.filter(r=>r.id!==delRoleId);
+  if(selectedRoleId===delRoleId) selectedRoleId=roles[0]?.id;
+  bootstrap.Modal.getInstance(document.getElementById('modalDelRole')).hide();
+  renderAll();
+}
+
+function renderAll() {
+  renderRoleCards();
+  renderPermMatrix();
+  renderUserBars();
+}
+
+renderAll();
+</script>
+</body>
+</html>

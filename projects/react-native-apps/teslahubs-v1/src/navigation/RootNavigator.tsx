@@ -1,0 +1,48 @@
+import React, { useMemo } from 'react';
+import { NavigationContainer, DarkTheme } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import type { RootStackParamList } from './types';
+import { useTheme } from '../context/ThemeContext';
+import MainTabNavigator from './MainTabNavigator';
+import ShoppingTabNavigator from './ShoppingTabNavigator';
+import CarWashStackNavigator from './CarWashStackNavigator';
+import TeslaServiceStackNavigator from './TeslaServiceStackNavigator';
+import AutoServicesStackNavigator from './AutoServicesStackNavigator';
+import DoctorsStackNavigator from './DoctorsStackNavigator';
+import RestaurantsStackNavigator from './RestaurantsStackNavigator';
+import CoursesStackNavigator from './CoursesStackNavigator';
+import OrderConfirmScreen from '../screens/OrderConfirmScreen';
+import MyPlacesScreen from '../screens/MyPlacesScreen';
+import CargoStackNavigator from './CargoStackNavigator';
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+export default function RootNavigator() {
+  const { colors } = useTheme();
+
+  const navTheme = useMemo(
+    () => ({
+      ...DarkTheme,
+      colors: { ...DarkTheme.colors, background: colors.bg, card: colors.bg, text: colors.text, border: colors.divider, primary: colors.brand },
+    }),
+    [colors],
+  );
+
+  return (
+    <NavigationContainer theme={navTheme}>
+      <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
+        <Stack.Screen name="MainTabs" component={MainTabNavigator} />
+        <Stack.Screen name="Shopping" component={ShoppingTabNavigator} />
+        <Stack.Screen name="CarWash" component={CarWashStackNavigator} options={{ presentation: 'fullScreenModal' }} />
+        <Stack.Screen name="TeslaService" component={TeslaServiceStackNavigator} options={{ presentation: 'fullScreenModal' }} />
+        <Stack.Screen name="AutoServices" component={AutoServicesStackNavigator} options={{ presentation: 'fullScreenModal' }} />
+        <Stack.Screen name="Doctors" component={DoctorsStackNavigator} options={{ presentation: 'fullScreenModal' }} />
+        <Stack.Screen name="Restaurants" component={RestaurantsStackNavigator} options={{ presentation: 'fullScreenModal' }} />
+        <Stack.Screen name="Courses" component={CoursesStackNavigator} options={{ presentation: 'fullScreenModal' }} />
+        <Stack.Screen name="Cargo" component={CargoStackNavigator} options={{ presentation: 'fullScreenModal' }} />
+        <Stack.Screen name="MyPlaces" component={MyPlacesScreen} />
+        <Stack.Screen name="OrderConfirm" component={OrderConfirmScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}

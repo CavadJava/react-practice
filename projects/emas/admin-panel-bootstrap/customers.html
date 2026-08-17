@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EMAS — Müştərilər</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<aside id="sidebar" class="sidebar"></aside>
+
+<div class="main-wrapper">
+  <header class="topbar">
+    <div>
+      <div class="tb-title"><i class="bi bi-person-lines-fill text-primary me-2"></i>Müştərilər</div>
+      <div class="tb-crumb">CRM / Müştəri İdarəetməsi</div>
+    </div>
+    <div class="tb-search">
+      <i class="bi bi-search"></i>
+      <input type="text" id="searchInput" placeholder="Ad, email, FİN axtar..." oninput="filterTable()">
+    </div>
+    <div class="tb-right">
+      <div class="tb-clock">
+        <div class="tb-date" id="live-date"></div>
+        <div class="tb-time" id="live-time"></div>
+      </div>
+      <div class="tb-divider"></div>
+      <div class="live-dot me-2">Canlı</div>
+      <div class="tb-icon"><i class="bi bi-bell"></i><span class="tb-dot"></span></div>
+      <div class="tb-divider"></div>
+      <a href="profile.html" class="tb-user">
+        <div class="tb-avatar">İH</div>
+        <div><div class="tb-uname">İlham Həsənov</div><div class="tb-urole">Baş Admin</div></div>
+      </a>
+    </div>
+  </header>
+
+  <main class="content">
+    <div class="page-header d-flex align-items-center justify-content-between">
+      <div>
+        <h2>Müştəri İdarəetməsi</h2>
+        <p>Cəmi <strong id="total-count">12</strong> müştəri qeydiyyatdadır</p>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary btn-sm" onclick="toggleView('table')" id="btn-table"><i class="bi bi-table me-1"></i>Cədvəl</button>
+        <button class="btn btn-outline-secondary btn-sm" onclick="toggleView('charts')" id="btn-charts"><i class="bi bi-bar-chart me-1"></i>Qrafiklər</button>
+        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCustomer" onclick="openAdd()"><i class="bi bi-plus-lg me-1"></i>Yeni Müştəri</button>
+      </div>
+    </div>
+
+    <!-- STAT STRIP -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div><div class="s-label">Ümumi Müştəri</div><div class="s-val" id="sc-total">12</div></div>
+          <div class="s-icon c-blue"><i class="bi bi-people-fill"></i></div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div><div class="s-label">Aktiv</div><div class="s-val" id="sc-active">8</div></div>
+          <div class="s-icon c-green"><i class="bi bi-check-circle-fill"></i></div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div><div class="s-label">Qeyri-aktiv</div><div class="s-val" id="sc-inactive">3</div></div>
+          <div class="s-icon c-purple"><i class="bi bi-pause-circle-fill"></i></div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div><div class="s-label">Bloklanmış</div><div class="s-val" id="sc-blocked">1</div></div>
+          <div class="s-icon c-red"><i class="bi bi-x-circle-fill"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TABLE VIEW ===== -->
+    <div id="view-table">
+      <div class="panel mb-4">
+        <div class="panel-header">
+          <h5><i class="bi bi-table me-2 text-primary"></i>Müştəri Siyahısı</h5>
+          <div class="d-flex gap-2 align-items-center">
+            <select class="form-select form-select-sm" style="width:130px;" onchange="filterByStatus(this.value)">
+              <option value="">Hamısı</option>
+              <option value="Aktiv">Aktiv</option>
+              <option value="Qeyri-aktiv">Qeyri-aktiv</option>
+              <option value="Bloklanmış">Bloklanmış</option>
+            </select>
+            <button class="btn btn-sm btn-outline-secondary" onclick="exportCSV()"><i class="bi bi-download me-1"></i>Export</button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" id="customerTable">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>
+                <th>Müştəri</th>
+                <th>Email</th>
+                <th>Telefon</th>
+                <th>Rayon</th>
+                <th>Kateqoriya</th>
+                <th>Tarix</th>
+                <th>Status</th>
+                <th>Əməliyyat</th>
+              </tr>
+            </thead>
+            <tbody id="customerTbody"></tbody>
+          </table>
+        </div>
+        <div class="d-flex align-items-center justify-content-between px-4 py-3" style="border-top:1px solid #f5f6f8;">
+          <small class="text-muted" id="pag-info">1–10 / 12 müştəri</small>
+          <nav><ul class="pagination pagination-sm mb-0" id="pagination"></ul></nav>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CHARTS VIEW ===== -->
+    <div id="view-charts" style="display:none;">
+      <div class="row g-3 mb-4">
+        <div class="col-lg-8">
+          <div class="panel">
+            <div class="panel-header"><h5><i class="bi bi-graph-up me-2 text-primary"></i>Aylıq Qeydiyyat Trendi (2026)</h5></div>
+            <div class="p-3"><div class="chart-wrap"><canvas id="chartLine"></canvas></div></div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="panel">
+            <div class="panel-header"><h5><i class="bi bi-pie-chart me-2 text-success"></i>Status Bölgüsü</h5></div>
+            <div class="p-3"><div class="chart-wrap"><canvas id="chartDoughnut"></canvas></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="row g-3">
+        <div class="col-lg-6">
+          <div class="panel">
+            <div class="panel-header"><h5><i class="bi bi-bar-chart me-2 text-warning"></i>Rayon Üzrə Müştərilər</h5></div>
+            <div class="p-3"><div class="chart-wrap"><canvas id="chartBar"></canvas></div></div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="panel">
+            <div class="panel-header"><h5><i class="bi bi-layers me-2 text-purple"></i>Kateqoriya Üzrə Bölgü</h5></div>
+            <div class="p-3"><div class="chart-wrap"><canvas id="chartCategory"></canvas></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="main-footer">
+    <small>© 2026 EMAS — Elektron Sosial Müavinət İdarəetmə Sistemi</small>
+    <small>Versiya 3.1.4 · <a href="profile.html">Profil</a></small>
+  </footer>
+</div>
+
+<!-- ===== ADD / EDIT MODAL ===== -->
+<div class="modal fade" id="modalCustomer" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitle">Yeni Müştəri</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editId">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Ad *</label>
+            <input type="text" class="form-control" id="fAd" placeholder="Ad">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Soyad *</label>
+            <input type="text" class="form-control" id="fSoyad" placeholder="Soyad">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Email *</label>
+            <input type="email" class="form-control" id="fEmail" placeholder="email@example.com">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Telefon</label>
+            <input type="text" class="form-control" id="fTelefon" placeholder="+994 XX XXX XX XX">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">FİN Kod</label>
+            <input type="text" class="form-control" id="fFin" placeholder="XXXXXXX" maxlength="7">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Rayon</label>
+            <select class="form-select" id="fRayon">
+              <option value="">Seçin...</option>
+              <option>Bakı — Nəsimi</option><option>Bakı — Binəqədi</option><option>Bakı — Sabunçu</option>
+              <option>Gəncə</option><option>Sumqayıt</option><option>Lənkəran</option>
+              <option>Mingəçevir</option><option>Naxçıvan</option><option>Şirvan</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Kateqoriya</label>
+            <select class="form-select" id="fKateqoriya">
+              <option value="">Seçin...</option>
+              <option>Sosial Yardım</option><option>Əlillik</option><option>Pensiya</option>
+              <option>Təhsil</option><option>Tibbi Sığorta</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Status</label>
+            <select class="form-select" id="fStatus">
+              <option value="Aktiv">Aktiv</option>
+              <option value="Qeyri-aktiv">Qeyri-aktiv</option>
+              <option value="Bloklanmış">Bloklanmış</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Qeyd</label>
+            <textarea class="form-control" id="fQeyd" rows="2" placeholder="Əlavə məlumat..."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Ləğv Et</button>
+        <button class="btn btn-primary" onclick="saveCustomer()"><i class="bi bi-check-lg me-1"></i>Yadda Saxla</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal fade" id="modalDelete" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title text-danger"><i class="bi bi-trash me-2"></i>Sil</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body"><p>Bu müştərini silmək istədiyinizə əminsiniz?</p><p class="text-muted small" id="del-name"></p></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Ləğv Et</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmDelete()"><i class="bi bi-trash me-1"></i>Sil</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/sidebar.js"></script>
+<script>
+initSidebar('customers');
+
+/* ── DATA ───────────────────────────────────── */
+let COLORS = {
+  'Aktiv': 'bs-active', 'Qeyri-aktiv': 'bs-inactive', 'Bloklanmış': 'bs-suspended'
+};
+let customers = [
+  { id:1,  ad:'Aytən',   soyad:'Hüseynova', email:'a.huseynova@mail.az', telefon:'+994501234567', fin:'5BNM234', rayon:'Bakı — Nəsimi',   kat:'Sosial Yardım', status:'Gözləyən', tarix:'11.07.2026', qeyd:'' },
+  { id:2,  ad:'Rauf',    soyad:'Məmmədov',  email:'r.mammadov@mail.az',  telefon:'+994557654321', fin:'7XKP901', rayon:'Gəncə',             kat:'Əlillik',       status:'Aktiv',    tarix:'10.07.2026', qeyd:'' },
+  { id:3,  ad:'Lalə',    soyad:'Əliyeva',   email:'l.aliyeva@mail.az',   telefon:'+994701112233', fin:'3CQR567', rayon:'Sumqayıt',           kat:'Tibbi Sığorta', status:'Aktiv',    tarix:'10.07.2026', qeyd:'' },
+  { id:4,  ad:'Nigar',   soyad:'Kərimova',  email:'n.kerimova@mail.az',  telefon:'+994773334455', fin:'9FZM012', rayon:'Mingəçevir',         kat:'Təhsil',        status:'Qeyri-aktiv', tarix:'09.07.2026', qeyd:'' },
+  { id:5,  ad:'Samir',   soyad:'İsmayılov', email:'s.ismayilov@mail.az', telefon:'+994515556677', fin:'2HWV345', rayon:'Lənkəran',           kat:'Sosial Yardım', status:'Aktiv',    tarix:'09.07.2026', qeyd:'' },
+  { id:6,  ad:'Günel',   soyad:'Babayeva',  email:'g.babayeva@mail.az',  telefon:'+994557778899', fin:'1AAQ678', rayon:'Bakı — Binəqədi',   kat:'Pensiya',       status:'Aktiv',    tarix:'08.07.2026', qeyd:'' },
+  { id:7,  ad:'Elnur',   soyad:'Quliyev',   email:'e.quliyev@mail.az',   telefon:'+994509998877', fin:'4BRX123', rayon:'Şirvan',             kat:'Əlillik',       status:'Aktiv',    tarix:'07.07.2026', qeyd:'' },
+  { id:8,  ad:'Sevinc',  soyad:'Nəcəfova',  email:'s.nacafova@mail.az',  telefon:'+994702223344', fin:'6JKL890', rayon:'Naxçıvan',           kat:'Tibbi Sığorta', status:'Qeyri-aktiv', tarix:'06.07.2026', qeyd:'' },
+  { id:9,  ad:'Tural',   soyad:'Həsənli',   email:'t.hasanli@mail.az',   telefon:'+994514445566', fin:'8MNP234', rayon:'Bakı — Sabunçu',    kat:'Sosial Yardım', status:'Aktiv',    tarix:'05.07.2026', qeyd:'' },
+  { id:10, ad:'Könül',   soyad:'Rzayeva',   email:'k.rzayeva@mail.az',   telefon:'+994556667788', fin:'0STV567', rayon:'Gəncə',             kat:'Pensiya',       status:'Aktiv',    tarix:'04.07.2026', qeyd:'' },
+  { id:11, ad:'Orxan',   soyad:'Abdullayev',email:'o.abdullayev@mail.az',telefon:'+994707778899', fin:'2GHI012', rayon:'Sumqayıt',           kat:'Təhsil',        status:'Qeyri-aktiv', tarix:'03.07.2026', qeyd:'' },
+  { id:12, ad:'Xədicə',  soyad:'Sultanova', email:'x.sultanova@mail.az', telefon:'+994509990011', fin:'3JKL345', rayon:'Bakı — Nəsimi',     kat:'Sosial Yardım', status:'Bloklanmış', tarix:'02.07.2026', qeyd:'' },
+];
+let nextId = 13;
+let deleteTargetId = null;
+let currentFilter = '';
+let currentSearch = '';
+let currentPage = 1;
+const PER_PAGE = 10;
+
+/* ── RENDER TABLE ───────────────────────────── */
+function getInitials(ad, soyad) { return (ad[0]||'') + (soyad[0]||''); }
+const avatarColors = ['c-blue','c-green','c-purple','c-orange','c-teal','c-red'];
+
+function filteredData() {
+  return customers.filter(c => {
+    const q = currentSearch.toLowerCase();
+    const matchSearch = !q || `${c.ad} ${c.soyad} ${c.email} ${c.fin}`.toLowerCase().includes(q);
+    const matchStatus = !currentFilter || c.status === currentFilter;
+    return matchSearch && matchStatus;
+  });
+}
+
+function renderTable() {
+  const data = filteredData();
+  const start = (currentPage - 1) * PER_PAGE;
+  const page = data.slice(start, start + PER_PAGE);
+  const tbody = document.getElementById('customerTbody');
+
+  tbody.innerHTML = page.map((c, i) => {
+    const cls = avatarColors[(c.id - 1) % avatarColors.length];
+    const statusCls = c.status === 'Aktiv' ? 'bs-active' : c.status === 'Qeyri-aktiv' ? 'bs-inactive' : 'bs-suspended';
+    return `<tr>
+      <td><input type="checkbox" class="row-check" value="${c.id}"></td>
+      <td>
+        <div class="d-flex align-items-center gap-2">
+          <div class="avatar avatar-sm ${cls}">${getInitials(c.ad, c.soyad)}</div>
+          <div><div style="font-weight:600;">${c.ad} ${c.soyad}</div><div style="font-size:11px;color:#999;">${c.fin}</div></div>
+        </div>
+      </td>
+      <td><small>${c.email}</small></td>
+      <td><small>${c.telefon}</small></td>
+      <td><small>${c.rayon}</small></td>
+      <td><small>${c.kat}</small></td>
+      <td><small>${c.tarix}</small></td>
+      <td><span class="badge-status ${statusCls}">${c.status}</span></td>
+      <td>
+        <div class="d-flex gap-1">
+          <button class="btn btn-outline-primary btn-sm py-0 px-2" style="font-size:11px;" onclick="openEdit(${c.id})"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-outline-danger btn-sm py-0 px-2" style="font-size:11px;" onclick="openDelete(${c.id})"><i class="bi bi-trash"></i></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Pagination
+  const totalPages = Math.ceil(data.length / PER_PAGE);
+  const pag = document.getElementById('pagination');
+  let pagHtml = `<li class="page-item ${currentPage===1?'disabled':''}"><a class="page-link" href="#" onclick="goPage(${currentPage-1});return false;">‹</a></li>`;
+  for (let p = 1; p <= totalPages; p++) {
+    pagHtml += `<li class="page-item ${p===currentPage?'active':''}"><a class="page-link" href="#" onclick="goPage(${p});return false;">${p}</a></li>`;
+  }
+  pagHtml += `<li class="page-item ${currentPage===totalPages?'disabled':''}"><a class="page-link" href="#" onclick="goPage(${currentPage+1});return false;">›</a></li>`;
+  pag.innerHTML = pagHtml;
+  document.getElementById('pag-info').textContent = `${start+1}–${Math.min(start+PER_PAGE,data.length)} / ${data.length} müştəri`;
+
+  updateStats();
+}
+
+function updateStats() {
+  const all = customers;
+  document.getElementById('sc-total').textContent   = all.length;
+  document.getElementById('sc-active').textContent   = all.filter(c=>c.status==='Aktiv').length;
+  document.getElementById('sc-inactive').textContent = all.filter(c=>c.status==='Qeyri-aktiv').length;
+  document.getElementById('sc-blocked').textContent  = all.filter(c=>c.status==='Bloklanmış').length;
+  document.getElementById('total-count').textContent = all.length;
+}
+
+function goPage(p) {
+  const total = Math.ceil(filteredData().length / PER_PAGE);
+  if (p < 1 || p > total) return;
+  currentPage = p;
+  renderTable();
+}
+
+function filterTable() {
+  currentSearch = document.getElementById('searchInput').value;
+  currentPage = 1;
+  renderTable();
+}
+
+function filterByStatus(v) {
+  currentFilter = v;
+  currentPage = 1;
+  renderTable();
+}
+
+function toggleSelectAll(cb) {
+  document.querySelectorAll('.row-check').forEach(c => c.checked = cb.checked);
+}
+
+/* ── CRUD ───────────────────────────────────── */
+function clearForm() {
+  ['fAd','fSoyad','fEmail','fTelefon','fFin','fQeyd'].forEach(id => document.getElementById(id).value = '');
+  ['fRayon','fKateqoriya','fStatus'].forEach(id => document.getElementById(id).value = id === 'fStatus' ? 'Aktiv' : '');
+  document.getElementById('editId').value = '';
+}
+
+function openAdd() {
+  document.getElementById('modalTitle').textContent = 'Yeni Müştəri';
+  clearForm();
+}
+
+function openEdit(id) {
+  const c = customers.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('modalTitle').textContent = 'Müştəri Redaktə Et';
+  document.getElementById('editId').value = id;
+  document.getElementById('fAd').value = c.ad;
+  document.getElementById('fSoyad').value = c.soyad;
+  document.getElementById('fEmail').value = c.email;
+  document.getElementById('fTelefon').value = c.telefon;
+  document.getElementById('fFin').value = c.fin;
+  document.getElementById('fRayon').value = c.rayon;
+  document.getElementById('fKateqoriya').value = c.kat;
+  document.getElementById('fStatus').value = c.status;
+  document.getElementById('fQeyd').value = c.qeyd || '';
+  new bootstrap.Modal(document.getElementById('modalCustomer')).show();
+}
+
+function saveCustomer() {
+  const ad = document.getElementById('fAd').value.trim();
+  const soyad = document.getElementById('fSoyad').value.trim();
+  const email = document.getElementById('fEmail').value.trim();
+  if (!ad || !soyad || !email) { alert('Ad, soyad və email mütləqdir.'); return; }
+
+  const data = {
+    ad, soyad, email,
+    telefon: document.getElementById('fTelefon').value.trim(),
+    fin: document.getElementById('fFin').value.trim().toUpperCase(),
+    rayon: document.getElementById('fRayon').value,
+    kat: document.getElementById('fKateqoriya').value,
+    status: document.getElementById('fStatus').value,
+    qeyd: document.getElementById('fQeyd').value.trim(),
+    tarix: new Date().toLocaleDateString('az-AZ').replace(/\//g,'.'),
+  };
+
+  const editId = document.getElementById('editId').value;
+  if (editId) {
+    const idx = customers.findIndex(c => c.id === +editId);
+    if (idx !== -1) customers[idx] = { ...customers[idx], ...data };
+  } else {
+    data.id = nextId++;
+    customers.push(data);
+  }
+
+  bootstrap.Modal.getInstance(document.getElementById('modalCustomer')).hide();
+  renderTable();
+  if (chartDoughnut) updateCharts();
+}
+
+function openDelete(id) {
+  const c = customers.find(x => x.id === id);
+  deleteTargetId = id;
+  document.getElementById('del-name').textContent = c ? `${c.ad} ${c.soyad} — ${c.email}` : '';
+  new bootstrap.Modal(document.getElementById('modalDelete')).show();
+}
+
+function confirmDelete() {
+  customers = customers.filter(c => c.id !== deleteTargetId);
+  bootstrap.Modal.getInstance(document.getElementById('modalDelete')).hide();
+  renderTable();
+  if (chartDoughnut) updateCharts();
+}
+
+/* ── EXPORT ─────────────────────────────────── */
+function exportCSV() {
+  const rows = [['Ad','Soyad','Email','Telefon','FİN','Rayon','Kateqoriya','Status','Tarix']];
+  filteredData().forEach(c => rows.push([c.ad,c.soyad,c.email,c.telefon,c.fin,c.rayon,c.kat,c.status,c.tarix]));
+  const csv = rows.map(r=>r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'musteri-siyahisi.csv';
+  a.click();
+}
+
+/* ── TOGGLE VIEW ────────────────────────────── */
+function toggleView(v) {
+  document.getElementById('view-table').style.display  = v==='table'  ? 'block' : 'none';
+  document.getElementById('view-charts').style.display = v==='charts' ? 'block' : 'none';
+  document.getElementById('btn-table').className  = 'btn btn-sm ' + (v==='table'  ? 'btn-primary' : 'btn-outline-secondary');
+  document.getElementById('btn-charts').className = 'btn btn-sm ' + (v==='charts' ? 'btn-primary' : 'btn-outline-secondary');
+  if (v === 'charts') renderCharts();
+  // handle hash
+  window.location.hash = v === 'charts' ? 'charts' : '';
+}
+
+/* ── CHARTS ─────────────────────────────────── */
+let chartLine, chartDoughnut, chartBar, chartCategory;
+
+function renderCharts() {
+  if (chartLine) return; // already rendered
+
+  // Line – Monthly registrations
+  chartLine = new Chart(document.getElementById('chartLine'), {
+    type: 'line',
+    data: {
+      labels: ['Yan','Fev','Mar','Apr','May','İyn','İyl'],
+      datasets: [{
+        label: 'Qeydiyyat',
+        data: [45, 62, 78, 55, 90, 72, 110],
+        borderColor: '#1565c0', backgroundColor: 'rgba(21,101,192,.1)',
+        fill: true, tension: 0.4, pointBackgroundColor: '#1565c0', pointRadius: 4,
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#f0f2f5' } }, x: { grid: { display: false } } } }
+  });
+
+  // Doughnut – Status
+  chartDoughnut = new Chart(document.getElementById('chartDoughnut'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Aktiv','Qeyri-aktiv','Bloklanmış'],
+      datasets: [{ data: getStatusCounts(), backgroundColor: ['#2e7d32','#6a1b9a','#c62828'], borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 12 } } } } }
+  });
+
+  // Bar – by region
+  const regionMap = {};
+  customers.forEach(c => { regionMap[c.rayon] = (regionMap[c.rayon]||0)+1; });
+  chartBar = new Chart(document.getElementById('chartBar'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(regionMap),
+      datasets: [{ label: 'Müştəri', data: Object.values(regionMap), backgroundColor: '#42a5f5', borderRadius: 4 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#f0f2f5' } }, x: { grid: { display: false } } } }
+  });
+
+  // Category
+  const catMap = {};
+  customers.forEach(c => { catMap[c.kat] = (catMap[c.kat]||0)+1; });
+  chartCategory = new Chart(document.getElementById('chartCategory'), {
+    type: 'polarArea',
+    data: {
+      labels: Object.keys(catMap),
+      datasets: [{ data: Object.values(catMap), backgroundColor: ['rgba(21,101,192,.7)','rgba(46,125,50,.7)','rgba(230,81,0,.7)','rgba(106,27,154,.7)','rgba(0,105,92,.7)'] }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } }
+  });
+}
+
+function getStatusCounts() {
+  return [
+    customers.filter(c=>c.status==='Aktiv').length,
+    customers.filter(c=>c.status==='Qeyri-aktiv').length,
+    customers.filter(c=>c.status==='Bloklanmış').length,
+  ];
+}
+
+function updateCharts() {
+  if (!chartDoughnut) return;
+  chartDoughnut.data.datasets[0].data = getStatusCounts();
+  chartDoughnut.update();
+}
+
+/* ── INIT ───────────────────────────────────── */
+renderTable();
+if (window.location.hash === '#charts') toggleView('charts');
+else if (window.location.search.includes('action=new')) {
+  document.getElementById('btn-table').classList.add('btn-primary');
+  setTimeout(() => new bootstrap.Modal(document.getElementById('modalCustomer')).show(), 400);
+}
+</script>
+</body>
+</html>

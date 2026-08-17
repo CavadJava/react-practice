@@ -1,0 +1,317 @@
+<html lang="en"><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/content/location/location.js" id="eppiocemhmnlbhjplcgkofciiegomcon"></script><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/libs/extend-native-history-api.js"></script><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/libs/requests.js"></script><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+        body { background-color: #f4f6f9; color: #333; overflow-x: hidden; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 260px;
+            background-color: #111;
+            color: #fff;
+            min-height: 100vh;
+            position: fixed;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        .sidebar-header {
+            padding: 20px;
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+            font-style: italic;
+        }
+        .sidebar-header span {
+            display: block;
+            font-size: 11px;
+            font-weight: normal;
+            color: #888;
+            letter-spacing: 1px;
+            font-style: normal;
+            margin-top: 5px;
+        }
+        .nav-menu { list-style: none; padding: 20px 0; margin: 0; }
+        .nav-item { padding: 0 15px; margin-bottom: 5px; }
+        .nav-link {
+            color: #bbb;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        .nav-link i { margin-right: 12px; font-size: 18px; }
+        .nav-link:hover, .nav-link.active { background-color: #3a82f6; color: #fff; }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            min-height: 100vh;
+            transition: all 0.3s;
+        }
+
+        /* --- TOPBAR --- */
+        .topbar {
+            background-color: #fff;
+            height: 70px;
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            border-bottom: 1px solid #eaeaea;
+        }
+        .search-bar { position: relative; width: 300px; }
+        .search-bar input {
+            width: 100%;
+            padding: 8px 15px 8px 35px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            outline: none;
+            font-size: 13px;
+        }
+        .search-bar i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #888; }
+        .topbar-right { display: flex; align-items: center; gap: 20px; }
+        .icon-btn { position: relative; color: #555; font-size: 20px; cursor: pointer; }
+        .badge-alert {
+            position: absolute; top: -5px; right: -5px; background: #e23b2b; color: #fff;
+            font-size: 9px; padding: 2px 5px; border-radius: 50%; font-weight: bold;
+        }
+        .user-profile { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .user-profile img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+        .user-info { display: flex; flex-direction: column; }
+        .user-name { font-size: 13px; font-weight: 600; }
+        .user-role { font-size: 11px; color: #888; }
+
+        /* --- DASHBOARD CONTENT --- */
+        .dashboard-container { padding: 30px; }
+        .page-title { font-size: 22px; font-weight: 700; margin-bottom: 25px; color: #111; }
+
+        /* Stat Cards */
+        .stat-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border: 1px solid #eaeaea;
+        }
+        .stat-info h6 { font-size: 13px; color: #666; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-info h3 { font-size: 26px; font-weight: 700; color: #111; margin: 0; }
+        .stat-icon {
+            width: 50px; height: 50px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; font-size: 24px;
+        }
+        .bg-blue-light { background: #eef2ff; color: #3a82f6; }
+        .bg-green-light { background: #ecfdf5; color: #10b981; }
+        .bg-purple-light { background: #f3e8ff; color: #8b5cf6; }
+        .bg-orange-light { background: #fff7ed; color: #f97316; }
+
+        /* Tables */
+        .card-table { background: #fff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #eaeaea; overflow: hidden; margin-top: 30px; }
+        .card-header { background: #fff; padding: 20px; border-bottom: 1px solid #eaeaea; display: flex; justify-content: space-between; align-items: center; }
+        .card-header h5 { margin: 0; font-size: 16px; font-weight: 600; }
+        .table { margin-bottom: 0; }
+        .table th { font-size: 12px; color: #666; text-transform: uppercase; padding: 15px 20px; background-color: #f8f9fa; border-bottom: none; }
+        .table td { vertical-align: middle; padding: 15px 20px; font-size: 14px; border-bottom: 1px solid #f0f0f0; }
+        .badge-status { padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+        .status-completed { background: #ecfdf5; color: #10b981; }
+        .status-pending { background: #fff7ed; color: #f97316; }
+
+    </style>
+<style id="monica-reading-highlight-style">
+        .monica-reading-highlight {
+          animation: fadeInOut 1.5s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+          0%, 100% { background-color: transparent; }
+          30%, 70% { background-color: rgba(2, 118, 255, 0.20); }
+        }
+      </style></head>
+<body cz-shortcut-listen="true">
+
+<aside class="sidebar">
+    <div class="sidebar-header">
+        TESERY
+        <span>SUPER ADMIN</span>
+    </div>
+    <ul class="nav-menu">
+        <li class="nav-item"><a href="#" class="nav-link active"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-shop"></i> Vendors</a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-box-seam"></i> Products</a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-cart3"></i> Orders</a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-people"></i> Customers</a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-chat-dots"></i> Live Chat Leads</a></li>
+        <li class="nav-item mt-4"><a href="#" class="nav-link"><i class="bi bi-gear"></i> Settings</a></li>
+    </ul>
+</aside>
+
+<main class="main-content">
+    <nav class="topbar">
+        <div class="search-bar">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Search orders, vendors, or products...">
+        </div>
+
+        <div class="topbar-right">
+            <div class="icon-btn">
+                <i class="bi bi-bell"></i>
+                <span class="badge-alert">3</span>
+            </div>
+            <div class="user-profile">
+                <img src="https://placehold.co/100x100/3a82f6/fff?text=SA" alt="Admin">
+                <div class="user-info">
+                    <span class="user-name">System Admin</span>
+                    <span class="user-role">Super Admin</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <h1 class="page-title">Platform Overview</h1>
+
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h6>Total Marketplace Sales</h6>
+                        <h3>$245,800</h3>
+                    </div>
+                    <div class="stat-icon bg-blue-light"><i class="bi bi-currency-dollar"></i></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h6>Platform Revenue (10%)</h6>
+                        <h3>$24,580</h3>
+                    </div>
+                    <div class="stat-icon bg-green-light"><i class="bi bi-graph-up-arrow"></i></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h6>Total Orders</h6>
+                        <h3>1,284</h3>
+                    </div>
+                    <div class="stat-icon bg-purple-light"><i class="bi bi-cart-check"></i></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h6>Active Vendors</h6>
+                        <h3>42</h3>
+                    </div>
+                    <div class="stat-icon bg-orange-light"><i class="bi bi-shop-window"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-table">
+            <div class="card-header">
+                <h5>Recent Transactions</h5>
+                <button class="btn btn-sm btn-outline-dark">View All</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Vendor Store</th>
+                        <th>Customer</th>
+                        <th>Total Amount</th>
+                        <th>Commission (10%)</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><a href="#" class="text-primary font-weight-bold">#ORD-0091</a></td>
+                        <td>AutoParts Pro</td>
+                        <td>John Doe</td>
+                        <td>$450.00</td>
+                        <td class="text-success fw-bold">+$45.00</td>
+                        <td><span class="badge-status status-completed">Completed</span></td>
+                        <td>Jun 24, 2026</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#" class="text-primary font-weight-bold">#ORD-0092</a></td>
+                        <td>TeslaMods Inc.</td>
+                        <td>Sarah Smith</td>
+                        <td>$1,200.00</td>
+                        <td class="text-success fw-bold">+$120.00</td>
+                        <td><span class="badge-status status-pending">Pending</span></td>
+                        <td>Jun 24, 2026</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#" class="text-primary font-weight-bold">#ORD-0093</a></td>
+                        <td>GearUp Accessories</td>
+                        <td>Michael Lee</td>
+                        <td>$85.00</td>
+                        <td class="text-success fw-bold">+$8.50</td>
+                        <td><span class="badge-status status-completed">Completed</span></td>
+                        <td>Jun 23, 2026</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+(function() {
+  var ws = new WebSocket('ws://' + window.location.host + 
+             '/jb-server-page?reloadMode=RELOAD_ON_SAVE&'+
+             'referrer=' + encodeURIComponent(window.location.pathname));
+  ws.onmessage = function (msg) {
+      if (msg.data === 'reload') {
+          window.location.reload();
+      }
+      if (msg.data.startsWith('update-css ')) {
+          var messageId = msg.data.substring(11);
+          var links = document.getElementsByTagName('link');
+          for (var i = 0; i < links.length; i++) {
+              var link = links[i];
+              if (link.rel !== 'stylesheet') continue;
+              var clonedLink = link.cloneNode(true);
+              var newHref = link.href.replace(/(&|\?)jbUpdateLinksId=\d+/, "$1jbUpdateLinksId=" + messageId);
+              if (newHref !== link.href) {
+                clonedLink.href = newHref;
+              }
+              else {
+                var indexOfQuest = newHref.indexOf('?');
+                if (indexOfQuest >= 0) {
+                  // to support ?foo#hash 
+                  clonedLink.href = newHref.substring(0, indexOfQuest + 1) + 'jbUpdateLinksId=' + messageId + '&' + 
+                                    newHref.substring(indexOfQuest + 1);
+                }
+                else {
+                  clonedLink.href += '?' + 'jbUpdateLinksId=' + messageId;
+                }
+              }
+              link.replaceWith(clonedLink);
+          }
+      }
+  };
+})();
+</script><div id="monica-content-root" class="monica-widget" style="pointer-events: auto;"></div></body></html>
