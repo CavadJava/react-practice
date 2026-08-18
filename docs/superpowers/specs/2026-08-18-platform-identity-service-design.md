@@ -34,6 +34,12 @@ serve future SaaS-style projects, not the existing 14 taobao-v1 services.
   system-level superadmin concept yet. `POST /projects` is meant to be used
   by whoever is standing up a new project (e.g. via a seed script or admin
   tooling), not by end users of that project.
+- **A project's first registered user automatically becomes `admin`;**
+  every subsequent registration under that `project_id` defaults to `user`.
+  `POST /auth/register` never accepts a client-supplied role — this keeps
+  the open registration endpoint safe (nobody can self-promote to admin)
+  while still giving every project exactly one initial admin without a
+  separate bootstrapping step.
 - **No plaintext password storage.** The originally sketched schema had both
   `password` and `passwordhash`; only a bcrypt `password_hash` is kept.
 
@@ -74,12 +80,18 @@ not a runtime-mutable table for now.
 | POST   | `/projects`           | none                            | Create a new project |
 | GET    | `/projects`           | none                            | List projects |
 | GET    | `/projects/{id}`      | none                            | Project details |
-| POST   | `/auth/register`      | none                            | Register a user under a `project_id`; defaults to role `user` |
+| POST   | `/auth/register`      | none                            | Register a user under a `project_id`; first user in that project → `admin`, all later ones → `user` |
 | POST   | `/auth/login`         | none                            | Email/username + password → JWT |
 | GET    | `/users/{id}`         | Bearer JWT                      | Self, or (if caller is `admin`) any user in caller's own project |
 | POST   | `/users/{id}/role`    | Bearer JWT, caller must be `admin` | Promote/demote a user's role — only within the caller's own project |
 
 JWT claims: `user_id`, `project_id`, `role`.
+
+**First-admin assignment implementation note:** `Register` must count
+existing users for `project_id` and insert the new user transactionally
+(`SELECT ... FOR UPDATE` on the project row, or a single `INSERT ...
+SELECT` with a `COUNT(*)` subquery) so two concurrent first registrations
+for the same brand-new project can't both become `admin`.
 
 Envelope format matches the rest of go-project-practices:
 ```json
