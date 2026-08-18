@@ -1,0 +1,70 @@
+{
+  "webSocketEndpoints": [
+    {
+      "name": "Streaming Telemetry",
+      "url": "Not documented in source",
+      "protocol": "The source page (https://tesla-api.timdorr.com/vehicle/streaming.md) is currently a stub. Its entire content is: '# Streaming' followed by 'Please help fill this out! https://github.com/timdorr/tesla-api/issues/97'. No connection URL, handshake/auth method, message framing, or payload shapes are documented on this page as of the fetch date (2026-08-16). Confirmed identical via both the rendered .md route and the underlying GitHub source file (docs/vehicle/streaming.md on timdorr/tesla-api).",
+      "exampleMessages": {},
+      "fields": "Not documented in source — no field list is present on the page.",
+      "sourceDocUrl": "https://tesla-api.timdorr.com/vehicle/streaming.md"
+    },
+    {
+      "name": "Autopark / Summon",
+      "url": "Not documented in source",
+      "protocol": "The source page (https://tesla-api.timdorr.com/vehicle/autopark.md) is currently a stub. Its entire content is the single heading '# Autopark/Summon' with no body text at all — no protocol description, connection details, auth method, or message examples. Confirmed identical via both the rendered .md route and the underlying GitHub source file (docs/vehicle/autopark.md on timdorr/tesla-api).",
+      "exampleMessages": {},
+      "fields": "Not documented in source — no field list is present on the page.",
+      "sourceDocUrl": "https://tesla-api.timdorr.com/vehicle/autopark.md"
+    }
+  ],
+  "referenceData": [
+    {
+      "name": "Vehicle Option Codes",
+      "description": "A large static reference table (columns: Code, Title, Description) listing Tesla vehicle build option codes — the values returned in a vehicle's 'option_codes' field — covering trim options, region, battery size/type, color/paint, wheels, roof, interior, adapters/charging connectors, autopilot hardware, and many add-on packages. The table runs to several hundred rows.",
+      "sampleEntries": [
+        {
+          "code": "MDLS",
+          "meaning": "Model S — This vehicle is a Model S"
+        },
+        {
+          "code": "MDL3",
+          "meaning": "Model 3 — This vehicle is a Model 3"
+        },
+        {
+          "code": "MDLX",
+          "meaning": "Model X — This vehicle is a Model X"
+        },
+        {
+          "code": "MDLY",
+          "meaning": "Model Y — This vehicle is a Model Y"
+        },
+        {
+          "code": "REEU",
+          "meaning": "Region: Europe"
+        },
+        {
+          "code": "RENA",
+          "meaning": "Region: North America"
+        },
+        {
+          "code": "ACL1",
+          "meaning": "Ludicrous Mode (Model X)"
+        },
+        {
+          "code": "AD02",
+          "meaning": "NEMA 14-50 (charging adapter)"
+        },
+        {
+          "code": "ADPX2",
+          "meaning": "Type 2 Public Charging Connector"
+        },
+        {
+          "code": "AF02",
+          "meaning": "HEPA Filter"
+        }
+      ],
+      "sourceDocUrl": "https://tesla-api.timdorr.com/vehicle/optioncodes.md",
+      "note": "Table too large to fully enumerate here (several hundred codes across many categories); see source for the complete list."
+    }
+  ]
+}

@@ -1,0 +1,3813 @@
+openapi: "3.0.3"
+info:
+  title: "Tesla Owner API (Unofficial)"
+  version: "2026.08.16"
+  description: "**Unofficial, community-reverse-engineered** specification for the Tesla mobile-app \"Owner API\", generated from https://tesla-api.timdorr.com (the timdorr/tesla-api community documentation project) and cross-checked against that project's canonical internal endpoint registry (`ownerapi_endpoints.json`, 551 entries).\n\n**This is not official Tesla documentation.** Tesla does not publish or support a public API for this surface and may change or break any of it without notice. Using it may violate Tesla's Terms of Service — use at your own risk, for personal/research purposes.\n\nGenerated notes from source pages:\n- Authentication uses OAuth 2.0 with PKCE against Tesla's SSO service, hosted on a separate host (auth.tesla.com) from the main owner-api.\n- Tesla's SSO service has a WAF that blocks repeated excessive requests; avoid automatic retries and keep call volume to a minimum. The service requires TLS 1.2+ and rejects/JS-challenges obviously browser-like User-Agent headers.\n- client_id is always the literal string 'ownerapi'; redirect_uri is always 'https://auth.tesla.com/void/callback' (a non-resolving address by design — the authorization code is extracted from the redirect's Location header, the request is never actually followed).\n- CONFIRMED BY LIVE TEST (2026-08-16): scripting Step 1 (GET /oauth2/v3/authorize) with a plain HTTP client gets served an Akamai bot-management challenge (_abck/bm_sz cookies, no actual login form) instead of the real hidden fields — Tesla's WAF fingerprints non-browser TLS/HTTP clients and blocks them. The reliable way to get an authorization code for personal use is the manual browser flow real community clients (e.g. TeslaPy) use: build the Step 1 URL yourself (see get_login_url.py alongside this spec), open it in a real browser, log in normally, then copy the `code` query parameter straight out of the browser's address bar after it redirects to the non-resolving void/callback — this needs Step 3 only, skipping the scripted Step 2 hidden-field dance entirely.\n- get_step1_fields.py (alongside this spec) is kept for reference/experimentation but is expected to fail with the WAF challenge above for most callers; get_login_url.py implements the recommended manual-browser flow instead.\n- Base URI: https://owner-api.teslamotors.com/ (primary endpoint for most API requests)\n- China region variant: use owner-api.vn.cloud.tesla.cn for the API and auth.tesla.cn for auth\n- All requests require a User-Agent header (any value accepted); identifying your app via this header is recommended\n- The API has three surfaces: (1) state & commands — point-in-time vehicle state and basic controls, loosely REST but with notable deviations, (2) streaming telemetry — JSON data streamed at up to half-second intervals over HTTP, (3) Autopark/Summon — WebSocket-based streaming control for HW1/HW2/3 vehicles\n- Because the API deviates from strict REST conventions, standard REST client tools/libraries may not work with it out of the box\n- Nearly all endpoints in Tesla's internal endpoint registry are marked AUTH:true, implying an OAuth2 bearer-token scheme, though the fetched docs pages did not themselves detail the token/OAuth flow\n- Tesla's vehicle telemetry (charge_state, climate_state, drive_state, gui_settings, vehicle_state, vehicle_config) is NOT a set of separate HTTP endpoints in the current API. It is delivered as nested sub-objects of the single GET /api/1/vehicles/{vehicle_id}/vehicle_data response, confirmed against the canonical internal endpoint registry which contains exactly one entry (VEHICLE_DATA) for this whole data surface and no separate CHARGE_STATE/CLIMATE_STATE/DRIVE_STATE/GUI_SETTINGS/VEHICLE_STATE/VEHICLE_CONFIG entries.\n- Legacy standalone per-category endpoints did exist historically at GET /api/1/vehicles/{vehicle_id}/data_request/<category> (e.g. data_request/charge_state, data_request/climate_state, data_request/drive_state, data_request/gui_settings, data_request/vehicle_state, data_request/vehicle_config). The docs explicitly state each of these 'was deprecated and returns 404'. They are documented below as historical/informational context inside each corresponding sub-object entry's description, but the authoritative, currently-live path used for `path` on each is the VEHICLE_DATA path per instructions, since the registry has no live entry for the deprecated data_request/* routes.\n- mobile_enabled (GET /api/1/vehicles/{id}/mobile_enabled) is documented as its own standalone endpoint returning a bare boolean, not marked deprecated by the docs. However it does NOT appear anywhere in the canonical 551-entry endpoint registry (searched case-insensitively for MOBILE_ENABLED/MOBILE_ACCESS/mobile_enabled with no hits), so its liveness is unverified against the authoritative source; it is included with unverified_path=true.\n- nearby_charging_sites and release_notes (the latter documented on the 'misc' docs page) ARE confirmed as real, currently-live standalone endpoints, matched exactly against the registry's NEARBY_CHARGING_SITES and RELEASE_NOTES entries respectively (both GET, both auth=true, both keyed by {vehicle_id}).\n- All *_range values returned within vehicle_data are in miles regardless of the user's configured GUI distance units (gui_settings.gui_distance_units only affects app/UI display, not the raw API values).\n- All vehicle commands are authenticated POST requests to https://owner-api.teslamotors.com, using an OAuth bearer token (auth: true) obtained via Tesla's account login flow.\n- Command endpoints (other than wake_up) follow the pattern POST api/1/vehicles/{vehicle_id}/command/{command_name}.\n- The vehicle must be online before most commands will succeed; if the car is asleep, call WAKE_UP (POST api/1/vehicles/{vehicle_id}/wake_up) first and poll the vehicle summary until its `state` field is `online` (docs suggest allowing at least 30 seconds, since waking can take several seconds).\n- These commands alter the vehicle's state and return a boolean `result` field indicating success, plus a `reason` string that is populated when `result` is false (e.g. vehicle asleep, command rejected).\n- The standard response envelope for command endpoints is `{ \"response\": { \"result\": bool, \"reason\": string } }`; the wake_up endpoint is an exception and instead returns the full vehicle summary object.\n- {vehicle_id} in the path is Tesla's internal numeric vehicle id (id_s from the vehicle list/summary endpoints), not the VIN.\n- Path parameter is emitted as {vehicle_id} throughout, matching the canonical ownerapi_endpoints.json registry; the community docs site (tesla-api.timdorr.com) labels the same URL segment {id}.\n- `charge_standard` and `charge_max_range` (documented on charging.md) do not appear anywhere in the provided 551-entry canonical registry — they appear to have been superseded by the parameterized `set_charge_limit` endpoint and are marked unverified_path: true; their method/path/auth come only from the community docs.\n- `set_vehicle_name` (misc.md) also does not appear in the canonical registry. The docs page itself notes it was removed from ownerapi_endpoints.json in app version 4.19.0-1639, then became usable again client-side in app 4.20.5+ on vehicle software 2023.12+; marked unverified_path: true.\n- calendar.md, the source page for CALENDAR_SYNC, contains only a bare '# Calendar' heading on tesla-api.timdorr.com with no parameter, request, or response documentation. Method/path/auth for this endpoint were taken from the canonical registry (upcoming_calendar_entries); no requestBodyExample/responseExample could be sourced beyond the generic result/reason shape.\n- Most command endpoints only show the bare `{ \"reason\": \"\", \"result\": true }` object in the community docs; per instructions these are wrapped in Tesla's actual top-level `{ \"response\": { ... } }` envelope for responseExample.\n- TAKE_DRIVENOTE currently returns `not_supported` per the docs, as the feature is not implemented server-side despite the endpoint existing.\n- SET_COP_TEMP (set_cop_temp) is noted in the docs as 'in progress' and not fully functional/enabled as of the source page's last update (2022-12-13).\n- Base URI for the Energy Products API is https://owner-api.teslamotors.com/api/1/energy_sites/{site_id}/ (per tesla-api.timdorr.com/energy-products/energy.md).\n- site_id (also called energy_site_id in Tesla's internal endpoint registry) identifies a specific energy installation (Powerwall/Solar site) and must first be obtained from Tesla's product list endpoint before calling any of the endpoints below.\n- The community docs group energy endpoints into three categories: History (time-series power/energy data), State (current status/config snapshots), and Commands (POST actions that change site configuration).\n- Cross-referenced against a canonical internal Tesla endpoint registry (551 entries). Endpoints found in that registry use its exact TYPE (HTTP method), URI, and AUTH values as authoritative. Two endpoints described on tesla-api.timdorr.com (plain 'history' and 'site_status') have no matching entry in that registry — they are flagged unverified_path: true and use the path/method as documented on the community site.\n- Nearly all Commands-page endpoints beyond backup, site_name, and storm_mode are listed by tesla-api.timdorr.com only by name/path with no documented request or response fields ('these endpoints are not yet documented'); for those, requestBodyExample/responseExample are left null rather than fabricated.\n- Command endpoints that ARE documented (backup, site_name, storm_mode) all return the same generic acknowledgement shape: {\"response\": {\"code\": 201, \"message\": \"Updated\"}}."
+  license:
+    name: "Source docs: MIT (timdorr/tesla-api)"
+    url: "https://github.com/timdorr/tesla-api"
+externalDocs:
+  description: "Source documentation"
+  url: "https://tesla-api.timdorr.com"
+servers:
+  - url: "https://owner-api.teslamotors.com"
+    description: "Main Owner API (all vehicle/energy endpoints unless noted)"
+  - url: "https://owner-api.vn.cloud.tesla.cn"
+    description: "China region variant of the main Owner API"
+tags:
+  - name: "API Basics"
+    description: "Account/session-level endpoints that don't belong to a single vehicle or energy site."
+  - name: "Authentication"
+    description: "Tesla SSO OAuth2/PKCE login, token exchange, MFA, and refresh flow. Hosted on auth.tesla.com, not owner-api.teslamotors.com."
+  - name: "Calendar"
+    description: ""
+  - name: "Charge State"
+    description: "Battery/charging-specific state and nearby charging sites."
+  - name: "Charging"
+    description: ""
+  - name: "Climate"
+    description: ""
+  - name: "Energy Products"
+    description: "Powerwall/solar energy site history, live status, configuration, and commands."
+  - name: "Media"
+    description: ""
+  - name: "Misc"
+    description: ""
+  - name: "Products"
+    description: "Listing Tesla Energy (solar/Powerwall) products on the account."
+  - name: "Sharing"
+    description: ""
+  - name: "Software Update"
+    description: ""
+  - name: "Sunroof"
+    description: ""
+  - name: "Trip Planner"
+    description: "Route planning with automatic Supercharger stop insertion."
+  - name: "Users"
+    description: "The authenticated Tesla account holder's profile, keys, and app feature flags."
+  - name: "Vehicle Commands"
+    description: "POST actions that change vehicle state (locks, climate, charging, etc). The vehicle must be online (see Wake)."
+  - name: "Vehicle State"
+    description: "Read-only vehicle telemetry and configuration (GET vehicle_data and its sub-objects)."
+  - name: "Vehicles"
+    description: "Listing and summary info for vehicles on the account."
+  - name: "Windows"
+    description: ""
+security:
+  - BearerAuth: []
+components:
+  securitySchemes:
+    BearerAuth:
+      type: "http"
+      scheme: "bearer"
+      bearerFormat: "JWT"
+      description: "OAuth2 access_token obtained via the Authentication flow (see the Authentication tag)."
+paths:
+  "/api/1/energy_sites/rate_tariffs":
+    get:
+      operationId: "getEnergySiteRateTariffs"
+      summary: "List available utility rate tariff identifiers"
+      description: "Lists available utility rate plan identifiers and metadata (tariff ID, description, utility name, country, state) that can be referenced when configuring a site's tariff."
+      tags:
+        - "Energy Products"
+      responses:
+        "200":
+          description: "Not scoped to a site_id (no site_id path param). 'count' reflects the total number of tariff entries available (233 in the example); response array is a truncated sample here."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  - tariffID: "AE-R-CS"
+                    description: "Residential - Community Solar"
+                    utility: "Austin Energy"
+                    country: "US"
+                    state: "TX"
+                  - tariffID: "APS-ET-1"
+                    description: "Residential - Time of Use, Time Advantage, 9pm - 9 am"
+                    utility: "Arizona Public Service Co"
+                    country: "US"
+                    state: "AZ"
+                count: 233
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/state.md"
+        description: "Source documentation page"
+  "/api/1/energy_sites/{site_id}/backup":
+    post:
+      operationId: "setEnergySiteBackupReserve"
+      summary: "Set the battery backup reserve percentage for an energy site"
+      description: "Adjusts the battery backup reserve energy percentage that is held back for use during grid outages."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "backup_reserve_percent (number): the percentage of battery capacity to reserve for backup/outage use."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              backup_reserve_percent: 75
+      responses:
+        "200":
+          description: "Generic acknowledgement response shared by several command endpoints (code/message)."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  code: 201
+                  message: "Updated"
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/commands.md"
+        description: "Source documentation page"
+  "/api/1/energy_sites/{site_id}/backup_time_remaining":
+    get:
+      operationId: "getEnergySiteBackupTimeRemaining"
+      summary: "Get estimated backup time remaining for an energy site"
+      description: "Calculates how many hours the battery system can sustain the home if it transitions to off-grid (backup) operation."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "time_remaining_hours is a float representing estimated hours of backup runtime."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  time_remaining_hours: 2.0933370487093645
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/state.md"
+        description: "Source documentation page"
+  "/api/1/energy_sites/{site_id}/calendar_history":
+    get:
+      operationId: "getEnergyCalendarHistory"
+      summary: "Get power or energy history for an energy site ending on a specific date"
+      description: "Returns power generation/storage at 15-minute intervals for a specified day, or energy generation/storage for a specified period (day/week/month/year/lifetime) ending on the given end_date. Timestamps in the response represent the start of a period."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+        - name: "kind"
+          in: "query"
+          required: true
+          description: "Either 'power' or 'energy'."
+          schema:
+            type: "string"
+        - name: "end_date"
+          in: "query"
+          required: true
+          description: "Last day for statistics retrieval, formatted yyyy-mm-ddThh:mm:ss-hh:mm (local time) or yyyy-mm-ddThh:mm:ssZ (UTC). Avoid using midnight (00:00:00) as the time value — it can produce zero or garbage data depending on period type."
+          schema:
+            type: "string"
+        - name: "period"
+          in: "query"
+          required: false
+          description: "Required when kind=energy; one of 'day', 'week', 'month', 'year', 'lifetime'. Ignored when kind=power."
+          schema:
+            type: "string"
+        - name: "interval"
+          in: "query"
+          required: false
+          description: "Only confirmed valid value is '15m', usable only with period=day, to return daily data in 15-minute increments."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Shown response is for kind=power. For kind=energy the response adds a 'period' field and time_series entries with the same cumulative energy fields as the /history endpoint (solar_energy_exported, grid_energy_imported, battery_energy_exported, consumer_energy_imported_from_*, etc). Docs note data consistency caveats across different period types."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  serial_number: "313dbc37-555c-45b1-83aa-62a4ef9ff7ac"
+                  time_zone_offset: -420
+                  time_series:
+                    - timestamp: "2022-04-29T00:00:00-07:00"
+                      solar_power: 0
+                      battery_power: 0
+                      grid_power: 0
+                      grid_services_power: 0
+                      generator_power: 0
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/history.md"
+        description: "Source documentation page"
+  "/api/1/energy_sites/{site_id}/command":
+    post:
+      operationId: "sendEnergySiteCommand"
+      summary: "Send a generic command to an energy site"
+      description: "Generic command dispatch endpoint for the energy site. tesla-api.timdorr.com lists this endpoint's path but does not document its request/response fields."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Not documented on tesla-api.timdorr.com. (Response shape is not documented by the source; not yet confirmed.)"
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/commands.md"
+        description: "Source documentation page"
+  "/api/1/energy_sites/{site_id}/event":
+    post:
+      operationId: "sendEnergySiteOptEvent"
+      summary: "Send an opt in/out event for an energy site program"
+      description: "Sends a demand-response/grid-event opt in/out signal for the energy site. tesla-api.timdorr.com lists this endpoint's path but does not document its request/response fields."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Not documented on tesla-api.timdorr.com. (Response shape is not documented by the source; not yet confirmed.)"
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/commands.md"
+        description: "Source documentation page"
+  "/api/1/energy_sites/{site_id}/grid_import_export":
+    post:
+      operationId: "setEnergySiteGridImportExportConfig"
+      summary: "Set grid import/export configuration for an energy site"
+      description: "Configures grid import/export behavior for the site (e.g. grid charging allowance, non-export configuration). tesla-api.timdorr.com lists this endpoint's path but does not document its request/response fields."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Not documented on tesla-api.timdorr.com. (Response shape is not documented by the source; not yet confirmed.)"
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/commands.md"
+        description: "Source documentation page"
+  "/api/1/energy_sites/{site_id}/history":
+    get:
+      operationId: "getEnergyHistory"
+      summary: "Get power or energy history for an energy site"
+      description: "Returns instantaneous power generation/storage in watts at 15-minute intervals for the previous day (kind=power), or cumulative energy generation/storage in kWh for a specified recent period (kind=energy)."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+        - name: "kind"
+          in: "query"
+          required: true
+          description: "Either 'power' (instantaneous power at 15-minute intervals for the previous day) or 'energy' (cumulative energy for a period)."
+          schema:
+            type: "string"
+        - name: "period"
+          in: "query"
+          required: false
+          description: "Required when kind=energy; one of 'day', 'week', 'month', 'year'. Ignored when kind=power."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Shown response is for kind=power. For kind=energy the response instead includes a 'period' field and time_series entries with cumulative Wh fields: solar_energy_exported, generator_energy_exported, grid_energy_imported, grid_services_energy_imported, grid_services_energy_exported, grid_energy_exported_from_solar/generator/battery, battery_energy_exported, battery_energy_imported_from_grid/solar/generator, consumer_energy_imported_from_grid/solar/battery/generator."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  serial_number: "313dbc37-555c-45b1-83aa-62a4ef9ff7ac"
+                  time_series:
+                    - timestamp: "2022-05-13T00:00:00-07:00"
+                      solar_power: 0
+                      battery_power: 0
+                      grid_power: 0
+                      grid_services_power: 0
+                      generator_power: 0
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/history.md"
+        description: "Source documentation page"
+      x-unverified-path: true
+  "/api/1/energy_sites/{site_id}/live_status":
+    get:
+      operationId: "getEnergySiteLiveStatus"
+      summary: "Get real-time power flow and status for an energy site"
+      description: "Retrieves real-time operational metrics for the site including solar production, battery power, grid import/export, home load consumption, grid status, and storm mode state."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Example shown is for a solar-only site without Powerwalls (energy_left/total_pack_energy/percentage_charged are 0/1/0 in that case). Sites with Powerwalls populate battery capacity fields and wall_connectors when Wall Connectors are present."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  solar_power: 7720
+                  energy_left: 0
+                  total_pack_energy: 1
+                  percentage_charged: 0
+                  battery_power: 0
+                  load_power: 4517.14990234375
+                  grid_status: "Unknown"
+                  grid_services_active: false
+                  grid_power: -3202.85009765625
+                  grid_services_power: 0
+                  generator_power: 0
+                  island_status: "island_status_unknown"
+                  storm_mode_active: false
+                  timestamp: "2022-07-28T17:11:27Z"
+                  wall_connectors: null
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/state.md"
+        description: "Source documentation page"
+  "/api/1/energy_sites/{site_id}/off_grid_vehicle_charging_reserve":
+    post:
+      operationId: "setEnergySiteOffGridVehicleChargingReserve"
+      summary: "Set the off-grid vehicle charging reserve percentage for an energy site"
+      description: "Sets the battery percentage reserved to support vehicle charging while the site is operating off-grid (Powerwall+ 'off-grid vehicle charging reserve' feature referenced in site_info.components.off_grid_vehicle_charging_reserve_supported and site_info.off_grid_vehicle_charging_reserve_percent). tesla-api.timdorr.com lists this endpoint's path but does not document its request/response fields."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Not documented on tesla-api.timdorr.com. (Response shape is not documented by the source; not yet confirmed.)"
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/commands.md"
+        description: "Source documentation page"
+  "/api/1/energy_sites/{site_id}/operation":
+    post:
+      operationId: "setEnergySiteOperationMode"
+      summary: "Set the operating mode for an energy site"
+      description: "Sets the site's default operating mode (site_info.default_real_mode observes values such as 'self_consumption', suggesting backup-only/autonomous modes also exist). tesla-api.timdorr.com lists this endpoint's path but does not document its request/response fields."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Not documented on tesla-api.timdorr.com. (Response shape is not documented by the source; not yet confirmed.)"
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/commands.md"
+        description: "Source documentation page"
+  "/api/1/energy_sites/{site_id}/preference":
+    post:
+      operationId: "setEnergySitePreference"
+      summary: "Set a site-level preference for an energy site"
+      description: "Sets a site-level preference/configuration flag. tesla-api.timdorr.com lists this endpoint's path but does not document its request/response fields."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Not documented on tesla-api.timdorr.com. (Response shape is not documented by the source; not yet confirmed.)"
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/commands.md"
+        description: "Source documentation page"
+  "/api/1/energy_sites/{site_id}/program":
+    post:
+      operationId: "enrollEnergySiteProgram"
+      summary: "Enroll or update an energy site's program participation"
+      description: "Enrolls or updates the energy site's participation in a utility or Tesla energy program. tesla-api.timdorr.com lists this endpoint's path but does not document its request/response fields."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Not documented on tesla-api.timdorr.com. (Response shape is not documented by the source; not yet confirmed.)"
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/commands.md"
+        description: "Source documentation page"
+  "/api/1/energy_sites/{site_id}/programs":
+    get:
+      operationId: "getEnergySitePrograms"
+      summary: "Get energy program enrollment info for an energy site"
+      description: "Retrieves the energy site's utility/Tesla program enrollment information."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Example shows an empty programs array (no programs shown in docs example)."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  programs: []
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/state.md"
+        description: "Source documentation page"
+  "/api/1/energy_sites/{site_id}/site_info":
+    get:
+      operationId: "getEnergySiteInfo"
+      summary: "Get full site configuration info for an energy site"
+      description: "Returns comprehensive site configuration including id, site name, install date, location/address, time zone, user settings, component inventory/capabilities, and (for Powerwall sites) backup reserve, operation mode, Time-of-Use schedule, and nameplate power/energy ratings."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Shown response is for a Solar+Powerwall site. A solar-only site without Powerwalls instead omits backup_reserve_percent/default_real_mode/tou_settings/battery fields and adds site_number, installation_time_zone, address (address_line1/city/state/zip/country), with components.battery=false and components.backup=false."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  id: "1234567-00-R--EY132456789F4N"
+                  site_name: "My Site Name"
+                  backup_reserve_percent: 100
+                  default_real_mode: "self_consumption"
+                  installation_date: "2020-12-20T04:00:00-07:00"
+                  user_settings:
+                    storm_mode_enabled: true
+                    powerwall_onboarding_settings_set: true
+                    powerwall_tesla_electric_interested_in: false
+                    sync_grid_alert_enabled: true
+                    breaker_alert_enabled: false
+                  components:
+                    solar: true
+                    solar_type: "pv_panel"
+                    generator: true
+                    battery: true
+                    grid: true
+                    backup: true
+                    gateway: "hec"
+                    load_meter: true
+                    tou_capable: true
+                    storm_mode_capable: true
+                    flex_energy_request_capable: false
+                    car_charging_data_supported: false
+                    off_grid_vehicle_charging_reserve_supported: true
+                    vehicle_charging_performance_view_enabled: false
+                    vehicle_charging_solar_offset_view_enabled: false
+                    battery_solar_offset_view_enabled: true
+                    solar_value_enabled: true
+                    energy_value_header: "Energy Value"
+                    energy_value_subheader: "Estimated Value"
+                    energy_service_self_scheduling_enabled: true
+                    show_grid_import_battery_source_cards: true
+                    set_islanding_mode_enabled: true
+                    wifi_commissioning_enabled: true
+                    backup_time_remaining_enabled: true
+                    battery_type: "ac_powerwall"
+                    configurable: true
+                    grid_services_enabled: false
+                    edit_setting_permission_to_export: true
+                    edit_setting_grid_charging: true
+                    edit_setting_energy_exports: true
+                  version: "23.4.2-1 f8e490"
+                  battery_count: 2
+                  tou_settings:
+                    optimization_strategy: "economics"
+                    schedule:
+                      - target: "off_peak"
+                        week_days:
+                          - 1
+                          - 0
+                        start_seconds: 0
+                        end_seconds: 0
+                  nameplate_power: 10000
+                  nameplate_energy: 27000
+                  installation_time_zone: "America/Los_Angeles"
+                  off_grid_vehicle_charging_reserve_percent: 75
+                  max_site_meter_power_ac: 1000000000
+                  min_site_meter_power_ac: -1000000000
+                  geolocation:
+                    latitude: 18.339148
+                    longitude: -67.241601
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/state.md"
+        description: "Source documentation page"
+  "/api/1/energy_sites/{site_id}/site_name":
+    post:
+      operationId: "setEnergySiteName"
+      summary: "Set the display name for an energy site"
+      description: "Updates the display name for the energy site."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "site_name (string): new energy site name."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              site_name: "Wardenclyffe"
+      responses:
+        "200":
+          description: "Generic acknowledgement response shared by several command endpoints (code/message)."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  code: 201
+                  message: "Updated"
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/commands.md"
+        description: "Source documentation page"
+  "/api/1/energy_sites/{site_id}/site_status":
+    get:
+      operationId: "getEnergySiteStatus"
+      summary: "Get site component/status summary for an energy site"
+      description: "Provides a broad system configuration and status overview for the site, including resource type, gateway id, battery state of charge, and user setting toggles (storm mode, grid alerts, breaker alerts)."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Shown response is for a Battery/Powerwall site (resource_type='battery'). A solar-only site without Powerwalls instead returns resource_type='solar', asset_site_id, solar_power, solar_type, and null storm_mode_enabled/powerwall_onboarding_settings_set with fewer fields overall."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  resource_type: "battery"
+                  site_name: "My Name Here"
+                  gateway_id: "A-123456-987645321S"
+                  energy_left: 21604
+                  total_pack_energy: 21604
+                  percentage_charged: 100
+                  battery_type: "ac_powerwall"
+                  backup_capable: true
+                  battery_power: 10
+                  storm_mode_enabled: true
+                  powerwall_onboarding_settings_set: true
+                  powerwall_tesla_electric_interested_in: null
+                  sync_grid_alert_enabled: true
+                  breaker_alert_enabled: true
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/state.md"
+        description: "Source documentation page"
+      x-unverified-path: true
+  "/api/1/energy_sites/{site_id}/storm_mode":
+    post:
+      operationId: "setEnergySiteStormModeSettings"
+      summary: "Enable or disable Storm Watch for an energy site"
+      description: "Toggles Storm Watch, which charges the battery to full ahead of forecast severe weather to provide extra backup protection."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "enabled (boolean): whether Storm Watch should be enabled."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              enabled: true
+      responses:
+        "200":
+          description: "Generic acknowledgement response shared by several command endpoints (code/message)."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  code: 201
+                  message: "Updated"
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/commands.md"
+        description: "Source documentation page"
+  "/api/1/energy_sites/{site_id}/tariff_rate":
+    get:
+      operationId: "getEnergySiteTariffRate"
+      summary: "Get the configured utility tariff rate structure for an energy site"
+      description: "Provides the utility rate plan configuration used for Time-Based Control mode, including daily/demand/energy charges by season and time-of-use period, plus a matching sell_tariff for energy exported to the grid. Updates roughly every 30 minutes."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "energy_charges/demand_charges are keyed by season then by TOU period name (or 'ALL'). seasons.<Season>.tou_periods defines the day-of-week/hour ranges for each TOU period name used above. sell_tariff mirrors the same shape for energy exported to the grid (feed-in rates). Truncated example — original docs example includes more OFF_PEAK/PARTIAL_PEAK sub-ranges per period."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  name: "Amber"
+                  utility: "Amber"
+                  daily_charges:
+                    - amount: 0
+                      name: "Charge"
+                  demand_charges:
+                    ALL:
+                      ALL: 0
+                    Summer: {}
+                    Winter: {}
+                  energy_charges:
+                    ALL:
+                      ALL: 0
+                    Summer:
+                      ON_PEAK: 0.43
+                      PARTIAL_PEAK: 0.43
+                      OFF_PEAK: 0.01
+                    Winter: {}
+                  seasons:
+                    Summer:
+                      fromDay: 1
+                      toDay: 31
+                      fromMonth: 1
+                      toMonth: 12
+                      tou_periods:
+                        ON_PEAK:
+                          - fromDayOfWeek: 0
+                            toDayOfWeek: 6
+                            fromHour: 5
+                            fromMinute: 30
+                            toHour: 7
+                            toMinute: 0
+                        PARTIAL_PEAK:
+                          - fromDayOfWeek: 0
+                            toDayOfWeek: 6
+                            fromHour: 7
+                            fromMinute: 0
+                            toHour: 10
+                            toMinute: 0
+                        OFF_PEAK:
+                          - fromDayOfWeek: 0
+                            toDayOfWeek: 6
+                            fromHour: 20
+                            fromMinute: 0
+                            toHour: 5
+                            toMinute: 30
+                    Winter:
+                      fromDay: 0
+                      toDay: 0
+                      fromMonth: 0
+                      toMonth: 0
+                      tou_periods: {}
+                  sell_tariff:
+                    name: "Amber"
+                    utility: "Amber"
+                    daily_charges:
+                      - amount: 0
+                        name: "Charge"
+                    demand_charges:
+                      ALL:
+                        ALL: 0
+                      Summer: {}
+                      Winter: {}
+                    energy_charges:
+                      ALL:
+                        ALL: 0
+                      Summer:
+                        ON_PEAK: 0.3
+                        PARTIAL_PEAK: 0.1
+                        OFF_PEAK: 0.01
+                      Winter: {}
+                    seasons:
+                      Summer:
+                        fromDay: 1
+                        toDay: 31
+                        fromMonth: 1
+                        toMonth: 12
+                        tou_periods:
+                          ON_PEAK:
+                            - fromDayOfWeek: 0
+                              toDayOfWeek: 6
+                              fromHour: 5
+                              fromMinute: 30
+                              toHour: 7
+                              toMinute: 0
+                          PARTIAL_PEAK:
+                            - fromDayOfWeek: 0
+                              toDayOfWeek: 6
+                              fromHour: 7
+                              fromMinute: 0
+                              toHour: 10
+                              toMinute: 0
+                          OFF_PEAK:
+                            - fromDayOfWeek: 0
+                              toDayOfWeek: 6
+                              fromHour: 20
+                              fromMinute: 0
+                              toHour: 5
+                              toMinute: 30
+                      Winter:
+                        fromDay: 0
+                        toDay: 0
+                        fromMonth: 0
+                        toMonth: 0
+                        tou_periods: {}
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/state.md"
+        description: "Source documentation page"
+  "/api/1/energy_sites/{site_id}/time_of_use_settings":
+    post:
+      operationId: "setEnergySiteTimeOfUseSettings"
+      summary: "Set Time-of-Use settings for an energy site"
+      description: "Sets the site's Time-of-Use optimization settings (site_info.tou_settings shows an optimization_strategy and a schedule of target/week_days/start_seconds/end_seconds entries). tesla-api.timdorr.com lists this endpoint's path but does not document its request/response fields in detail."
+      tags:
+        - "Energy Products"
+      parameters:
+        - name: "site_id"
+          in: "path"
+          required: true
+          description: "Tesla energy site identifier."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Not documented on tesla-api.timdorr.com. (Response shape is not documented by the source; not yet confirmed.)"
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/energy-products/energy/commands.md"
+        description: "Source documentation page"
+  "/api/1/products":
+    get:
+      operationId: "listProducts"
+      summary: "List Tesla Energy products on the account"
+      description: "Retrieves a list of the authenticated user's Tesla Energy products (e.g. solar, Powerwall). The energy_site_id value returned is used as the site_id parameter for subsequent energy product API calls."
+      tags:
+        - "API Basics"
+        - "Products"
+      responses:
+        "200":
+          description: "energy_site_id is the unique identifier required by subsequent energy_sites endpoints; resource_type categorizes the product (e.g. solar); solar_power is current output in watts; components describes system capabilities (battery/solar/grid presence, market_type)."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  - energy_site_id: 2252147638651575
+                    resource_type: "solar"
+                    id: "313dbc37-555c-45b1-83aa-62a4ef9ff7ac"
+                    asset_site_id: "47d04752-9cf1-4e76-88fb-08839a1c41c4"
+                    solar_power: 2320
+                    solar_type: "pv_panel"
+                    sync_grid_alert_enabled: false
+                    breaker_alert_enabled: false
+                    components:
+                      battery: false
+                      solar: true
+                      solar_type: "pv_panel"
+                      grid: true
+                      load_meter: false
+                      market_type: "residential"
+                count: 1
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/api-basics/products.md"
+        description: "Source documentation page"
+  "/api/1/users/feature_config":
+    get:
+      operationId: "getUserFeatureConfig"
+      summary: "Get feature configuration for the mobile app"
+      description: "Retrieves feature configuration/flags applicable to the mobile application for the authenticated user."
+      tags:
+        - "API Basics"
+        - "Users"
+      responses:
+        "200":
+          description: "signaling.enabled/subscribe_connectivity indicate mobile app signaling and connectivity-subscription feature flags."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                signaling:
+                  enabled: true
+                  subscribe_connectivity: false
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/api-basics/users.md"
+        description: "Source documentation page"
+  "/api/1/users/keys":
+    post:
+      operationId: "updateDeviceKey"
+      summary: "Update a Bluetooth device key's display name"
+      description: "Updates the name of a Bluetooth key across all vehicles it is linked to. Changes are refreshed when the vehicle's locks menu is next opened."
+      tags:
+        - "API Basics"
+        - "Users"
+      requestBody:
+        required: true
+        description: "kind (required, must be \"mobile_device\") and public_key (required, 65-byte ANSI X9.62/X9.63 public key as hex string) identify the device key; name and model are optional display metadata (model shown as subtext)."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              kind: "mobile_device"
+              public_key: "<65-byte ANSI X9.62/X9.63 public key as hex string>"
+              name: "My iPhone"
+              model: "iPhone 15 Pro"
+      responses:
+        "200":
+          description: "response is a boolean confirming the key update succeeded."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response: true
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/api-basics/users.md"
+        description: "Source documentation page"
+  "/api/1/users/me":
+    get:
+      operationId: "getCurrentUser"
+      summary: "Get the currently authenticated user"
+      description: "Retrieves basic profile information about the currently authenticated Tesla account user."
+      tags:
+        - "API Basics"
+        - "Users"
+      responses:
+        "200":
+          description: "email, full_name, and profile_image_url describe the account holder."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                email: "elon@tesla.com"
+                full_name: "Elon Musk"
+                profile_image_url: "https://vehicle-files.prd.euw1.vn.cloud.tesla.com/profile_images/{IMG}.jpg"
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/api-basics/users.md"
+        description: "Source documentation page"
+  "/api/1/users/vault_profile":
+    get:
+      operationId: "getUserVaultProfile"
+      summary: "Get the user's vault profile"
+      description: "Retrieves vault profile data for the authenticated user. The response payload requires base64 decoding and protobuf deserialization using the Vault message schema. The same URI also supports POST (upload/replace vault) and DELETE (reset vault) per the internal endpoint registry, not separately documented on this docs page."
+      tags:
+        - "API Basics"
+        - "Users"
+      responses:
+        "200":
+          description: "vault contains base64-encoded data that must be decoded and deserialized per the Vault protobuf spec."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                vault: "base64_data"
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/api-basics/users.md"
+        description: "Source documentation page"
+  "/api/1/vehicles":
+    get:
+      operationId: "listVehicles"
+      summary: "List vehicles on the account"
+      description: "Retrieves the list of vehicles associated with the authenticated account, including state, VIN, display name, and tokens. Results are limited to a maximum of 100 entries per page."
+      tags:
+        - "API Basics"
+        - "Vehicles"
+      parameters:
+        - name: "page"
+          in: "query"
+          required: false
+          description: "The page number"
+          schema:
+            type: "integer"
+      responses:
+        "200":
+          description: "id is used to address the vehicle on the owner-api endpoints (e.g. path params on other calls), while vehicle_id is used on other (non owner-api) endpoints. state reflects online/asleep/offline status."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  - id: 12345678901234567
+                    vehicle_id: 1234567890
+                    vin: "5YJSA11111111111"
+                    display_name: "Nikola 2.0"
+                    color: null
+                    tokens:
+                      - "abcdef1234567890"
+                      - "1234567890abcdef"
+                    state: "online"
+                    in_service: false
+                    id_s: "12345678901234567"
+                    calendar_enabled: true
+                    api_version: 7
+                    backseat_token: null
+                    backseat_token_updated_at: null
+                count: 1
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/api-basics/vehicles.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}":
+    get:
+      operationId: "getVehicle"
+      summary: "Get details for a single vehicle"
+      description: "Retrieves detailed, read-only information for a specific vehicle that determines the state of its various sub-systems."
+      tags:
+        - "API Basics"
+        - "Vehicles"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "The id of the car as returned by the vehicle list endpoint's `id` field (not the `vehicle_id` field of that response, despite the path parameter's name here)."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Same fields as the list-vehicles response, for a single vehicle."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  id: 12345678901234567
+                  vehicle_id: 1234567890
+                  vin: "5YJSA11111111111"
+                  display_name: "Nikola 2.0"
+                  color: null
+                  tokens:
+                    - "abcdef1234567890"
+                    - "1234567890abcdef"
+                  state: "online"
+                  in_service: false
+                  id_s: "12345678901234567"
+                  calendar_enabled: true
+                  api_version: 7
+                  backseat_token: null
+                  backseat_token_updated_at: null
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/api-basics/vehicles.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/actuate_trunk":
+    post:
+      operationId: "actuateTrunk"
+      summary: "Open or close the front or rear trunk"
+      description: "Opens either the front trunk (frunk) or rear trunk. On the Model S and X, calling this on the rear trunk will also close it if it is already open."
+      tags:
+        - "Vehicle Commands"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla internal numeric vehicle id."
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "which_trunk: which trunk to open/close; `rear` and `front` are the only valid options (string)."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              which_trunk: "rear"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/trunk.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/adjust_volume":
+    post:
+      operationId: "adjustVolume"
+      summary: "Set media volume to a specific level"
+      description: "Adjusts the volume of the media system to the desired level. Accepts both a string and a numerical value; the docs note this endpoint currently is not exposed as a feature in the official Tesla app despite working."
+      tags:
+        - "Vehicle Commands"
+        - "Media"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "volume (number or string, 0-11): the desired volume level; both numeric and string forms are accepted."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              volume: 1
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/media.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/auto_conditioning_start":
+    post:
+      operationId: "climateOn"
+      summary: "Start climate control (HVAC)"
+      description: "Starts the climate control system, which will cool or heat automatically depending on the set temperature."
+      tags:
+        - "Vehicle Commands"
+        - "Climate"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "manual_override (string, optional): overrides the low_soc failure reason (<20%); e.g. 'socdoors'."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              manual_override: "socdoors"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/climate.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/auto_conditioning_stop":
+    post:
+      operationId: "climateOff"
+      summary: "Stop climate control (HVAC)"
+      description: "Stops the climate control (HVAC) system."
+      tags:
+        - "Vehicle Commands"
+        - "Climate"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/climate.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/cancel_software_update":
+    post:
+      operationId: "cancelSoftwareUpdate"
+      summary: "Cancel a scheduled software update"
+      description: "Cancels a software update, if one is scheduled and has not yet started."
+      tags:
+        - "Vehicle Commands"
+        - "Software Update"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/softwareupdate.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/charge_max_range":
+    post:
+      operationId: "setChargeMaxRange"
+      summary: "Set charge limit to max range (100%)"
+      description: "Sets the charge limit to 'max range', 100%. Not found in the canonical ownerapi_endpoints.json registry (likely superseded by set_charge_limit); documented here per the community docs only."
+      tags:
+        - "Vehicle Commands"
+        - "Charging"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/charging.md"
+        description: "Source documentation page"
+      x-unverified-path: true
+  "/api/1/vehicles/{vehicle_id}/command/charge_port_door_close":
+    post:
+      operationId: "closeChargePort"
+      summary: "Close the charge port door"
+      description: "For vehicles with a motorized charge port, this closes it."
+      tags:
+        - "Vehicle Commands"
+        - "Charging"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/charging.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/charge_port_door_open":
+    post:
+      operationId: "openChargePort"
+      summary: "Open the charge port door"
+      description: "Opens the charge port or unlocks the charge cable."
+      tags:
+        - "Vehicle Commands"
+        - "Charging"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/charging.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/charge_standard":
+    post:
+      operationId: "setChargeStandard"
+      summary: "Set charge limit to standard (~90%)"
+      description: "Sets the charge limit to 'standard', approximately 90%. Not found in the canonical ownerapi_endpoints.json registry (likely superseded by set_charge_limit); documented here per the community docs only."
+      tags:
+        - "Vehicle Commands"
+        - "Charging"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/charging.md"
+        description: "Source documentation page"
+      x-unverified-path: true
+  "/api/1/vehicles/{vehicle_id}/command/charge_start":
+    post:
+      operationId: "startCharge"
+      summary: "Start charging"
+      description: "If the car is plugged in but not currently charging, this will start it charging."
+      tags:
+        - "Vehicle Commands"
+        - "Charging"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/charging.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/charge_stop":
+    post:
+      operationId: "stopCharge"
+      summary: "Stop charging"
+      description: "If the car is currently charging, this will stop it."
+      tags:
+        - "Vehicle Commands"
+        - "Charging"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/charging.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/door_lock":
+    post:
+      operationId: "lockDoors"
+      summary: "Lock the doors"
+      description: "Locks the doors to the car. Retracts the handles on the Model S, if they are extended."
+      tags:
+        - "Vehicle Commands"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla internal numeric vehicle id."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/doors.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/door_unlock":
+    post:
+      operationId: "unlockDoors"
+      summary: "Unlock the doors"
+      description: "Unlocks the doors to the car. Extends the handles on the Model S."
+      tags:
+        - "Vehicle Commands"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla internal numeric vehicle id."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/doors.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/flash_lights":
+    post:
+      operationId: "flashLights"
+      summary: "Flash the headlights"
+      description: "Flashes the headlights once."
+      tags:
+        - "Vehicle Commands"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla internal numeric vehicle id."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/alerts.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/honk_horn":
+    post:
+      operationId: "honkHorn"
+      summary: "Honk the horn"
+      description: "Honks the horn twice."
+      tags:
+        - "Vehicle Commands"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla internal numeric vehicle id."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/alerts.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/media_next_fav":
+    post:
+      operationId: "mediaNextFavorite"
+      summary: "Skip to next favorite"
+      description: "Skips to the next saved favorite in the media system."
+      tags:
+        - "Vehicle Commands"
+        - "Media"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/media.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/media_next_track":
+    post:
+      operationId: "mediaNextTrack"
+      summary: "Skip to next track"
+      description: "Skips to the next track in the current playlist. The car must be on for this to work."
+      tags:
+        - "Vehicle Commands"
+        - "Media"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/media.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/media_prev_fav":
+    post:
+      operationId: "mediaPrevFavorite"
+      summary: "Skip to previous favorite"
+      description: "Skips to the previous saved favorite in the media system."
+      tags:
+        - "Vehicle Commands"
+        - "Media"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/media.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/media_prev_track":
+    post:
+      operationId: "mediaPrevTrack"
+      summary: "Skip to previous track"
+      description: "Skips to the previous track in the current playlist. Does nothing when streaming from Stitcher."
+      tags:
+        - "Vehicle Commands"
+        - "Media"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/media.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/media_toggle_playback":
+    post:
+      operationId: "mediaTogglePlayback"
+      summary: "Toggle play/pause of current media"
+      description: "Toggles the media between playing and paused. For the radio, this mutes or unmutes the audio. The car must be on for this to work."
+      tags:
+        - "Vehicle Commands"
+        - "Media"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/media.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/media_volume_down":
+    post:
+      operationId: "mediaVolumeDown"
+      summary: "Turn media volume down"
+      description: "Turns down the volume of the media system."
+      tags:
+        - "Vehicle Commands"
+        - "Media"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/media.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/media_volume_up":
+    post:
+      operationId: "mediaVolumeUp"
+      summary: "Turn media volume up"
+      description: "Turns up the volume of the media system."
+      tags:
+        - "Vehicle Commands"
+        - "Media"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/media.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/remote_auto_seat_climate_request":
+    post:
+      operationId: "remoteAutoSeatClimateRequest"
+      summary: "Enable/disable Automatic Seat Climate for a seat"
+      description: "Enables/disables Automatic Seat Climate on the specified seat. Seat mapping: 0=Front Left, 1=Front Right, 2=Rear Left, 4=Rear Center, 5=Rear Right."
+      tags:
+        - "Vehicle Commands"
+        - "Climate"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "auto_seat_position (integer, 0-5): the seat, per the seat mapping. auto_climate_on (boolean): true to enable, false to disable."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              auto_seat_position: 0
+              auto_climate_on: true
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/climate.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/remote_boombox":
+    post:
+      operationId: "remoteBoombox"
+      summary: "Trigger remote boombox / fart sound effect"
+      description: "Lets the car fart remotely (vehicle software 2022.44.25.1+) or use boombox v2 on supported vehicles. No POST body is required to fart, but one is needed to use boombox v2."
+      tags:
+        - "Vehicle Commands"
+        - "Misc"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "action (integer, optional): numerical value representing the action; 0 = Fart. Not required for the default fart action."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              action: 0
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/misc.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/remote_seat_cooler_request":
+    post:
+      operationId: "remoteSeatCoolerRequest"
+      summary: "Set a seat's cooler level (Refresh Model S & X)"
+      description: "Sets the specified seat's cooler level, available on Refresh Model S & X. Seat mapping: 0=Front Left, 1=Front Right, 2=Rear Left, 4=Rear Center, 5=Rear Right."
+      tags:
+        - "Vehicle Commands"
+        - "Climate"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "seat_position (integer, 0-5): the seat to cool, per the seat mapping. seat_cooler_level (integer, 0-3): the desired cooler level."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              seat_position: 0
+              seat_cooler_level: 3
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/climate.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/remote_seat_heater_request":
+    post:
+      operationId: "remoteSeatHeaterRequest"
+      summary: "Set a seat's heater level"
+      description: "Sets the specified seat's heater level. Seat mapping: 0=Front Left, 1=Front Right, 2=Rear Left, 4=Rear Center, 5=Rear Right."
+      tags:
+        - "Vehicle Commands"
+        - "Climate"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "heater (integer, 0-5): the seat to heat, per the seat mapping. level (integer, 0-3): the desired heater level."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              heater: 0
+              level: 3
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/climate.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/remote_start_drive":
+    post:
+      operationId: "remoteStart"
+      summary: "Enable keyless driving"
+      description: "Enables keyless driving (remote start). There is a two-minute window after issuing the command in which to actually start driving the car."
+      tags:
+        - "Vehicle Commands"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla internal numeric vehicle id."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/remotestart.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/remote_steering_wheel_heater_request":
+    post:
+      operationId: "remoteSteeringWheelHeaterRequest"
+      summary: "Turn steering wheel heater on/off"
+      description: "Turns the steering wheel heater on or off."
+      tags:
+        - "Vehicle Commands"
+        - "Climate"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "on (boolean): true to turn on, false to turn off."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              "on": true
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/climate.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/reset_valet_pin":
+    post:
+      operationId: "resetValetPin"
+      summary: "Reset the Valet Mode PIN"
+      description: "Clears the currently set PIN for Valet Mode. Valet Mode must be deactivated for this to succeed."
+      tags:
+        - "Vehicle Commands"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla internal numeric vehicle id."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/valet.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/schedule_software_update":
+    post:
+      operationId: "scheduleSoftwareUpdate"
+      summary: "Schedule a pending software update install"
+      description: "Schedules a software update to be installed, if one is available."
+      tags:
+        - "Vehicle Commands"
+        - "Software Update"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "offset_sec (integer): how many seconds in the future to schedule the update; set to 0 for immediate install."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              offset_sec: 7200
+      responses:
+        "200":
+          description: "expected_duration_sec: estimated install duration. scheduled_time_ms: epoch ms the update is scheduled for. status: e.g. 'scheduled'. warning_time_remaining_ms: time left in the pre-install warning window."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  expected_duration_sec: 3000
+                  reason: ""
+                  result: true
+                  scheduled_time_ms: 1685735308001
+                  status: "scheduled"
+                  warning_time_remaining_ms: 120000
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/softwareupdate.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/set_bioweapon_mode":
+    post:
+      operationId: "setBioweaponMode"
+      summary: "Enable/disable Bioweapon Defense Mode"
+      description: "Enables or disables Bioweapon Defense Mode. The docs note the endpoint will respond with result=true even with no parameters or body specified."
+      tags:
+        - "Vehicle Commands"
+        - "Climate"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "on (boolean): true/false to enable/disable. manual_override (boolean): optional override flag."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              "on": true
+              manual_override: true
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/climate.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/set_cabin_overheat_protection":
+    post:
+      operationId: "setCabinOverheatProtection"
+      summary: "Turn on Cabin Overheat Protection and set its mode"
+      description: "Turns Cabin Overheat Protection (COP) on/off and sets its mode."
+      tags:
+        - "Vehicle Commands"
+        - "Climate"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "on (boolean): turns COP on/off. fan_only (boolean): use only the fans, do not use/turn on HVAC/AC."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              "on": true
+              fan_only: true
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/climate.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/set_charge_limit":
+    post:
+      operationId: "setChargeLimit"
+      summary: "Set a custom charge limit"
+      description: "Sets the charge limit to a custom percentage value."
+      tags:
+        - "Vehicle Commands"
+        - "Charging"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "percent (integer): the percentage the battery will charge until."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              percent: 75
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/charging.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/set_charging_amps":
+    post:
+      operationId: "setChargingAmps"
+      summary: "Set the charging amperage limit"
+      description: "Sets the charge amps limit to a custom value."
+      tags:
+        - "Vehicle Commands"
+        - "Charging"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "charging_amps (integer): the max amps to use during charging."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              charging_amps: 32
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/charging.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/set_climate_keeper_mode":
+    post:
+      operationId: "setClimateKeeperMode"
+      summary: "Set Climate Keeper mode"
+      description: "Sets the Climate Keeper mode. Mode values: 0=Off, 1=On (Default), 2=Dog Mode, 3=Camp Mode."
+      tags:
+        - "Vehicle Commands"
+        - "Climate"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "climate_keeper_mode (integer): 0=Off, 1=On (Default), 2=Dog Mode, 3=Camp Mode."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              climate_keeper_mode: 0
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/climate.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/set_cop_temp":
+    post:
+      operationId: "setCabinOverheatProtectionTemp"
+      summary: "Set Cabin Overheat Protection temperature"
+      description: "Sets the Cabin Overheat Protection (COP) temperature threshold. The docs note this endpoint appears to be in progress and not yet fully functional/enabled."
+      tags:
+        - "Vehicle Commands"
+        - "Climate"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "temp (integer): the COP temperature in Celsius (name subject to change per the docs)."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              temp: 40
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/climate.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/set_preconditioning_max":
+    post:
+      operationId: "setPreconditioningMax"
+      summary: "Toggle Max Defrost"
+      description: "Toggles the climate controls between Max Defrost and the previous setting."
+      tags:
+        - "Vehicle Commands"
+        - "Climate"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "on (boolean): true to turn on, false to turn off."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              "on": true
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/climate.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/set_scheduled_charging":
+    post:
+      operationId: "setScheduledCharging"
+      summary: "Enable/disable scheduled charging"
+      description: "Sets the scheduled charge time."
+      tags:
+        - "Vehicle Commands"
+        - "Charging"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "enable (boolean): true for on, false for off. time (integer): time in minutes since midnight local time."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              enable: true
+              time: 1410
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/charging.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/set_scheduled_departure":
+    post:
+      operationId: "setScheduledDeparture"
+      summary: "Configure scheduled departure preconditioning/off-peak charging"
+      description: "Sets the scheduled departure, controlling preconditioning and off-peak charging behavior tied to a departure time."
+      tags:
+        - "Vehicle Commands"
+        - "Charging"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "enable (boolean): true for on, false for off. departure_time (integer): minutes since midnight local time; per the docs this should be true if (preconditioning_enabled or off_peak_charging_enabled), false otherwise. preconditioning_enabled (boolean): true for on, false for off. preconditioning_weekdays_only (boolean): true for on, false for off. off_peak_charging_enabled (boolean): true for on, false for off. off_peak_charging_weekdays_only (boolean): true for on, false for off. end_off_peak_time (integer): time in minutes since midnight local time."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              enable: true
+              departure_time: 540
+              preconditioning_enabled: true
+              preconditioning_weekdays_only: true
+              off_peak_charging_enabled: true
+              off_peak_charging_weekdays_only: true
+              end_off_peak_time: 450
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/charging.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/set_sentry_mode":
+    post:
+      operationId: "setSentryMode"
+      summary: "Turn Sentry Mode on or off"
+      description: "Turns Sentry Mode on or off."
+      tags:
+        - "Vehicle Commands"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla internal numeric vehicle id."
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "on: true to enable Sentry Mode, false to disable it (boolean)."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              "on": true
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/sentrymode.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/set_temps":
+    post:
+      operationId: "setTemps"
+      summary: "Set target driver/passenger climate temperature"
+      description: "Sets the target temperature for the climate control (HVAC) system. Only driver_temp is used unless the 'split' option is active in the climate menu. Values are always in Celsius regardless of car region/display settings."
+      tags:
+        - "Vehicle Commands"
+        - "Climate"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "driver_temp (number): desired driver-side temperature in Celsius. passenger_temp (number): desired passenger-side temperature in Celsius."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              driver_temp: 23.4
+              passenger_temp: 23.4
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/climate.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/set_valet_mode":
+    post:
+      operationId: "setValetMode"
+      summary: "Activate or deactivate Valet Mode"
+      description: "Activates or deactivates Valet Mode. Valet Mode restricts top speed to 70 MPH and acceleration to 80 kW, and disables Homelink, Bluetooth/WiFi settings changes, the ability to disable mobile access, and location favorites visibility."
+      tags:
+        - "Vehicle Commands"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla internal numeric vehicle id."
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "on: true to activate, false to deactivate (boolean). password: a 4-digit PIN used to deactivate Valet Mode (string)."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              "on": true
+              password: "1234"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/valet.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/set_vehicle_name":
+    post:
+      operationId: "setVehicleName"
+      summary: "Set the vehicle's name"
+      description: "Sets the vehicle's name. The docs note the endpoint was removed from ownerapi_endpoints.json in app version 4.19.0-1639, then became usable again as of app version 4.20.5 on vehicle software 2023.12+. Not present in the provided canonical registry, consistent with the docs' own note about its removal."
+      tags:
+        - "Vehicle Commands"
+        - "Misc"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "vehicle_name (string): the desired vehicle name."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              vehicle_name: "Nikola"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/misc.md"
+        description: "Source documentation page"
+      x-unverified-path: true
+  "/api/1/vehicles/{vehicle_id}/command/share":
+    post:
+      operationId: "shareToVehicle"
+      summary: "Send a navigation destination or video URL to the vehicle"
+      description: "Sends a location for the car to start navigation, or a video URL to play in theatre mode. This endpoint replaced the previous navigation_request API to also support video links. A URL-encoded POST body also works in addition to JSON."
+      tags:
+        - "Vehicle Commands"
+        - "Sharing"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "type (string): must be 'share_ext_content_raw'. locale (string): ISO 639-1 language code for the request. timestamp_ms (string): current UNIX timestamp. value['android.intent.extra.TEXT'] (string): the address or video URL to set as the navigation/playback destination."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              type: "share_ext_content_raw"
+              value:
+                "android.intent.extra.TEXT": "123 Main St, City, ST 12345\n\nhttps://goo.gl/maps/X"
+              locale: "en-US"
+              timestamp_ms: "1539465730"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/sharing.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/speed_limit_activate":
+    post:
+      operationId: "activateSpeedLimit"
+      summary: "Activate Speed Limit Mode"
+      description: "Activates Speed Limit Mode at the currently set speed."
+      tags:
+        - "Vehicle Commands"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla internal numeric vehicle id."
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "pin: the existing 4-digit PIN if previously set, or a new 4-digit PIN to set (string)."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              pin: "1234"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/speedlimit.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/speed_limit_clear_pin":
+    post:
+      operationId: "clearSpeedLimitPin"
+      summary: "Clear the Speed Limit Mode PIN"
+      description: "Clears the currently set PIN for Speed Limit Mode."
+      tags:
+        - "Vehicle Commands"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla internal numeric vehicle id."
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "pin: the 4-digit PIN used to activate Speed Limit Mode (string)."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              pin: "1234"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/speedlimit.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/speed_limit_deactivate":
+    post:
+      operationId: "deactivateSpeedLimit"
+      summary: "Deactivate Speed Limit Mode"
+      description: "Deactivates Speed Limit Mode if it is currently active."
+      tags:
+        - "Vehicle Commands"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla internal numeric vehicle id."
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "pin: the 4-digit PIN used to activate Speed Limit Mode (string)."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              pin: "1234"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/speedlimit.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/speed_limit_set_limit":
+    post:
+      operationId: "setSpeedLimit"
+      summary: "Set the Speed Limit Mode maximum speed"
+      description: "Sets the maximum speed allowed when Speed Limit Mode is active."
+      tags:
+        - "Vehicle Commands"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla internal numeric vehicle id."
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "limit_mph: the speed limit in MPH (number). Must be between 50 and 90."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              limit_mph: 65
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/speedlimit.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/sun_roof_control":
+    post:
+      operationId: "sunRoofControl"
+      summary: "Vent or close the panoramic sunroof"
+      description: "Controls the panoramic sunroof on the Model S. Previously supported 'open' (100%), 'comfort' (~80%), and 'move' (with a percent parameter) options have been disabled server-side."
+      tags:
+        - "Vehicle Commands"
+        - "Sunroof"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "state (string): amount to open the sunroof; currently only 'vent' or 'close' are accepted."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              state: "vent"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/sunroof.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/take_drivenote":
+    post:
+      operationId: "takeDriveNote"
+      summary: "Take a drive note"
+      description: "Takes a drive note; may relate to the FSD beta bug reporting system. The docs note this endpoint currently returns 'not_supported' since it is not implemented/enabled server-side."
+      tags:
+        - "Vehicle Commands"
+        - "Misc"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "note (string): the note content."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              note: "42"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/misc.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/trigger_homelink":
+    post:
+      operationId: "triggerHomelink"
+      summary: "Trigger the primary Homelink device"
+      description: "Opens or closes the primary Homelink device (e.g. a garage door). The provided location must be in proximity of the stored location of the Homelink device."
+      tags:
+        - "Vehicle Commands"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla internal numeric vehicle id."
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "lat: current latitude of the vehicle/device (number). lon: current longitude of the vehicle/device (number)."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              lat: 36.98765432109876
+              lon: -77.12345678901234
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/homelink.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/upcoming_calendar_entries":
+    post:
+      operationId: "calendarSync"
+      summary: "Sync upcoming calendar entries to the vehicle"
+      description: "Uploads upcoming calendar entries to the vehicle's navigation/calendar display. The community docs page for this endpoint (calendar.md) contains no body beyond its title, so no request/response schema could be sourced from it; method, path, and auth are taken from the canonical ownerapi_endpoints.json registry."
+      tags:
+        - "Vehicle Commands"
+        - "Calendar"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/calendar.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/command/window_control":
+    post:
+      operationId: "windowControl"
+      summary: "Vent or close all windows"
+      description: "Controls the vehicle's windows, venting or closing all windows simultaneously. lat/lon must be near the car's current location for the close operation to succeed; for vent, lat/lon are ignored and may both be 0."
+      tags:
+        - "Vehicle Commands"
+        - "Windows"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        description: "command (string): 'vent' or 'close'. lat (number): current latitude, ignored for vent. lon (number): current longitude, ignored for vent."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              command: "close"
+              lat: 0
+              lon: 0
+      responses:
+        "200":
+          description: "Successful response."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  result: true
+                  reason: ""
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/windows.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/mobile_enabled":
+    get:
+      operationId: "getMobileEnabled"
+      summary: "Check whether Mobile Access is enabled on the vehicle"
+      description: "Returns a simple boolean indicating whether the 'Allow Mobile Access' setting is currently enabled in the vehicle's touchscreen. Documented as its own standalone endpoint (not a vehicle_data sub-object) and not marked deprecated by the docs, but it does not appear in the canonical internal endpoint registry, so its current liveness is unverified."
+      tags:
+        - "Vehicle State"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "The vehicle's ID as returned by the vehicle list/products endpoint."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "The entire `response` value is a single boolean (true/false), not an object — unlike every other vehicle_data-related endpoint documented here."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response: true
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/state/mobileenabled.md"
+        description: "Source documentation page"
+      x-unverified-path: true
+  "/api/1/vehicles/{vehicle_id}/nearby_charging_sites":
+    get:
+      operationId: "getNearbyChargingSites"
+      summary: "List nearby Superchargers and destination chargers"
+      description: "Returns nearby Tesla Supercharger and destination charging locations relative to the vehicle's current position, including distance and (for Superchargers) live stall availability. Requires vehicle software version 2018.48 or higher."
+      tags:
+        - "Vehicle State"
+        - "Charge State"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "The vehicle's ID as returned by the vehicle list/products endpoint."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "`destination_charging` and `superchargers` are arrays of site objects with `location` ({lat, long}), `name`, `type`, and `distance_miles`; superchargers additionally report `available_stalls`/`total_stalls` (live stall counts) and `site_closed`. `congestion_sync_time_utc_secs` indicates when Supercharger congestion data was last synced."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  congestion_sync_time_utc_secs: 1604976488
+                  destination_charging:
+                    - location:
+                        lat: 34.010854
+                        long: -84.574979
+                      name: "Hilton Garden Inn Atlanta NW/Kennesaw Town Center"
+                      type: "destination"
+                      distance_miles: 6.430447
+                    - location:
+                        lat: 34.011213
+                        long: -84.575745
+                      name: "Homewood Suites by Hilton Atlanta NW-Kennesaw"
+                      type: "destination"
+                      distance_miles: 6.48008
+                  superchargers:
+                    - location:
+                        lat: 33.848756
+                        long: -84.36434
+                      name: "Atlanta, GA - Peachtree Road"
+                      type: "supercharger"
+                      distance_miles: 10.868304
+                      available_stalls: 4
+                      total_stalls: 5
+                      site_closed: false
+                    - location:
+                        lat: 33.846487
+                        long: -84.360172
+                      name: "Atlanta, GA - Lenox Road"
+                      type: "supercharger"
+                      distance_miles: 11.131691
+                      available_stalls: 16
+                      total_stalls: 16
+                      site_closed: false
+                  timestamp: 1604977312943
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/state/nearbychargingsites.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/release_notes":
+    get:
+      operationId: "getReleaseNotes"
+      summary: "Get software release notes for the vehicle's current or pending update"
+      description: "Returns release notes for the vehicle's currently deployed software version, or (with the staged query param) for a pending/staged software update not yet installed. Documented on the docs site's 'misc' page."
+      tags:
+        - "Vehicle State"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "The vehicle's ID as returned by the vehicle list/products endpoint."
+          schema:
+            type: "string"
+        - name: "staged"
+          in: "query"
+          required: false
+          description: "If there is currently a pending software update, setting this to true returns the upcoming software update's release notes instead of the currently deployed version's."
+          schema:
+            type: "boolean"
+      responses:
+        "200":
+          description: "`release_notes` is an array of per-feature note objects (title/subtitle/description/customer_version/image_url); `deployed_version` is the currently installed software version string; `staged_version` is the pending update's version, or null if no update is queued."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  release_notes:
+                    - title: "Feature 1"
+                      subtitle: "A bit more info"
+                      description: "What changed?"
+                      customer_version: "2022.40"
+                      image_url: "https://vehicle-files.teslamotors.com/release_notes/{id}?__gda__=exp={unix_timestamp}~acl=/release_notes/{id}~hmac={id}"
+                  deployed_version: "2022.40.4.2"
+                  staged_version: null
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/state/misc.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/screenshot":
+    get:
+      operationId: "triggerVehicleScreenshot"
+      summary: "Trigger a display screenshot"
+      description: "Takes a screenshot of both displays (instrument cluster and MCU), retrievable via the vehicle's CAN/OBD interface by Tesla Service. Can also be triggered in-vehicle by holding the lower left & right steering wheel buttons for ~5-10 seconds (Model S & X pre-refresh); no on-screen message appears."
+      tags:
+        - "Vehicle Commands"
+        - "Misc"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla vehicle ID"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "response (string): an opaque screenshot/session identifier string, not a result/reason object."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response: "teleforce-ab1c234d-1a23-12a3-12a3-ab123c456d7e"
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/misc.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/vehicle_data":
+    get:
+      operationId: "getVehicleData"
+      summary: "Get full vehicle data (rollup of all state sub-objects)"
+      description: "Returns a rollup of all vehicle telemetry and configuration in a single call: drive_state, climate_state, charge_state, gui_settings, vehicle_state, and vehicle_config, plus top-level vehicle metadata. This is the modern replacement for the deprecated per-category data_request/* endpoints.\n\n**Sub-object breakdown:**\n- `charge_state` — Charge state sub-object (battery level, charging status, range). Returned as the `charge_state` key inside GET vehicle_data. Notable fields: `battery_level`/`usable_battery_level` (SoC %), `charging_state` (e.g. Charging/Disconnected/Complete/Stopped), `charge_limit_soc*` (target charge % and its allowed min/max/std bounds), `battery_range`/`ideal_battery_range`/`est_battery_range` (miles, GUI-unit independent), `scheduled_charging_*` and `scheduled_departure_*` (Scheduled Charging / Scheduled Departure feature state), `fast_charger_present`/`fast_charger_type`/`fast_charger_brand` (Supercharger/CCS detection).\n- `climate_state` — Climate state sub-object (interior temperature, HVAC status). Returned as the `climate_state` key inside GET vehicle_data. Notable fields: `inside_temp`/`outside_temp` and `driver_temp_setting`/`passenger_temp_setting` are in Celsius regardless of gui_settings; `is_climate_on`/`is_auto_conditioning_on` reflect HVAC active state; `cabin_overheat_protection`/`cop_activation_temperature` control the Cabin Overheat Protection feature; `climate_keeper_mode` covers Keep/Dog/Camp modes.\n- `drive_state` — Drive state sub-object (GPS location, heading, speed, power). Returned as the `drive_state` key inside GET vehicle_data. `shift_state`/`speed` are null when parked; `shift_state` takes values like P/R/N/D while driving. `power` is instantaneous kW draw (negative when regenerating/charging). `gps_as_of` is a Unix seconds timestamp for when the GPS fix was taken, separate from the overall `timestamp` field (Unix ms).\n- `gui_settings` — GUI settings sub-object (display units and preferences). Returned as the `gui_settings` key inside GET vehicle_data. These fields only affect how the vehicle's own touchscreen (and typically the mobile app) formats numbers for display — they do NOT change the units of any other vehicle_data field, which are always returned in a fixed unit (e.g. range values always in miles).\n- `vehicle_state` — Vehicle state sub-object (locks, doors, odometer, software, Sentry Mode). Returned as the `vehicle_state` key inside GET vehicle_data. `df/dr/pf/pr` are door states (driver/passenger, front/rear; 0=closed), `ft/rt` are frunk/trunk states (0=closed, non-zero=open); `locked` is overall door lock status; `sentry_mode`/`sentry_mode_available` and `valet_mode`/`valet_pin_needed` cover security features; `tpms_pressure_*` are per-wheel tire pressures; `software_update` and `speed_limit_mode` are nested sub-objects with their own status fields.\n- `vehicle_config` — Vehicle config sub-object (model, trim, color, wheels, charge port). Returned as the `vehicle_config` key inside GET vehicle_data. `car_type` identifies the model line (e.g. models/modelx/model3/models2 codenames), `trim_badging` gives the drivetrain/trim (e.g. '100d'), `charge_port_type` distinguishes US/EU/CCS charge port hardware; most fields describe fixed hardware options set at build time rather than dynamic vehicle state."
+      tags:
+        - "Vehicle State"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "The vehicle's ID as returned by the vehicle list/products endpoint."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "This is the primary, authoritative entry point for vehicle telemetry — every field documented separately for charge_state, climate_state, drive_state, gui_settings, vehicle_state, and vehicle_config (see their dedicated entries below for the full field lists) is nested under the corresponding key here; those dedicated entries are informational sub-object breakdowns of THIS response, not independently callable paths."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  id: 12345678901234567
+                  user_id: 123456789
+                  vehicle_id: 1234567890
+                  vin: "5YJSA11111111111"
+                  display_name: "Nikola 2.0"
+                  state: "online"
+                  api_version: 43
+                  drive_state:
+                    gps_as_of: 1543187664
+                    heading: 8
+                    latitude: 33.111111
+                    longitude: -88.111111
+                    native_latitude: 33.111111
+                    native_location_supported: 1
+                    native_longitude: -88.111111
+                    native_type: "wgs"
+                    power: 0
+                    shift_state: null
+                    speed: null
+                    timestamp: 1543187666472
+                  climate_state:
+                    allow_cabin_overheat_protection: true
+                    auto_seat_climate_left: false
+                    auto_seat_climate_right: false
+                    battery_heater: false
+                    battery_heater_no_power: null
+                    cabin_overheat_protection: "FanOnly"
+                    cabin_overheat_protection_actively_cooling: false
+                    climate_keeper_mode: "off"
+                    cop_activation_temperature: "High"
+                    defrost_mode: 0
+                    driver_temp_setting: 22.8
+                    fan_status: 0
+                    hvac_auto_request: "On"
+                    inside_temp: 27.0
+                    is_auto_conditioning_on: false
+                    is_climate_on: false
+                    is_front_defroster_on: false
+                    is_preconditioning: false
+                    is_rear_defroster_on: false
+                    left_temp_direction: 275
+                    max_avail_temp: 28.0
+                    min_avail_temp: 15.0
+                    outside_temp: 23.0
+                    passenger_temp_setting: 22.8
+                    remote_heater_control_enabled: false
+                    right_temp_direction: 275
+                    seat_heater_left: 0
+                    seat_heater_right: 0
+                    side_mirror_heaters: false
+                    supports_fan_only_cabin_overheat_protection: true
+                    timestamp: 1543187666472
+                    wiper_blade_heater: false
+                  charge_state:
+                    battery_heater_on: false
+                    battery_level: 91
+                    battery_range: 239.38
+                    charge_amps: 0
+                    charge_current_request: 32
+                    charge_current_request_max: 32
+                    charge_enable_request: true
+                    charge_energy_added: 0.0
+                    charge_limit_soc: 90
+                    charge_limit_soc_max: 100
+                    charge_limit_soc_min: 50
+                    charge_limit_soc_std: 90
+                    charge_miles_added_ideal: 0.0
+                    charge_miles_added_rated: 0.0
+                    charge_port_cold_weather_mode: false
+                    charge_port_color: "<invalid>"
+                    charge_port_door_open: false
+                    charge_port_latch: "Engaged"
+                    charge_rate: 0.0
+                    charge_to_max_range: false
+                    charger_actual_current: 0
+                    charger_phases: null
+                    charger_pilot_current: 40
+                    charger_power: 0
+                    charger_voltage: 0
+                    charging_state: "Disconnected"
+                    conn_charge_cable: "<invalid>"
+                    est_battery_range: 213.85
+                    fast_charger_brand: "<invalid>"
+                    fast_charger_present: false
+                    fast_charger_type: "<invalid>"
+                    ideal_battery_range: 239.38
+                    managed_charging_active: false
+                    managed_charging_start_time: null
+                    managed_charging_user_canceled: false
+                    max_range_charge_counter: 0
+                    minutes_to_full_charge: 0
+                    not_enough_power_to_heat: null
+                    off_peak_charging_enabled: false
+                    off_peak_charging_times: "all_week"
+                    off_peak_hours_end_time: 360
+                    preconditioning_enabled: false
+                    preconditioning_times: "all_week"
+                    scheduled_charging_mode: "Off"
+                    scheduled_charging_pending: false
+                    scheduled_charging_start_time: null
+                    scheduled_charging_start_time_app: 1783
+                    scheduled_departure_time: 1783
+                    scheduled_departure_time_minutes: 480
+                    supercharger_session_trip_planner: false
+                    time_to_full_charge: 0.0
+                    timestamp: 1543187666472
+                    trip_charging: false
+                    usable_battery_level: 91
+                    user_charge_enable_request: null
+                  gui_settings:
+                    gui_24_hour_time: false
+                    gui_charge_rate_units: "mi/hr"
+                    gui_distance_units: "mi/hr"
+                    gui_range_display: "Rated"
+                    gui_temperature_units: "F"
+                    show_range_units: true
+                    timestamp: 1543187561462
+                  vehicle_state:
+                    api_version: 43
+                    autopark_state_v2: "unavailable"
+                    autopark_style: "dead_man"
+                    calendar_supported: true
+                    car_version: "2022.40.4.2"
+                    center_display_state: 0
+                    df: 0
+                    dr: 0
+                    pf: 0
+                    pr: 0
+                    ft: 0
+                    rt: 0
+                    homelink_device_count: 0
+                    homelink_nearby: false
+                    is_user_present: false
+                    last_autopark_error: "no_error"
+                    locked: true
+                    media_state:
+                      remote_control_enabled: true
+                    notifications_supported: true
+                    odometer: 9847.65
+                    parsed_calendar_supported: true
+                    remote_start: false
+                    remote_start_enabled: true
+                    remote_start_supported: true
+                    sentry_mode: false
+                    sentry_mode_available: true
+                    smart_summon_available: true
+                    software_update:
+                      expected_duration_sec: 2700
+                      status: ""
+                    speed_limit_mode:
+                      active: false
+                      max_limit_mph: 90
+                      min_limit_mph: 50
+                      pin_code_set: false
+                    summon_standby_mode_enabled: false
+                    sun_roof_percent_open: 0
+                    sun_roof_state: "unknown"
+                    timestamp: 1543187666472
+                    tpms_pressure_fl: 2.9
+                    tpms_pressure_fr: 2.9
+                    tpms_pressure_rl: 2.9
+                    tpms_pressure_rr: 2.9
+                    valet_mode: false
+                    valet_pin_needed: true
+                    vehicle_name: "Nikola 2.0"
+                  vehicle_config:
+                    can_accept_navigation_requests: true
+                    can_actuate_trunks: true
+                    car_special_type: "base"
+                    car_type: "models2"
+                    charge_port_type: "US"
+                    ece_restrictions: false
+                    eu_vehicle: false
+                    exterior_color: "White"
+                    has_air_suspension: false
+                    has_ludicrous_mode: false
+                    motorized_charge_port: true
+                    plg: true
+                    rear_seat_heaters: 1
+                    rear_seat_type: 0
+                    rhd: false
+                    roof_color: "None"
+                    seat_type: 2
+                    spoiler_type: "None"
+                    sun_roof_installed: 2
+                    third_row_seats: "None"
+                    timestamp: 1543187666472
+                    trim_badging: "100d"
+                    use_range_badging: false
+                    wheel_type: "Pinwheel18"
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/state/data.md"
+        description: "Source documentation page"
+  "/api/1/vehicles/{vehicle_id}/wake_up":
+    post:
+      operationId: "wakeUp"
+      summary: "Wake the vehicle from sleep"
+      description: "Wakes up the car from a sleeping state. The API responds immediately, but the vehicle may take several seconds to actually come online; callers should poll for an \"online\" state with a timeout of at least 30 seconds."
+      tags:
+        - "Vehicle Commands"
+      parameters:
+        - name: "vehicle_id"
+          in: "path"
+          required: true
+          description: "Tesla internal numeric vehicle id."
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Unlike other command endpoints, wake_up returns the full vehicle summary object (not a result/reason envelope); check the `state` field for \"online\"."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                response:
+                  id: 12345678901234567
+                  user_id: 12345
+                  vehicle_id: 1234567890
+                  vin: "5YJSA11111111111"
+                  display_name: "Nikola 2.0"
+                  color: null
+                  tokens:
+                    - "abcdef1234567890"
+                    - "1234567890abcdef"
+                  state: "online"
+                  in_service: false
+                  id_s: "12345678901234567"
+                  calendar_enabled: true
+                  api_version: 7
+                  backseat_token: null
+                  backseat_token_updated_at: null
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/vehicle/commands/wake.md"
+        description: "Source documentation page"
+  "/oauth2/v3/authorize":
+    get:
+      operationId: "getLoginPage"
+      summary: "Step 1: Obtain the SSO login page and session"
+      description: "Starts the OAuth2/PKCE authorization_code flow. Before calling, generate an 86-character random code_verifier and compute code_challenge as the URL-safe base64 SHA-256 hash of it. Returns an HTML login form with hidden fields and sets a session cookie required by step 2."
+      tags:
+        - "Authentication"
+      parameters:
+        - name: "client_id"
+          in: "query"
+          required: true
+          description: "Fixed constant — always exactly this value, every request."
+          schema:
+            type: "string"
+          example: "ownerapi"
+        - name: "code_challenge"
+          in: "query"
+          required: true
+          description: "URL-safe base64 SHA-256 hash of the code_verifier — YOU generate a fresh (verifier, challenge) pair per login attempt; the example is a valid matching sample for reference only. Recipe: code_verifier = random 43-128 char string from [A-Za-z0-9-._~] -> code_challenge = base64url(SHA256(code_verifier)) with '=' padding stripped."
+          schema:
+            type: "string"
+          example: "UD9XsJ5psxMmlMb061H0n0iS8l7-tkcZgBgSXcN8PfE"
+        - name: "code_challenge_method"
+          in: "query"
+          required: true
+          description: "Fixed constant — always exactly this value, every request."
+          schema:
+            type: "string"
+          example: "S256"
+        - name: "redirect_uri"
+          in: "query"
+          required: true
+          description: "Fixed constant — always exactly this value, every request (the address deliberately does not resolve; the code is read from the 302's Location header, the redirect is never followed)."
+          schema:
+            type: "string"
+          example: "https://auth.tesla.com/void/callback"
+        - name: "response_type"
+          in: "query"
+          required: true
+          description: "Fixed constant — always exactly this value, every request."
+          schema:
+            type: "string"
+          example: "code"
+        - name: "scope"
+          in: "query"
+          required: true
+          description: "Fixed constant — always exactly this value, every request."
+          schema:
+            type: "string"
+          example: "openid email offline_access"
+        - name: "state"
+          in: "query"
+          required: true
+          description: "YOU generate this — any random string for CSRF protection; Tesla just echoes it back in the redirect. Example below is one valid random sample, generate your own per request (e.g. `python3 -c \"import secrets;print(secrets.token_urlsafe(16))\"`)."
+          schema:
+            type: "string"
+          example: "ZnW5yQ3lX3bRLFvaYq6BDw"
+        - name: "login_hint"
+          in: "query"
+          required: false
+          description: "Optional: pre-fill the account's email address."
+          schema:
+            type: "string"
+          example: "user@example.com"
+      responses:
+        "200":
+          description: "Response is text/html, not JSON: an HTML form with hidden input fields (_csrf, _phase, _process, transaction_id, cancel) that must be resubmitted in Step 2, plus a Set-Cookie session cookie that must be retained."
+          content:
+            "text/plain":
+              schema:
+                type: "string"
+              example: "<!-- HTML login form containing hidden fields: _csrf, _phase, _process, transaction_id, cancel -->"
+      security: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/api-basics/authentication.md"
+        description: "Source documentation page"
+      servers:
+        - url: "https://auth.tesla.com"
+          description: "Tesla SSO / OAuth2 (auth.tesla.com) — separate host from the main Owner API"
+    post:
+      operationId: "submitLogin"
+      summary: "Step 2: Submit credentials and obtain an authorization code"
+      description: "Submits the login form from Step 1 (same query parameters, plus the session cookie and hidden form fields) along with the user's email and password. On success, responds with a 302 redirect to the (non-resolving) redirect_uri; the authorization `code` is extracted from the Location header's query string rather than by following the redirect."
+      tags:
+        - "Authentication"
+      parameters:
+        - name: "client_id"
+          in: "query"
+          required: true
+          description: "Same fixed constant as Step 1."
+          schema:
+            type: "string"
+          example: "ownerapi"
+        - name: "code_challenge"
+          in: "query"
+          required: true
+          description: "Same value you generated for Step 1 — must match exactly (this endpoint doesn't use it directly, but it's part of the same query string)."
+          schema:
+            type: "string"
+          example: "UD9XsJ5psxMmlMb061H0n0iS8l7-tkcZgBgSXcN8PfE"
+        - name: "code_challenge_method"
+          in: "query"
+          required: true
+          description: "Same fixed constant as Step 1."
+          schema:
+            type: "string"
+          example: "S256"
+        - name: "redirect_uri"
+          in: "query"
+          required: true
+          description: "Same fixed constant as Step 1."
+          schema:
+            type: "string"
+          example: "https://auth.tesla.com/void/callback"
+        - name: "response_type"
+          in: "query"
+          required: true
+          description: "Same fixed constant as Step 1."
+          schema:
+            type: "string"
+          example: "code"
+        - name: "scope"
+          in: "query"
+          required: true
+          description: "Same fixed constant as Step 1."
+          schema:
+            type: "string"
+          example: "openid email offline_access"
+        - name: "state"
+          in: "query"
+          required: true
+          description: "Same value you generated for Step 1 — must match exactly."
+          schema:
+            type: "string"
+          example: "ZnW5yQ3lX3bRLFvaYq6BDw"
+      requestBody:
+        required: true
+        description: "application/x-www-form-urlencoded body. A THIRD category of value, distinct from both 'fixed constant' and 'you generate it': _csrf/_phase/_process/transaction_id/cancel are issued fresh by Tesla's server on every real Step 1 call and are single-use/session-bound, so — unlike code_challenge/state — there is no formula for them and no fixed sample can ever work; they can only be read out of your own live Step 1 HTML response (the PASTE_FROM_STEP_1_RESPONSE placeholders mark exactly that). The Step 1 session cookie must also be sent as a request cookie on this call. See get_step1_fields.py alongside this spec for a script that performs the real Step 1 request and prints these 5 fields + the cookie, ready to paste in here. identity/credential are simply the account's own email/password."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              _csrf: "PASTE_FROM_STEP_1_RESPONSE"
+              _phase: "PASTE_FROM_STEP_1_RESPONSE"
+              _process: "PASTE_FROM_STEP_1_RESPONSE"
+              transaction_id: "PASTE_FROM_STEP_1_RESPONSE"
+              cancel: "PASTE_FROM_STEP_1_RESPONSE"
+              identity: "user@example.com"
+              credential: "your-tesla-account-password"
+      responses:
+        "200":
+          description: "The response is a 302 redirect, not a JSON body. Parse the `code` query parameter out of the Location header — that is the authorization code needed for Step 3. If MFA is enabled on the account, the response is instead another HTML form requesting a passcode (see the mfaFactors/mfaVerify endpoints)."
+          content:
+            "text/plain":
+              schema:
+                type: "string"
+              example: "HTTP/1.1 302 Found\nLocation: https://auth.tesla.com/void/callback?code=<authorization_code>&state=<state>&issuer=https%3A%2F%2Fauth.tesla.com%2Foauth2%2Fv3"
+      security: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/api-basics/authentication.md"
+        description: "Source documentation page"
+      servers:
+        - url: "https://auth.tesla.com"
+          description: "Tesla SSO / OAuth2 (auth.tesla.com) — separate host from the main Owner API"
+  "/oauth2/v3/authorize/mfa/factors":
+    get:
+      operationId: "getMfaFactors"
+      summary: "Step 2b (if MFA enabled): List MFA factors for the account"
+      description: "Called when Step 2 responds with an MFA passcode form instead of a redirect. Retrieves the list of enrolled MFA factors (e.g. TOTP authenticator devices) for the account's transaction."
+      tags:
+        - "Authentication"
+      parameters:
+        - name: "transaction_id"
+          in: "query"
+          required: true
+          description: "Session-issued value (same third category as Step 2's hidden fields — not generated by you, not constant) from the MFA form Tesla returned in place of Step 2's redirect."
+          schema:
+            type: "string"
+          example: "PASTE_FROM_STEP_2_MFA_FORM"
+      responses:
+        "200":
+          description: "data is an array of enrolled MFA factor objects; each factor's `id` is required by the subsequent verify call as factor_id."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                data:
+                  - id: "factor_abc123xyz"
+                    name: "Authenticator App"
+                    factorType: "token:software"
+                    factorProvider: "TESLA"
+                    securityLevel: 1
+                    activatedAt: "2021-01-01T00:00:00.000Z"
+                    updatedAt: "2021-01-01T00:00:00.000Z"
+      security: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/api-basics/authentication.md"
+        description: "Source documentation page"
+      servers:
+        - url: "https://auth.tesla.com"
+          description: "Tesla SSO / OAuth2 (auth.tesla.com) — separate host from the main Owner API"
+  "/oauth2/v3/authorize/mfa/verify":
+    post:
+      operationId: "verifyMfaPasscode"
+      summary: "Step 2c (if MFA enabled): Submit an MFA passcode"
+      description: "Submits the user's TOTP passcode for the chosen MFA factor. On success, the flow proceeds as if Step 2 had succeeded directly — a subsequent GET to /oauth2/v3/authorize with the same query params (and session cookie) then yields the 302 redirect containing the authorization code, as in Step 2."
+      tags:
+        - "Authentication"
+      requestBody:
+        required: true
+        description: "JSON body: transaction_id (session-issued, from the MFA form — same as getMfaFactors), factor_id (session-issued, the chosen factor's id from getMfaFactors' response), passcode (you generate this — the current 6-digit code from your own TOTP authenticator app, e.g. `python3 -c \"import pyotp;print(pyotp.TOTP('YOUR_BASE32_SECRET').now())\"` if you have the enrollment secret). A fresh _csrf token (obtained alongside the MFA form) must also be sent, typically as a header."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              transaction_id: "PASTE_FROM_STEP_2_MFA_FORM"
+              factor_id: "PASTE_FROM_MFA_FACTORS_RESPONSE"
+              passcode: "123456"
+      responses:
+        "200":
+          description: "valid: true confirms the passcode was accepted; the caller must then repeat the Step 2 GET/POST to /oauth2/v3/authorize (with the session cookie) to obtain the final 302 redirect and authorization code."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                data:
+                  id: "factor_abc123xyz"
+                  challengeId: "chal_def456uvw"
+                  factorType: "token:software"
+                  valid: true
+      security: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/api-basics/authentication.md"
+        description: "Source documentation page"
+      servers:
+        - url: "https://auth.tesla.com"
+          description: "Tesla SSO / OAuth2 (auth.tesla.com) — separate host from the main Owner API"
+  "/oauth2/v3/token":
+    post:
+      operationId: "getOrRefreshToken"
+      summary: "Step 3: Exchange an authorization code, or refresh_token, for a Bearer access token"
+      description: "**Step 3: Exchange the authorization code for a Bearer access token** (authorization_code): Exchanges the authorization code obtained in Step 2 for an OAuth2 access_token/refresh_token pair. The same endpoint (with grant_type=refresh_token instead) is also used to refresh an expired access token — see refreshToken.\n\n**Refresh an expired access token** (refresh_token): Exchanges a previously issued refresh_token for a new access_token/refresh_token pair, without requiring the user to log in again."
+      tags:
+        - "Authentication"
+      requestBody:
+        required: true
+        description: "grant_type in the body selects the variant — see the named examples below."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            examples:
+              authorization_code:
+                summary: "grant_type=authorization_code"
+                description: "JSON body. grant_type: 'authorization_code' (fixed constant). client_id: 'ownerapi' (fixed constant). code: the authorization code from Step 2 — dynamic, only exists after a real login, cannot be pre-generated. code_verifier: YOU generate this in Step 1 and reuse it here verbatim (NOT the code_challenge) — the sample shown is the exact verifier that matches the code_challenge example on Step 1/2 (`UD9XsJ5psxMmlMb061H0n0iS8l7-tkcZgBgSXcN8PfE`), so the pair is consistent end-to-end if you copy both samples together; generate your own fresh pair for a real login. redirect_uri: fixed constant, same value used in Steps 1-2."
+                value:
+                  grant_type: "authorization_code"
+                  client_id: "ownerapi"
+                  code: "<authorization code from Step 2 — cannot be pre-generated, only exists after a real login>"
+                  code_verifier: "COVNnBfIh4m92P2C_0Clq1PfjBH-BE4Exf9uXsmAUuZa6YqlhJU8FU5XTyMwaItwfdpdyXv5cGbn9gEa37GkxA"
+                  redirect_uri: "https://auth.tesla.com/void/callback"
+              refresh_token:
+                summary: "grant_type=refresh_token"
+                description: "JSON body. grant_type: 'refresh_token' (fixed constant). client_id: 'ownerapi' (fixed constant). refresh_token: a previously issued refresh token — dynamic, only exists after a real login/token exchange, cannot be pre-generated. scope: 'openid email offline_access' (fixed constant)."
+                value:
+                  grant_type: "refresh_token"
+                  client_id: "ownerapi"
+                  refresh_token: "<refresh token from a prior token exchange — cannot be pre-generated, only exists after a real login>"
+                  scope: "openid email offline_access"
+      responses:
+        "200":
+          description: "Successful token response. See the named examples for the differences between the authorization_code and refresh_token variants."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              examples:
+                authorization_code:
+                  summary: "grant_type=authorization_code response"
+                  description: "access_token is short-lived (expires_in seconds, typically 300s = 5 minutes) — use refreshToken well before expiry. refresh_token is long-lived and must be stored securely; it is required to obtain new access tokens without re-authenticating. If the account has MFA enabled and Step 2 returned an HTML MFA form instead of a redirect, complete the MFA flow (getMfaFactors + verifyMfaPasscode) before this step."
+                  value:
+                    access_token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    refresh_token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    expires_in: 300
+                    state: "of the union"
+                    token_type: "Bearer"
+                refresh_token:
+                  summary: "grant_type=refresh_token response"
+                  description: "Refreshed access tokens are valid for 8 hours (28800s), longer than the initial 5-minute token from the code exchange. A new refresh_token is also issued and should replace the previously stored one."
+                  value:
+                    access_token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    refresh_token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    expires_in: 28800
+                    state: "of the union"
+                    token_type: "Bearer"
+      security: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/api-basics/authentication.md"
+        description: "Source documentation page"
+      servers:
+        - url: "https://auth.tesla.com"
+          description: "Tesla SSO / OAuth2 (auth.tesla.com) — separate host from the main Owner API"
+  "/trip-planner/api/v1/tripplan":
+    post:
+      operationId: "planTrip"
+      summary: "Compute a trip route plan with charging stops"
+      description: "Computes a routing itinerary using vehicle specifications and current battery level. When the journey exceeds the vehicle's range, the response automatically inserts Supercharger waypoints along the route."
+      tags:
+        - "API Basics"
+        - "Trip Planner"
+      requestBody:
+        required: true
+        description: "car_trim/car_type identify the vehicle variant; origin/destination are lat,lng coordinate pairs; origin_soe is the initial state of energy as a fraction (0.0-1.0); vin identifies the vehicle."
+        content:
+          "application/json":
+            schema:
+              type: "object"
+            example:
+              car_trim: "74D"
+              car_type: "ModelY"
+              destination: "37.485767,-122.340207"
+              origin: "37.79307,-125.108"
+              origin_soe: 0.64
+              vin: "5YJSA11111111111"
+      responses:
+        "200":
+          description: "destination_soe/origin_soe are state-of-energy fractions at trip end/start; polylines holds encoded route geometry; stops lists charging stop details/arrival battery levels; the total_* fields are cumulative drive/charge time, energy, and distance metrics; status reports plan outcome (e.g. success with/without stops)."
+          content:
+            "application/json":
+              schema:
+                type: "object"
+              example:
+                destination_soe: 0.064
+                origin_soe: 0.65
+                polylines:
+                  - "_truncated_encoded_polyline_data"
+                status: "TRIP_PLAN_SUCCESS_WITH_STOPS"
+                stops:
+                  - "_truncated_list_of_charging_stops"
+                total_charge_dur_s: 5299.774
+                total_charge_kWh: 227.65
+                total_drive_dur_s: 40274.0
+                total_drive_kWh: 229.461
+                total_drive_mi: 729.106
+                _truncated: true
+      security:
+        - BearerAuth: []
+      externalDocs:
+        url: "https://tesla-api.timdorr.com/api-basics/tripplan.md"
+        description: "Source documentation page"

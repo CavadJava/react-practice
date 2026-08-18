@@ -1,0 +1,934 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Turo Java/Spring Boot Microservices -- Implementation View" id="turo-java-ms-1">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1"
+        connect="1" arrows="1" fold="1" page="1" pageScale="1"
+        pageWidth="2000" pageHeight="2110" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Turo-like Car-Sharing Marketplace -- Java / Spring Boot Microservices Implementation View"
+            style="text;html=1;align=center;verticalAlign=middle;fontSize=20;fontStyle=1;fontColor=#333333;"
+            vertex="1" parent="1">
+          <mxGeometry x="20" y="0" width="1940" height="34" as="geometry" />
+        </mxCell>
+
+        <mxCell id="bg-infra" value="PLATFORM / INFRASTRUCTURE LAYER (Spring Cloud)"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F2F2F2;strokeColor=#BFBFBF;dashed=1;verticalAlign=top;align=left;fontSize=15;fontStyle=1;fontColor=#595959;spacingLeft=16;spacingTop=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="20" y="50" width="1940" height="170" as="geometry" />
+        </mxCell>
+
+        <mxCell id="infra-gateway" value="&lt;b&gt;Spring Cloud Gateway&lt;/b&gt;&lt;br&gt;&lt;small&gt;Edge routing, JWT authN, rate limiting&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="60" y="100" width="280" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="infra-eureka" value="&lt;b&gt;Eureka Service Discovery&lt;/b&gt;&lt;br&gt;&lt;small&gt;Service registry &amp;amp;amp; discovery&lt;br&gt;(all 11 services register here -- edges omitted)&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="360" y="100" width="280" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="infra-config" value="&lt;b&gt;Spring Cloud Config Server&lt;/b&gt;&lt;br&gt;&lt;small&gt;Centralized externalized config, Git-backed&lt;br&gt;(all 11 services pull config -- edges omitted)&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="660" y="100" width="280" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="infra-redis" value="&lt;b&gt;Redis Cache&lt;/b&gt;&lt;br&gt;&lt;small&gt;Hot search results &amp;amp;amp; price quotes&lt;br&gt;used by Search &amp;amp;amp; Pricing services&lt;/small&gt;"
+            style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#cce5ff;strokeColor=#3d85c6;fontSize=11;"
+            vertex="1" parent="1">
+          <mxGeometry x="960" y="100" width="260" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="infra-resilience4j" value="&lt;b&gt;Resilience4j&lt;/b&gt;&lt;br&gt;&lt;small&gt;@CircuitBreaker / @Retry / @RateLimiter / @Bulkhead&lt;br&gt;annotate every OpenFeign inter-service call (see legend)&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#999999;dashed=1;fontSize=10;align=left;verticalAlign=middle;spacingLeft=10;spacingRight=10;arcSize=6;"
+            vertex="1" parent="1">
+          <mxGeometry x="1240" y="100" width="460" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="bg-core" value="CORE MICROSERVICES  (Spring Boot, database-per-service)  +  EVENT-DRIVEN MESSAGING (Kafka)"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF7EA;strokeColor=#B7D7B0;dashed=1;verticalAlign=top;align=left;fontSize=15;fontStyle=1;fontColor=#4E7D45;spacingLeft=16;spacingTop=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="20" y="260" width="1940" height="1300" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-search" value="&lt;b&gt;Search / Discovery Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;(expanded internal detail)&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF7EA;strokeColor=#4E7D45;dashed=1;verticalAlign=top;align=center;fontSize=13;fontStyle=1;fontColor=#2F5E22;spacingTop=10;arcSize=6;"
+            vertex="1" parent="1">
+          <mxGeometry x="60" y="310" width="420" height="460" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-search-ctrl" value="SearchController&lt;br&gt;&lt;small&gt;@RestController -- search &amp;amp;amp; filter API&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82b366;strokeWidth=1.3;fontSize=10.5;arcSize=10;"
+            vertex="1" parent="1">
+          <mxGeometry x="80" y="356" width="380" height="56" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-search-svc" value="SearchService&lt;br&gt;&lt;small&gt;@Service -- ranking, geo/date filters&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82b366;strokeWidth=1.3;fontSize=10.5;arcSize=10;"
+            vertex="1" parent="1">
+          <mxGeometry x="80" y="428" width="380" height="56" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-search-kafka" value="@KafkaListener(topics = listing-events)&lt;br&gt;&lt;small&gt;keeps read model in sync (no direct producing)&lt;/small&gt;"
+            style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F3EAF5;strokeColor=#9673A6;dashed=1;fontSize=9.5;fontStyle=2;align=center;"
+            vertex="1" parent="1">
+          <mxGeometry x="80" y="496" width="380" height="46" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-search-repo" value="SearchRepository&lt;br&gt;&lt;small&gt;@Repository -- Spring Data Elasticsearch&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82b366;strokeWidth=1.3;fontSize=10.5;arcSize=10;"
+            vertex="1" parent="1">
+          <mxGeometry x="80" y="554" width="380" height="56" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-search-db" value="&lt;b&gt;Elasticsearch&lt;/b&gt;&lt;br&gt;&lt;small&gt;search_index&lt;br&gt;car listings read model&lt;/small&gt;"
+            style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10.5;"
+            vertex="1" parent="1">
+          <mxGeometry x="170" y="630" width="200" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-booking" value="&lt;b&gt;Booking / Reservation Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;(expanded internal detail)&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF7EA;strokeColor=#4E7D45;dashed=1;verticalAlign=top;align=center;fontSize=13;fontStyle=1;fontColor=#2F5E22;spacingTop=10;arcSize=6;"
+            vertex="1" parent="1">
+          <mxGeometry x="530" y="310" width="420" height="460" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-booking-ctrl" value="BookingController&lt;br&gt;&lt;small&gt;@RestController -- reserve/cancel/extend API&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82b366;strokeWidth=1.3;fontSize=10.5;arcSize=10;"
+            vertex="1" parent="1">
+          <mxGeometry x="550" y="356" width="380" height="56" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-booking-svc" value="BookingService&lt;br&gt;&lt;small&gt;@Service -- booking &amp;amp;amp; trip state machine&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82b366;strokeWidth=1.3;fontSize=10.5;arcSize=10;"
+            vertex="1" parent="1">
+          <mxGeometry x="550" y="428" width="380" height="56" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-booking-kafka" value="produces: booking-events, trip-events&lt;br&gt;&lt;small&gt;@KafkaListener(payment-events, verification-events)&lt;/small&gt;"
+            style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F3EAF5;strokeColor=#9673A6;dashed=1;fontSize=9.5;fontStyle=2;align=center;"
+            vertex="1" parent="1">
+          <mxGeometry x="550" y="496" width="380" height="46" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-booking-repo" value="BookingRepository&lt;br&gt;&lt;small&gt;@Repository -- Spring Data JPA&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82b366;strokeWidth=1.3;fontSize=10.5;arcSize=10;"
+            vertex="1" parent="1">
+          <mxGeometry x="550" y="554" width="380" height="56" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-booking-db" value="&lt;b&gt;PostgreSQL&lt;/b&gt;&lt;br&gt;&lt;small&gt;booking_db&lt;br&gt;@Entity Booking, TripSegment&lt;/small&gt;"
+            style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10.5;"
+            vertex="1" parent="1">
+          <mxGeometry x="640" y="630" width="200" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-trustsafety" value="&lt;b&gt;Trust &amp;amp;amp; Safety / Verification Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;(expanded internal detail)&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF7EA;strokeColor=#4E7D45;dashed=1;verticalAlign=top;align=center;fontSize=13;fontStyle=1;fontColor=#2F5E22;spacingTop=10;arcSize=6;"
+            vertex="1" parent="1">
+          <mxGeometry x="1000" y="310" width="420" height="460" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-trustsafety-ctrl" value="VerificationController&lt;br&gt;&lt;small&gt;@RestController -- verify guest API&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82b366;strokeWidth=1.3;fontSize=10.5;arcSize=10;"
+            vertex="1" parent="1">
+          <mxGeometry x="1020" y="356" width="380" height="56" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-trustsafety-svc" value="VerificationService&lt;br&gt;&lt;small&gt;@Service -- ID/license checks, risk scoring&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82b366;strokeWidth=1.3;fontSize=10.5;arcSize=10;"
+            vertex="1" parent="1">
+          <mxGeometry x="1020" y="428" width="380" height="56" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-trustsafety-kafka" value="produces: verification-events&lt;br&gt;&lt;small&gt;(producer only)&lt;/small&gt;"
+            style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F3EAF5;strokeColor=#9673A6;dashed=1;fontSize=9.5;fontStyle=2;align=center;"
+            vertex="1" parent="1">
+          <mxGeometry x="1020" y="496" width="380" height="46" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-trustsafety-repo" value="VerificationRepository&lt;br&gt;&lt;small&gt;@Repository -- Spring Data JPA&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82b366;strokeWidth=1.3;fontSize=10.5;arcSize=10;"
+            vertex="1" parent="1">
+          <mxGeometry x="1020" y="554" width="380" height="56" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-trustsafety-db" value="&lt;b&gt;PostgreSQL&lt;/b&gt;&lt;br&gt;&lt;small&gt;trust_safety_db&lt;br&gt;@Entity VerificationCase&lt;/small&gt;"
+            style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10.5;"
+            vertex="1" parent="1">
+          <mxGeometry x="1110" y="630" width="200" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-payment" value="&lt;b&gt;Payment &amp;amp;amp; Payout Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;(expanded internal detail)&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF7EA;strokeColor=#4E7D45;dashed=1;verticalAlign=top;align=center;fontSize=13;fontStyle=1;fontColor=#2F5E22;spacingTop=10;arcSize=6;"
+            vertex="1" parent="1">
+          <mxGeometry x="1470" y="310" width="420" height="460" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-payment-ctrl" value="PaymentController&lt;br&gt;&lt;small&gt;@RestController -- charge/hold/payout API&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82b366;strokeWidth=1.3;fontSize=10.5;arcSize=10;"
+            vertex="1" parent="1">
+          <mxGeometry x="1490" y="356" width="380" height="56" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-payment-svc" value="PaymentService&lt;br&gt;&lt;small&gt;@Service -- charge, deposit hold, payout orchestration&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82b366;strokeWidth=1.3;fontSize=10.5;arcSize=10;"
+            vertex="1" parent="1">
+          <mxGeometry x="1490" y="428" width="380" height="56" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-payment-kafka" value="produces: payment-events&lt;br&gt;&lt;small&gt;@KafkaListener(topics = trip-events)&lt;/small&gt;"
+            style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F3EAF5;strokeColor=#9673A6;dashed=1;fontSize=9.5;fontStyle=2;align=center;"
+            vertex="1" parent="1">
+          <mxGeometry x="1490" y="496" width="380" height="46" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-payment-repo" value="PaymentRepository&lt;br&gt;&lt;small&gt;@Repository -- Spring Data JPA&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82b366;strokeWidth=1.3;fontSize=10.5;arcSize=10;"
+            vertex="1" parent="1">
+          <mxGeometry x="1490" y="554" width="380" height="56" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-payment-db" value="&lt;b&gt;PostgreSQL&lt;/b&gt;&lt;br&gt;&lt;small&gt;payment_db&lt;br&gt;@Entity Payment, Payout&lt;/small&gt;"
+            style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10.5;"
+            vertex="1" parent="1">
+          <mxGeometry x="1580" y="630" width="200" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="kafka-cluster" value="&lt;b&gt;Kafka Cluster&lt;/b&gt;&lt;br&gt;&lt;small&gt;Topics: booking-events &amp;amp;#183; trip-events &amp;amp;#183; payment-events &amp;amp;#183; verification-events &amp;amp;#183; listing-events &amp;amp;#183; review-events &amp;amp;#183; notification-events&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673A6;fontSize=13;fontStyle=1;arcSize=4;align=center;verticalAlign=top;spacingTop=10;"
+            vertex="1" parent="1">
+          <mxGeometry x="60" y="820" width="1300" height="170" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-auth" value="&lt;b&gt;Auth / User Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;@RestController / @Service / @Repository&lt;br&gt;(internal layers not expanded)&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="60" y="1040" width="280" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-auth-db" value="&lt;b&gt;PostgreSQL&lt;/b&gt;&lt;br&gt;&lt;small&gt;auth_db&lt;br&gt;@Entity User, HostProfile&lt;/small&gt;"
+            style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10.5;"
+            vertex="1" parent="1">
+          <mxGeometry x="110" y="1160" width="180" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-listing" value="&lt;b&gt;Listing / Inventory Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;@RestController / @Service / @Repository&lt;br&gt;(internal layers not expanded)&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="400" y="1040" width="280" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-listing-db" value="&lt;b&gt;PostgreSQL&lt;/b&gt;&lt;br&gt;&lt;small&gt;listing_db&lt;br&gt;@Entity Listing, Calendar&lt;/small&gt;"
+            style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10.5;"
+            vertex="1" parent="1">
+          <mxGeometry x="450" y="1160" width="180" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-pricing" value="&lt;b&gt;Pricing Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;@RestController / @Service / @Repository&lt;br&gt;(internal layers not expanded)&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="740" y="1040" width="280" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-pricing-db" value="&lt;b&gt;PostgreSQL&lt;/b&gt;&lt;br&gt;&lt;small&gt;pricing_db&lt;br&gt;@Entity PriceRule&lt;br&gt;(+ Redis quote cache)&lt;/small&gt;"
+            style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10.5;"
+            vertex="1" parent="1">
+          <mxGeometry x="790" y="1160" width="180" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-notification" value="&lt;b&gt;Notification Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;@RestController / @Service / @Repository&lt;br&gt;(internal layers not expanded)&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="1080" y="1040" width="280" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-notification-db" value="&lt;b&gt;PostgreSQL&lt;/b&gt;&lt;br&gt;&lt;small&gt;notification_db&lt;br&gt;@Entity NotificationLog&lt;/small&gt;"
+            style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10.5;"
+            vertex="1" parent="1">
+          <mxGeometry x="1130" y="1160" width="180" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-messaging" value="&lt;b&gt;Messaging Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;@RestController / @Service / @Repository&lt;br&gt;(internal layers not expanded)&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="60" y="1310" width="280" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-messaging-db" value="&lt;b&gt;PostgreSQL&lt;/b&gt;&lt;br&gt;&lt;small&gt;messaging_db&lt;br&gt;@Entity ChatThread, Message&lt;/small&gt;"
+            style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10.5;"
+            vertex="1" parent="1">
+          <mxGeometry x="110" y="1430" width="180" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-insurance" value="&lt;b&gt;Insurance &amp;amp;amp; Claims Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;@RestController / @Service / @Repository&lt;br&gt;(internal layers not expanded)&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="400" y="1310" width="280" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-insurance-db" value="&lt;b&gt;PostgreSQL&lt;/b&gt;&lt;br&gt;&lt;small&gt;insurance_db&lt;br&gt;@Entity Policy, Claim&lt;/small&gt;"
+            style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10.5;"
+            vertex="1" parent="1">
+          <mxGeometry x="450" y="1430" width="180" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-review" value="&lt;b&gt;Review &amp;amp;amp; Rating Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;@RestController / @Service / @Repository&lt;br&gt;(internal layers not expanded)&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="740" y="1310" width="280" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-review-db" value="&lt;b&gt;PostgreSQL&lt;/b&gt;&lt;br&gt;&lt;small&gt;review_db&lt;br&gt;@Entity Review, Rating&lt;/small&gt;"
+            style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10.5;"
+            vertex="1" parent="1">
+          <mxGeometry x="790" y="1430" width="180" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="bg-external" value="EXTERNAL INTEGRATIONS (called via REST clients / SDKs from the relevant Java service)"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FBEAEA;strokeColor=#E4B3B3;dashed=1;verticalAlign=top;align=left;fontSize=15;fontStyle=1;fontColor=#A94442;spacingLeft=16;spacingTop=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="20" y="1570" width="1940" height="180" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ext-maps" value="&lt;b&gt;Maps &amp;amp;amp; Geocoding API&lt;/b&gt;&lt;br&gt;&lt;small&gt;e.g. Google Maps&lt;br&gt;car location, delivery radius&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="60" y="1620" width="300" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ext-identity" value="&lt;b&gt;Identity Verification Provider&lt;/b&gt;&lt;br&gt;&lt;small&gt;e.g. Onfido / Persona&lt;br&gt;license &amp;amp;amp; ID checks&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="420" y="1620" width="300" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ext-payment-gw" value="&lt;b&gt;Payment Gateway&lt;/b&gt;&lt;br&gt;&lt;small&gt;e.g. Stripe&lt;br&gt;charges &amp;amp;amp; host payouts&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="780" y="1620" width="300" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ext-insurance" value="&lt;b&gt;Insurance Partner API&lt;/b&gt;&lt;br&gt;&lt;small&gt;underwriting, claims processing&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="1140" y="1620" width="300" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ext-sms" value="&lt;b&gt;SMS / Push / Email Provider&lt;/b&gt;&lt;br&gt;&lt;small&gt;e.g. Twilio / SendGrid / FCM&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="1500" y="1620" width="300" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-box" value="Legend"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#999999;verticalAlign=top;align=left;fontSize=14;fontStyle=1;fontColor=#333333;spacingLeft=14;spacingTop=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="20" y="1790" width="1940" height="280" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-swatch-1" value=""
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;"
+            vertex="1" parent="1">
+          <mxGeometry x="40" y="1824" width="18" height="18" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-text-1" value="Platform / Infrastructure (Spring Cloud Gateway, Eureka, Config Server)"
+            style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;"
+            vertex="1" parent="1">
+          <mxGeometry x="66" y="1820" width="480" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-swatch-2" value=""
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF7EA;strokeColor=#4E7D45;dashed=1;"
+            vertex="1" parent="1">
+          <mxGeometry x="40" y="1852" width="18" height="18" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-text-2" value="Expanded service (dashed group) -- full Controller / Service / Repository stack"
+            style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;"
+            vertex="1" parent="1">
+          <mxGeometry x="66" y="1848" width="480" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-swatch-3" value=""
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82b366;"
+            vertex="1" parent="1">
+          <mxGeometry x="40" y="1880" width="18" height="18" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-text-3" value="Controller / Service / Repository sub-layer inside an expanded service"
+            style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;"
+            vertex="1" parent="1">
+          <mxGeometry x="66" y="1876" width="480" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-swatch-4" value=""
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3EAF5;strokeColor=#9673A6;dashed=1;"
+            vertex="1" parent="1">
+          <mxGeometry x="40" y="1908" width="18" height="18" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-text-4" value="Kafka producer / consumer annotation (@KafkaListener, kafkaTemplate.send)"
+            style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;"
+            vertex="1" parent="1">
+          <mxGeometry x="66" y="1904" width="480" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-swatch-5" value=""
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;"
+            vertex="1" parent="1">
+          <mxGeometry x="40" y="1936" width="18" height="18" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-text-5" value="Simplified service (layers implied, not expanded -- box + own DB)"
+            style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;"
+            vertex="1" parent="1">
+          <mxGeometry x="66" y="1932" width="480" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-swatch-6" value=""
+            style="shape=cylinder;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;"
+            vertex="1" parent="1">
+          <mxGeometry x="40" y="1964" width="18" height="18" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-text-6" value="Database -- one per service (PostgreSQL / Elasticsearch, database-per-service)"
+            style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;"
+            vertex="1" parent="1">
+          <mxGeometry x="66" y="1960" width="480" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-swatch-7" value=""
+            style="shape=cylinder;whiteSpace=wrap;html=1;fillColor=#cce5ff;strokeColor=#3d85c6;"
+            vertex="1" parent="1">
+          <mxGeometry x="40" y="1992" width="18" height="18" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-text-7" value="Redis cache (shared, used by Search &amp;amp;amp; Pricing)"
+            style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;"
+            vertex="1" parent="1">
+          <mxGeometry x="66" y="1988" width="480" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-swatch-8" value=""
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673A6;"
+            vertex="1" parent="1">
+          <mxGeometry x="40" y="2020" width="18" height="18" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-text-8" value="Kafka Cluster / event bus"
+            style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;"
+            vertex="1" parent="1">
+          <mxGeometry x="66" y="2016" width="480" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-swatch-9" value=""
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;"
+            vertex="1" parent="1">
+          <mxGeometry x="700" y="1824" width="18" height="18" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-text-9" value="External 3rd-party system (called via REST client / SDK)"
+            style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;"
+            vertex="1" parent="1">
+          <mxGeometry x="726" y="1820" width="480" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-line-sync-text" value="Synchronous call: REST / OpenFeign client (+ Resilience4j CircuitBreaker/Retry)"
+            style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;"
+            vertex="1" parent="1">
+          <mxGeometry x="760" y="1844" width="560" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-line-async-text" value="Asynchronous call: Kafka producer -&amp;amp;gt; topic -&amp;amp;gt; consumer(s) (topic name on label)"
+            style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;"
+            vertex="1" parent="1">
+          <mxGeometry x="760" y="1874" width="560" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-line-internal-text" value="Internal in-process call between Controller / Service / Repository layers"
+            style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;"
+            vertex="1" parent="1">
+          <mxGeometry x="760" y="1904" width="560" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-line-data-text" value="JPA data access: @Repository -&amp;amp;gt; own database (database-per-service)"
+            style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;"
+            vertex="1" parent="1">
+          <mxGeometry x="760" y="1934" width="560" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-note-expanded" value="&lt;b&gt;Note:&lt;/b&gt; full internal Controller -&amp;amp;gt; Service -&amp;amp;gt; Repository -&amp;amp;gt; DB detail is shown for 4 representative services -- &lt;b&gt;Search / Discovery&lt;/b&gt;, &lt;b&gt;Booking / Reservation&lt;/b&gt;, &lt;b&gt;Trust &amp;amp;amp; Safety / Verification&lt;/b&gt; and &lt;b&gt;Payment &amp;amp;amp; Payout&lt;/b&gt;. The remaining 7 services (Auth/User, Listing/Inventory, Pricing, Notification, Messaging, Insurance &amp;amp;amp; Claims, Review &amp;amp;amp; Rating) follow the identical @RestController / @Service / @Repository layering internally but are rendered as simplified boxes to keep the diagram readable."
+            style="text;html=1;align=left;verticalAlign=top;fontSize=10.5;fontColor=#333333;whiteSpace=wrap;"
+            vertex="1" parent="1">
+          <mxGeometry x="700" y="1976" width="1240" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-search-e1"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#4E7D45;strokeWidth=1;endArrow=block;fontSize=9;fontColor=#4E7D45;jettySize=auto;"
+            edge="1" parent="1" source="container-search-ctrl" target="container-search-svc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-search-e2"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#4E7D45;strokeWidth=1;endArrow=block;fontSize=9;fontColor=#4E7D45;jettySize=auto;"
+            edge="1" parent="1" source="container-search-svc" target="container-search-repo">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-search-e3" value="JPA"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#4E7D45;strokeWidth=1;endArrow=block;fontSize=9;fontColor=#4E7D45;jettySize=auto;"
+            edge="1" parent="1" source="container-search-repo" target="container-search-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-booking-e1"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#4E7D45;strokeWidth=1;endArrow=block;fontSize=9;fontColor=#4E7D45;jettySize=auto;"
+            edge="1" parent="1" source="container-booking-ctrl" target="container-booking-svc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-booking-e2"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#4E7D45;strokeWidth=1;endArrow=block;fontSize=9;fontColor=#4E7D45;jettySize=auto;"
+            edge="1" parent="1" source="container-booking-svc" target="container-booking-repo">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-booking-e3" value="JPA"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#4E7D45;strokeWidth=1;endArrow=block;fontSize=9;fontColor=#4E7D45;jettySize=auto;"
+            edge="1" parent="1" source="container-booking-repo" target="container-booking-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-trustsafety-e1"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#4E7D45;strokeWidth=1;endArrow=block;fontSize=9;fontColor=#4E7D45;jettySize=auto;"
+            edge="1" parent="1" source="container-trustsafety-ctrl" target="container-trustsafety-svc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-trustsafety-e2"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#4E7D45;strokeWidth=1;endArrow=block;fontSize=9;fontColor=#4E7D45;jettySize=auto;"
+            edge="1" parent="1" source="container-trustsafety-svc" target="container-trustsafety-repo">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-trustsafety-e3" value="JPA"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#4E7D45;strokeWidth=1;endArrow=block;fontSize=9;fontColor=#4E7D45;jettySize=auto;"
+            edge="1" parent="1" source="container-trustsafety-repo" target="container-trustsafety-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-payment-e1"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#4E7D45;strokeWidth=1;endArrow=block;fontSize=9;fontColor=#4E7D45;jettySize=auto;"
+            edge="1" parent="1" source="container-payment-ctrl" target="container-payment-svc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-payment-e2"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#4E7D45;strokeWidth=1;endArrow=block;fontSize=9;fontColor=#4E7D45;jettySize=auto;"
+            edge="1" parent="1" source="container-payment-svc" target="container-payment-repo">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="container-payment-e3" value="JPA"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#4E7D45;strokeWidth=1;endArrow=block;fontSize=9;fontColor=#4E7D45;jettySize=auto;"
+            edge="1" parent="1" source="container-payment-repo" target="container-payment-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-auth-edb" value="JPA read/write"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B08A4E;strokeWidth=1;dashed=1;endArrow=block;fontSize=9;fontColor=#B08A4E;labelBackgroundColor=#FFFFFF;jettySize=auto;"
+            edge="1" parent="1" source="svc-auth" target="svc-auth-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-listing-edb" value="JPA read/write"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B08A4E;strokeWidth=1;dashed=1;endArrow=block;fontSize=9;fontColor=#B08A4E;labelBackgroundColor=#FFFFFF;jettySize=auto;"
+            edge="1" parent="1" source="svc-listing" target="svc-listing-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-pricing-edb" value="JPA read/write"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B08A4E;strokeWidth=1;dashed=1;endArrow=block;fontSize=9;fontColor=#B08A4E;labelBackgroundColor=#FFFFFF;jettySize=auto;"
+            edge="1" parent="1" source="svc-pricing" target="svc-pricing-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-notification-edb" value="JPA read/write"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B08A4E;strokeWidth=1;dashed=1;endArrow=block;fontSize=9;fontColor=#B08A4E;labelBackgroundColor=#FFFFFF;jettySize=auto;"
+            edge="1" parent="1" source="svc-notification" target="svc-notification-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-messaging-edb" value="JPA read/write"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B08A4E;strokeWidth=1;dashed=1;endArrow=block;fontSize=9;fontColor=#B08A4E;labelBackgroundColor=#FFFFFF;jettySize=auto;"
+            edge="1" parent="1" source="svc-messaging" target="svc-messaging-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-insurance-edb" value="JPA read/write"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B08A4E;strokeWidth=1;dashed=1;endArrow=block;fontSize=9;fontColor=#B08A4E;labelBackgroundColor=#FFFFFF;jettySize=auto;"
+            edge="1" parent="1" source="svc-insurance" target="svc-insurance-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="svc-review-edb" value="JPA read/write"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B08A4E;strokeWidth=1;dashed=1;endArrow=block;fontSize=9;fontColor=#B08A4E;labelBackgroundColor=#FFFFFF;jettySize=auto;"
+            edge="1" parent="1" source="svc-review" target="svc-review-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-line-sync"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;"
+            edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="700" y="1856" />
+              <mxPoint x="746" y="1856" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="legend-line-async"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;"
+            edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="700" y="1886" />
+              <mxPoint x="746" y="1886" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="legend-line-internal"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#4E7D45;strokeWidth=1;endArrow=block;fontSize=9;fontColor=#4E7D45;jettySize=auto;"
+            edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="700" y="1916" />
+              <mxPoint x="746" y="1916" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="legend-line-data"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B08A4E;strokeWidth=1;dashed=1;endArrow=block;fontSize=9;fontColor=#B08A4E;labelBackgroundColor=#FFFFFF;jettySize=auto;"
+            edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="700" y="1946" />
+              <mxPoint x="746" y="1946" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="sync-gw-auth" value="REST / Feign Client (authenticate)"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.15;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="infra-gateway" target="svc-auth">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="100" y="190" />
+              <mxPoint x="100" y="250" />
+              <mxPoint x="40" y="250" />
+              <mxPoint x="40" y="1015" />
+              <mxPoint x="200" y="1015" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="sync-gw-search" value="REST / Feign Client (search request)"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="infra-gateway" target="container-search">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="sync-gw-booking" value="REST / Feign Client (create reservation)"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.85;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="infra-gateway" target="container-booking">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="298" y="250" />
+              <mxPoint x="740" y="250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="sync-search-listing" value="OpenFeign + Resilience4j CircuitBreaker (fetch listing detail)"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="container-search" target="svc-listing">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="270" y="795" />
+              <mxPoint x="40" y="795" />
+              <mxPoint x="40" y="1015" />
+              <mxPoint x="540" y="1015" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="sync-booking-trustsafety" value="OpenFeign + Resilience4j CircuitBreaker (verify guest)"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=1;exitY=0.35;exitDx=0;exitDy=0;entryX=0;entryY=0.35;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="container-booking" target="container-trustsafety">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="sync-booking-payment" value="OpenFeign + Resilience4j CircuitBreaker (authorize / hold deposit)"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="container-booking" target="container-payment">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="740" y="300" />
+              <mxPoint x="740" y="280" />
+              <mxPoint x="1680" y="280" />
+              <mxPoint x="1680" y="300" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="sync-booking-pricing" value="REST / Feign Client (get dynamic price quote)"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="container-booking" target="svc-pricing">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="740" y="795" />
+              <mxPoint x="1420" y="795" />
+              <mxPoint x="1420" y="1015" />
+              <mxPoint x="880" y="1015" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="sync-trustsafety-idv" value="REST Client (external)"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="container-trustsafety" target="ext-identity">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1420" y="540" />
+              <mxPoint x="1440" y="540" />
+              <mxPoint x="1440" y="1600" />
+              <mxPoint x="570" y="1600" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="sync-payment-stripe" value="REST Client (external, Stripe SDK)"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="container-payment" target="ext-payment-gw">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1680" y="770" />
+              <mxPoint x="1680" y="1600" />
+              <mxPoint x="930" y="1600" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="sync-listing-maps" value="REST Client (external)"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="svc-listing" target="ext-maps">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="540" y="1260" />
+              <mxPoint x="540" y="1285" />
+              <mxPoint x="40" y="1285" />
+              <mxPoint x="40" y="1600" />
+              <mxPoint x="210" y="1600" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="sync-notification-sms" value="REST Client (external)"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="svc-notification" target="ext-sms">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1220" y="1260" />
+              <mxPoint x="1220" y="1285" />
+              <mxPoint x="1420" y="1285" />
+              <mxPoint x="1420" y="1600" />
+              <mxPoint x="1650" y="1600" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="sync-insurance-partner" value="REST Client (external)"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="svc-insurance" target="ext-insurance">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="540" y="1530" />
+              <mxPoint x="540" y="1600" />
+              <mxPoint x="1290" y="1600" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="cache-search-redis" value="cache hot search results"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#3d85c6;strokeWidth=1;dashed=1;endArrow=block;fontSize=9;fontColor=#3d85c6;labelBackgroundColor=#FFFFFF;jettySize=auto;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="container-search" target="infra-redis">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="270" y="310" />
+              <mxPoint x="270" y="250" />
+              <mxPoint x="1090" y="250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="kf-booking-out1" value="produces: booking-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.35;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="container-booking" target="kafka-cluster">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="kf-booking-out2" value="produces: trip-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.65;exitY=1;exitDx=0;exitDy=0;entryX=0.55;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="container-booking" target="kafka-cluster">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="kf-booking-in1" value="consumes: payment-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.45;exitY=0;exitDx=0;exitDy=0;entryX=0.3;entryY=1;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="kafka-cluster" target="container-booking">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="kf-booking-in2" value="consumes: verification-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.6;exitY=0;exitDx=0;exitDy=0;entryX=0.7;entryY=1;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="kafka-cluster" target="container-booking">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="kf-payment-out" value="produces: payment-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.35;exitY=1;exitDx=0;exitDy=0;entryX=0.95;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="container-payment" target="kafka-cluster">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1617" y="795" />
+              <mxPoint x="1295" y="795" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="kf-payment-in" value="consumes: trip-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.9;exitY=0;exitDx=0;exitDy=0;entryX=0.65;entryY=1;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="kafka-cluster" target="container-payment">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1230" y="795" />
+              <mxPoint x="1743" y="795" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="kf-trustsafety-out" value="produces: verification-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.72;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="container-trustsafety" target="kafka-cluster">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="kf-search-in" value="consumes: listing-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.08;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="kafka-cluster" target="container-search">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="kf-notification-in1" value="consumes: booking-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.9;exitY=1;exitDx=0;exitDy=0;entryX=0.3;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="kafka-cluster" target="svc-notification">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="kf-notification-in2" value="consumes: trip-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.93;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="kafka-cluster" target="svc-notification">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="kf-notification-in3" value="consumes: payment-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.96;exitY=1;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="kafka-cluster" target="svc-notification">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="kf-notification-out" value="produces: notification-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.99;entryY=1;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="svc-notification" target="kafka-cluster">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="kf-pricing-in" value="consumes: booking-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.6;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="kafka-cluster" target="svc-pricing">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="kf-listing-out" value="produces: listing-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.35;exitY=0;exitDx=0;exitDy=0;entryX=0.3;entryY=1;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="svc-listing" target="kafka-cluster">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="kf-listing-in" value="consumes: review-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.35;exitY=1;exitDx=0;exitDy=0;entryX=0.65;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="kafka-cluster" target="svc-listing">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="kf-auth-in1" value="consumes: verification-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.05;exitY=1;exitDx=0;exitDy=0;entryX=0.35;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="kafka-cluster" target="svc-auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="kf-auth-in2" value="consumes: review-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.1;exitY=1;exitDx=0;exitDy=0;entryX=0.65;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="kafka-cluster" target="svc-auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="kf-messaging-in" value="consumes: trip-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=1;exitY=0.53;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="kafka-cluster" target="svc-messaging">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1420" y="890" />
+              <mxPoint x="1420" y="1285" />
+              <mxPoint x="200" y="1285" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="kf-insurance-in" value="consumes: trip-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=1;exitY=0.65;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="kafka-cluster" target="svc-insurance">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1420" y="925" />
+              <mxPoint x="1420" y="1285" />
+              <mxPoint x="540" y="1285" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="kf-review-out" value="produces: review-events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;align=center;jettySize=auto;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.82;entryDx=0;entryDy=0;"
+            edge="1" parent="1" source="svc-review" target="kafka-cluster">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="880" y="1285" />
+              <mxPoint x="1420" y="1285" />
+              <mxPoint x="1420" y="960" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

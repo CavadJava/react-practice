@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tesla Fleet API (Official) — Swagger UI</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+  <style>
+    body { margin: 0; background: #fafafa; }
+    #topbar {
+      background: #14532d; color: #fff; padding: 10px 20px; font: 14px/1.4 -apple-system, sans-serif;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    #topbar strong { color: #86efac; }
+    #topbar a { color: #7dd3fc; }
+  </style>
+</head>
+<body>
+  <div id="topbar">
+    <strong>✓ Official Tesla API</strong>
+    — developer.tesla.com, generated from
+    <a href="https://github.com/Teslemetry/python-tesla-fleet-api" target="_blank" rel="noopener">Teslemetry/python-tesla-fleet-api</a>
+    source. Requires your own developer.tesla.com app registration to actually use — see README.md.
+  </div>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script>
+    window.onload = () => {
+      window.ui = SwaggerUIBundle({
+        url: './openapi.yaml',
+        dom_id: '#swagger-ui',
+        presets: [SwaggerUIBundle.presets.apis, SwaggerUIBundle.SwaggerUIStandalonePreset],
+        layout: 'BaseLayout',
+        deepLinking: true,
+        docExpansion: 'list',
+        defaultModelsExpandDepth: -1,
+      });
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,961 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Turo-like Booking Lifecycle -- Flowchart" id="turo-flow-1">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="11130" pageHeight="2980" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Turo-like Car-Sharing Booking Process -- End-to-End Flowchart"
+            style="text;html=1;align=center;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#333333;"
+            vertex="1" parent="1">
+          <mxGeometry x="50" y="10" width="11030" height="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lane-guest" value="GUEST (RENTER)"
+            style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EAF1FB;strokeColor=#B3C6E7;dashed=1;verticalAlign=top;align=left;fontSize=15;fontStyle=1;fontColor=#2F5496;spacingLeft=16;spacingTop=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="20" y="80" width="11110" height="560" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lane-platform" value="TURO PLATFORM (System / Backend)"
+            style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EAF7EA;strokeColor=#B7D7B0;dashed=1;verticalAlign=top;align=left;fontSize=15;fontStyle=1;fontColor=#4E7D45;spacingLeft=16;spacingTop=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="20" y="650" width="11110" height="1160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lane-host" value="HOST (CAR OWNER)"
+            style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FDF3E7;strokeColor=#E4C08D;dashed=1;verticalAlign=top;align=left;fontSize=15;fontStyle=1;fontColor=#B36B00;spacingLeft=16;spacingTop=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="20" y="1820" width="11110" height="410" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lane-external" value="EXTERNAL PARTNERS (Payment / Identity Verification / Insurance)"
+            style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FBEAEA;strokeColor=#E4B3B3;dashed=1;verticalAlign=top;align=left;fontSize=15;fontStyle=1;fontColor=#A94442;spacingLeft=16;spacingTop=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="20" y="2240" width="11110" height="410" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-start" value="Guest Opens App" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="50" y="205" width="190" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-search" value="Search by Location, Dates &amp;amp; Filters" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="270" y="198" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-query-search" value="Query Search / Listing Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="270" y="768" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-view-results" value="Guest Views Search Results" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="490" y="198" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-view-listing" value="Guest Opens Listing Details (photos, reviews, price breakdown)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="710" y="198" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-select-options" value="Guest Selects Dates &amp;amp; Add-ons (protection tier, delivery option)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="930" y="198" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d-instant-book" value="Instant Book Enabled?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe599;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="753" width="210" height="104" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d-id-verified" value="Guest ID / License Already Verified?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe599;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="1370" y="753" width="210" height="104" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-send-request" value="Guest Sends Booking Request (Request to Book)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="348" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-notify-host-request" value="Platform Notifies Host of New Request" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="1370" y="918" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-host-review" value="Host Reviews Booking Request" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="1590" y="1938" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d-host-in-time" value="Host Responds Within Time Window (1h)?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe599;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="1810" y="1923" width="210" height="104" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-auto-decline" value="Auto-Decline (No Host Response)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="2030" y="918" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-notify-guest-timeout" value="Notify Guest: Request Expired" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="2250" y="918" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-end-timeout" value="Booking Cancelled (Timeout) -- Guest May Search Again" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="2470" y="925" width="190" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d-host-approves" value="Host Approves Request?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe599;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="2030" y="1923" width="210" height="104" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-host-declines" value="Booking Declined by Host" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="2250" y="1068" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-notify-guest-declined" value="Notify Guest: Request Declined" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="2470" y="1068" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-end-declined" value="Booking Cancelled (Declined) -- Guest May Search Again" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="2690" y="1075" width="190" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-host-approved-merge" value="Booking Request Approved by Host" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="2250" y="768" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d-id-verified-2" value="Guest ID / License Verified?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe599;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="2470" y="753" width="210" height="104" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-send-verification" value="Send Guest Info to Identity Verification Provider" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="2910" y="1068" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-ext-id-check" value="Identity Verification Provider: Check License, ID &amp;amp; Risk Score" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=#FFFFFF;strokeColor=#b85450;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="3130" y="2358" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d-verification-passed" value="Verification Passed?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe599;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="3350" y="1053" width="210" height="104" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-verification-blocked" value="Booking Blocked" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="3570" y="1068" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-notify-verification-failed" value="Notify Guest -- Reason &amp;amp; Appeal Path" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="3790" y="1068" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-end-verification-failed" value="Booking Blocked (Verification Failed)" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="4010" y="1075" width="190" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-request-auth" value="Request Deposit / Hold Authorization" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="3570" y="768" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-ext-payment-auth" value="Payment Gateway: Authorize Card / Hold Funds" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=#FFFFFF;strokeColor=#b85450;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="3790" y="2358" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d-auth-success" value="Authorization Successful?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe599;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="4010" y="753" width="210" height="104" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-booking-confirmed" value="Booking Status = Confirmed" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="4230" y="768" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-notify-both" value="Notify Guest &amp;amp; Host" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="4450" y="768" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-payment-declined" value="Card Declined" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="4230" y="1218" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d-payment-retry" value="Guest Updates Payment, Retries, or Cancels?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe599;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="4450" y="1203" width="210" height="104" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-end-payment-cancel" value="Booking Cancelled (Payment Failed)" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="4670" y="1225" width="190" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-guest-cancel-trigger" value="Guest Cancels Before Trip Start" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="4230" y="498" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d-guest-cancel-timing" value="How Close to Trip Start Date?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe599;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="4450" y="483" width="210" height="104" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-cancel-free" value="Free Cancellation -- Full Refund" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="4670" y="498" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-cancel-partial" value="Partial Refund (Policy Tier)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="4890" y="498" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-cancel-none" value="No Refund (Late Cancel / No-show)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="5110" y="498" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-end-guest-cancel" value="Booking Cancelled by Guest" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="5330" y="505" width="190" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-host-cancel-trigger" value="Host Cancels Booking" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="4230" y="2088" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-host-penalty" value="Penalty Applied to Host (per policy)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="4450" y="2088" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-guest-full-refund" value="Guest Fully Refunded" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="4670" y="2088" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-rebooking-assist" value="Platform Offers Rebooking Assistance to Guest" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="4890" y="2088" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-end-host-cancel" value="Booking Cancelled by Host" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="5110" y="2095" width="190" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-open-messaging" value="Open Messaging Channel (Guest &amp;lt;-&amp;gt; Host)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="4670" y="768" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-send-reminders" value="Send Reminder Notifications (24h &amp;amp; 1h Before Trip)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="4890" y="768" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d-delivery-addon" value="Delivery Add-on Selected?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe599;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="5110" y="753" width="210" height="104" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-delivery" value="Host / Turo Delivers Car to Guest Location" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="5330" y="1938" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-pickup" value="Guest Picks Up Car at Host Location" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="5330" y="348" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-meet" value="Guest &amp;amp; Host Meet / Handoff Begins" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="5550" y="198" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d-unlock-method" value="Digital Key Available?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe599;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="5770" y="183" width="210" height="104" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-digital-unlock" value="Unlock Car via Digital Key (App)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="5990" y="198" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-inperson-handoff" value="In-Person Key Handoff with Host" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="5990" y="348" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-pretrip-inspection" value="Pre-Trip Vehicle Inspection (photos, mileage, fuel level)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="6210" y="198" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-trip-active" value="Trip Status = Active -- Timer Starts" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="6430" y="768" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-trip-in-progress" value="Trip In Progress" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="6650" y="768" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-ext-request" value="Guest Requests Extension" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="6650" y="348" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-check-availability" value="Platform Checks Host / Car Availability" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="6870" y="1368" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d-extension-approved" value="Extension Approved?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe599;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="7090" y="1353" width="210" height="104" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-adjust-price" value="Adjust Price &amp;amp; Extend Trip End Time" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="7310" y="1368" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-extension-denied" value="Notify Guest: Extension Denied" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="7530" y="1368" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-roadside-request" value="Guest Requests Roadside Assistance" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="6870" y="348" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-route-roadside" value="Route to Roadside Support" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="7090" y="1518" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-ext-roadside" value="Roadside Partner Dispatched (Tow / Jump-start / Lockout)" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=#FFFFFF;strokeColor=#b85450;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="7310" y="2358" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-roadside-resolved" value="Issue Resolved" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="7530" y="1518" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-accident-report" value="Guest / Host Reports Accident or Damage During Trip" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="7090" y="348" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-route-claims" value="Route into Claims Sub-Flow (see Payout &amp;amp; Claims)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="7310" y="1668" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-return-car" value="Guest Returns Car to Host / Designated Location" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="6870" y="198" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-posttrip-inspection" value="Post-Trip Vehicle Inspection (photos, mileage, fuel)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="7090" y="198" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d-discrepancies" value="Discrepancies Found? (extra mileage, late return, damage, fuel)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe599;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="7310" y="753" width="210" height="104" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-calc-charges" value="Calculate Additional Charges" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="7530" y="768" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-charge-guest" value="Charge Guest's Payment Method" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="7750" y="768" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-trip-completed" value="Trip Status = Completed" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="7970" y="768" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-finalize-charge" value="Finalize Total Trip Charge" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="8190" y="768" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-schedule-payout" value="Schedule Host Payout (after X-day hold)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="8410" y="768" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-ext-payout" value="Payment Gateway Processes Host Payout" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=#FFFFFF;strokeColor=#b85450;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="8630" y="2358" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d-damage-reported" value="Damage / Dispute Reported?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe599;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="8410" y="1653" width="210" height="104" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-submit-claim" value="Guest / Host Submits Claim" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="8630" y="1668" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-ext-insurance-review" value="Insurance Partner API Reviews Claim" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=#FFFFFF;strokeColor=#b85450;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="8850" y="2508" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d-claim-approved" value="Claim Approved?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe599;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="9070" y="1653" width="210" height="104" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-payout-adjustment" value="Apply Payout Adjustment / Resolution" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="9290" y="1668" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-claim-denied" value="Claim Denied" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="9510" y="1668" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-appeal-notify" value="Notify Guest / Host -- Appeal Path Available" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="9730" y="1668" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-prompt-reviews" value="Prompt Guest &amp;amp; Host to Leave Reviews" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="9950" y="768" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-guest-review" value="Guest Submits Review" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="10170" y="198" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-host-review-submit" value="Host Submits Review" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="10170" y="1938" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="d-reviews-complete" value="Both Reviews Submitted OR Timeout Reached?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe599;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="10390" y="753" width="210" height="104" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-publish-reviews" value="Reviews Published" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="10610" y="768" width="200" height="74" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n-end-success" value="Booking Fully Closed" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="10830" y="775" width="190" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-start" target="n-search">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-2" value="Search Request" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-search" target="n-query-search">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-3" value="Return Results" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-query-search" target="n-view-results">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-view-results" target="n-view-listing">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-view-listing" target="n-select-options">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-6" value="Guest Proceeds to Book" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-select-options" target="d-instant-book">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-7" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#2E7D32;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#2E7D32;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-instant-book" target="d-id-verified">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-8" value="No (Request to Book)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#B85450;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-instant-book" target="n-send-request">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-send-request" target="n-notify-host-request">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-notify-host-request" target="n-host-review">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-host-review" target="d-host-in-time">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-12" value="No (Timeout)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#B85450;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-host-in-time" target="n-auto-decline">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-auto-decline" target="n-notify-guest-timeout">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-notify-guest-timeout" target="n-end-timeout">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-15" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#2E7D32;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#2E7D32;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-host-in-time" target="d-host-approves">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-16" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#B85450;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-host-approves" target="n-host-declines">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-host-declines" target="n-notify-guest-declined">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-notify-guest-declined" target="n-end-declined">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-19" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#2E7D32;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#2E7D32;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-host-approves" target="n-host-approved-merge">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-host-approved-merge" target="d-id-verified-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-21" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#B85450;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-id-verified" target="n-send-verification">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-22" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#B85450;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-id-verified-2" target="n-send-verification">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-send-verification" target="n-ext-id-check">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-24" value="Result Returned" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-ext-id-check" target="d-verification-passed">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-25" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#B85450;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-verification-passed" target="n-verification-blocked">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-verification-blocked" target="n-notify-verification-failed">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-notify-verification-failed" target="n-end-verification-failed">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-28" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#2E7D32;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#2E7D32;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-id-verified" target="n-request-auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-29" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#2E7D32;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#2E7D32;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-id-verified-2" target="n-request-auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-30" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#2E7D32;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#2E7D32;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-verification-passed" target="n-request-auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-request-auth" target="n-ext-payment-auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-ext-payment-auth" target="d-auth-success">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-33" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#2E7D32;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#2E7D32;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-auth-success" target="n-booking-confirmed">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-booking-confirmed" target="n-notify-both">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-35" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#B85450;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-auth-success" target="n-payment-declined">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-36" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-payment-declined" target="d-payment-retry">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-37" value="Cancel" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#B85450;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-payment-retry" target="n-end-payment-cancel">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-38" value="Retry w/ New Payment Method" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-payment-retry" target="n-request-auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-39" value="(side-branch) Guest Cancels" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=1;dashed=1;endArrow=open;fontSize=9;fontColor=#B85450;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-booking-confirmed" target="n-guest-cancel-trigger">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-guest-cancel-trigger" target="d-guest-cancel-timing">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-41" value="Far Out" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-guest-cancel-timing" target="n-cancel-free">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-42" value="Moderate" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-guest-cancel-timing" target="n-cancel-partial">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-43" value="Very Close / No-show" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-guest-cancel-timing" target="n-cancel-none">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-cancel-free" target="n-end-guest-cancel">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-45" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-cancel-partial" target="n-end-guest-cancel">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-46" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-cancel-none" target="n-end-guest-cancel">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-47" value="(side-branch) Host Cancels" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=1;dashed=1;endArrow=open;fontSize=9;fontColor=#B85450;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-booking-confirmed" target="n-host-cancel-trigger">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-48" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-host-cancel-trigger" target="n-host-penalty">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-49" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-host-penalty" target="n-guest-full-refund">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-50" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-guest-full-refund" target="n-rebooking-assist">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-rebooking-assist" target="n-end-host-cancel">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-52" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-notify-both" target="n-open-messaging">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-open-messaging" target="n-send-reminders">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-54" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-send-reminders" target="d-delivery-addon">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-55" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#2E7D32;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#2E7D32;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-delivery-addon" target="n-delivery">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-56" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#B85450;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-delivery-addon" target="n-pickup">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-57" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-delivery" target="n-meet">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-pickup" target="n-meet">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-59" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-meet" target="d-unlock-method">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-60" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#2E7D32;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#2E7D32;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-unlock-method" target="n-digital-unlock">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-61" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#B85450;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-unlock-method" target="n-inperson-handoff">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-62" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-digital-unlock" target="n-pretrip-inspection">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-63" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-inperson-handoff" target="n-pretrip-inspection">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-64" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-pretrip-inspection" target="n-trip-active">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-65" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-trip-active" target="n-trip-in-progress">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-66" value="Guest Requests Extension" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=1;dashed=1;endArrow=open;fontSize=9;fontColor=#B85450;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-trip-in-progress" target="n-ext-request">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-67" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-ext-request" target="n-check-availability">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-68" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-check-availability" target="d-extension-approved">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-69" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#2E7D32;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#2E7D32;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-extension-approved" target="n-adjust-price">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-70" value="Resume Trip" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-adjust-price" target="n-trip-in-progress">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-71" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#B85450;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-extension-approved" target="n-extension-denied">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-72" value="Resume Trip" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-extension-denied" target="n-trip-in-progress">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-73" value="Roadside Assistance Needed" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=1;dashed=1;endArrow=open;fontSize=9;fontColor=#B85450;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-trip-in-progress" target="n-roadside-request">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-74" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-roadside-request" target="n-route-roadside">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-75" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-route-roadside" target="n-ext-roadside">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-76" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-ext-roadside" target="n-roadside-resolved">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-77" value="Resume Trip" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-roadside-resolved" target="n-trip-in-progress">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-78" value="Accident / Damage Occurs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=1;dashed=1;endArrow=open;fontSize=9;fontColor=#B85450;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-trip-in-progress" target="n-accident-report">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-79" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-accident-report" target="n-route-claims">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-80" value="Trip Ends Normally" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-trip-in-progress" target="n-return-car">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-81" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-return-car" target="n-posttrip-inspection">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-82" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-posttrip-inspection" target="d-discrepancies">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-83" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#2E7D32;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#2E7D32;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-discrepancies" target="n-calc-charges">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-84" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-calc-charges" target="n-charge-guest">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-85" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-charge-guest" target="n-trip-completed">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-86" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#B85450;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-discrepancies" target="n-trip-completed">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-87" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-trip-completed" target="n-finalize-charge">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-88" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-finalize-charge" target="n-schedule-payout">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-89" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-schedule-payout" target="n-ext-payout">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-90" value="Check for Disputes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-finalize-charge" target="d-damage-reported">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-91" value="From Trip: Accident Reported" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#808080;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#808080;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-route-claims" target="d-damage-reported">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-92" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#2E7D32;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#2E7D32;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-damage-reported" target="n-submit-claim">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-93" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-submit-claim" target="n-ext-insurance-review">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-94" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-ext-insurance-review" target="d-claim-approved">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-95" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#2E7D32;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#2E7D32;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-claim-approved" target="n-payout-adjustment">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-96" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#B85450;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-claim-approved" target="n-claim-denied">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-97" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-claim-denied" target="n-appeal-notify">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-98" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-ext-payout" target="n-prompt-reviews">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-99" value="Adjustment Applied" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-payout-adjustment" target="n-prompt-reviews">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-100" value="Resolved / Appeal Filed" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-appeal-notify" target="n-prompt-reviews">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-101" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#B85450;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-damage-reported" target="n-prompt-reviews">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-102" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-prompt-reviews" target="n-guest-review">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-103" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-prompt-reviews" target="n-host-review-submit">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-104" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-guest-review" target="d-reviews-complete">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-105" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-host-review-submit" target="d-reviews-complete">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-106" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#2E7D32;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#2E7D32;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="d-reviews-complete" target="n-publish-reviews">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-107" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1" source="n-publish-reviews" target="n-end-success">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-box" value="Legend"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#999999;verticalAlign=top;align=left;fontSize=14;fontStyle=1;fontColor=#333333;spacingLeft=14;spacingTop=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="50" y="2680" width="11030" height="260" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-shape-0" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="70" y="2714" width="34" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-shape-0-text" value="Start terminator (rounded / stadium, green)" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="116" y="2710" width="400" height="28" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-shape-1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="70" y="2744" width="34" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-shape-1-text" value="End terminator (rounded / stadium, red)" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="116" y="2740" width="400" height="28" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-shape-2" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6c8ebf;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="70" y="2774" width="34" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-shape-2-text" value="Process step (rectangle, white / light-blue border)" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="116" y="2770" width="400" height="28" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-shape-3" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fillColor=#FFFFFF;strokeColor=#b85450;strokeWidth=1.5;fontSize=11;align=center;verticalAlign=middle;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="70" y="2804" width="34" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-shape-3-text" value="Process step performed by an external partner (dashed red border)" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="116" y="2800" width="400" height="28" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-shape-4" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe599;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=center;verticalAlign=middle;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="70" y="2834" width="34" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-shape-4-text" value="Decision (diamond, amber) -- branches labeled Yes / No" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="116" y="2830" width="400" height="28" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-line-0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#1F4E78;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="530" y="2722" as="sourcePoint" />
+            <mxPoint x="570" y="2722" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-line-0-text" value="Main sequential flow" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="582" y="2710" width="420" height="28" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-line-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#2E7D32;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#2E7D32;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="530" y="2752" as="sourcePoint" />
+            <mxPoint x="570" y="2752" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-line-1-text" value="&quot;Yes&quot; branch of a decision" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="582" y="2740" width="420" height="28" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-line-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=2;endArrow=block;fontSize=10;fontColor=#B85450;fontStyle=1;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="530" y="2782" as="sourcePoint" />
+            <mxPoint x="570" y="2782" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-line-2-text" value="&quot;No&quot; branch of a decision" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="582" y="2770" width="420" height="28" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-line-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="530" y="2812" as="sourcePoint" />
+            <mxPoint x="570" y="2812" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-line-3-text" value="Loop-back (e.g. retry payment, resume trip after side-branch)" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="582" y="2800" width="420" height="28" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-line-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#808080;strokeWidth=1.5;dashed=1;endArrow=block;fontSize=9;fontColor=#808080;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="530" y="2842" as="sourcePoint" />
+            <mxPoint x="570" y="2842" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-line-4-text" value="Cross-reference jump to another part of the flow" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="582" y="2830" width="420" height="28" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-line-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B85450;strokeWidth=1;dashed=1;endArrow=open;fontSize=9;fontColor=#B85450;labelBackgroundColor=#FFFFFF;jettySize=auto;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="530" y="2872" as="sourcePoint" />
+            <mxPoint x="570" y="2872" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-line-5-text" value="Optional trigger into a compact cancellation side-branch" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="582" y="2860" width="420" height="28" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-lane-0" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EAF1FB;strokeColor=#B3C6E7;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="2714" width="34" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-lane-0-text" value="Guest (Renter) swimlane" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="1056" y="2710" width="420" height="28" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-lane-1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EAF7EA;strokeColor=#B7D7B0;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="2744" width="34" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-lane-1-text" value="Turo Platform (System / Backend) swimlane" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="1056" y="2740" width="420" height="28" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-lane-2" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FDF3E7;strokeColor=#E4C08D;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="2774" width="34" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-lane-2-text" value="Host (Car Owner) swimlane" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="1056" y="2770" width="420" height="28" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-lane-3" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FBEAEA;strokeColor=#E4B3B3;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="2804" width="34" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-lane-3-text" value="External Partners swimlane" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="1056" y="2800" width="420" height="28" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

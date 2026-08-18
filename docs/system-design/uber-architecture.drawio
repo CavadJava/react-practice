@@ -1,0 +1,441 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Uber-like Ride-Hailing Architecture" id="uber-arch-1">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1"
+        connect="1" arrows="1" fold="1" page="1" pageScale="1"
+        pageWidth="1740" pageHeight="1320" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ================= TITLE ================= -->
+        <mxCell id="title" value="Uber-like Ride-Hailing System &#45;&#45; High-Level Architecture"
+            style="text;html=1;align=center;verticalAlign=middle;fontSize=20;fontStyle=1;fontColor=#333333;"
+            vertex="1" parent="1">
+          <mxGeometry x="20" y="0" width="1700" height="32" as="geometry" />
+        </mxCell>
+
+        <!-- ================= LAYER BACKGROUNDS ================= -->
+        <mxCell id="layer-clients" value="CLIENTS"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF1FB;strokeColor=#B3C6E7;dashed=1;verticalAlign=top;align=left;fontSize=15;fontStyle=1;fontColor=#2F5496;spacingLeft=16;spacingTop=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="20" y="40" width="1700" height="180" as="geometry" />
+        </mxCell>
+
+        <mxCell id="layer-edge" value="EDGE"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F2F2F2;strokeColor=#BFBFBF;dashed=1;verticalAlign=top;align=left;fontSize=15;fontStyle=1;fontColor=#595959;spacingLeft=16;spacingTop=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="20" y="240" width="1700" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="layer-core" value="CORE MICROSERVICES"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF7EA;strokeColor=#B7D7B0;dashed=1;verticalAlign=top;align=left;fontSize=15;fontStyle=1;fontColor=#4E7D45;spacingLeft=16;spacingTop=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="20" y="400" width="1700" height="200" as="geometry" />
+        </mxCell>
+
+        <mxCell id="layer-infra" value="DATA &amp; INFRASTRUCTURE"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF3E7;strokeColor=#E4C08D;dashed=1;verticalAlign=top;align=left;fontSize=15;fontStyle=1;fontColor=#B36B00;spacingLeft=16;spacingTop=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="20" y="620" width="1700" height="260" as="geometry" />
+        </mxCell>
+
+        <mxCell id="layer-external" value="EXTERNAL INTEGRATIONS"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FBEAEA;strokeColor=#E4B3B3;dashed=1;verticalAlign=top;align=left;fontSize=15;fontStyle=1;fontColor=#A94442;spacingLeft=16;spacingTop=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="20" y="900" width="1700" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- ================= CLIENTS ================= -->
+        <mxCell id="node-rider-app" value="&lt;b&gt;Rider Mobile App&lt;/b&gt;&lt;br&gt;&lt;small&gt;iOS / Android&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="250" y="100" width="220" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node-driver-app" value="&lt;b&gt;Driver Mobile App&lt;/b&gt;&lt;br&gt;&lt;small&gt;iOS / Android&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="700" y="100" width="220" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node-admin-web" value="&lt;b&gt;Admin Web Dashboard&lt;/b&gt;&lt;br&gt;&lt;small&gt;Ops &amp;amp; support console&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="1150" y="100" width="220" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- ================= EDGE ================= -->
+        <mxCell id="node-gateway" value="&lt;b&gt;API Gateway / Load Balancer&lt;/b&gt;&lt;br&gt;&lt;small&gt;Routing, authN, rate limiting&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=13;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="650" y="290" width="400" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ================= CORE MICROSERVICES ================= -->
+        <mxCell id="node-auth" value="&lt;b&gt;Auth / User Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;Rider &amp;amp; driver accounts, profiles&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="40" y="460" width="190" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node-trip" value="&lt;b&gt;Trip / Ride Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;Lifecycle: requested -&amp;gt; matched -&amp;gt; in-progress -&amp;gt; completed&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="250" y="460" width="190" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node-matching" value="&lt;b&gt;Matching / Dispatch Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;Matches riders to nearby available drivers&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="460" y="460" width="190" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node-location" value="&lt;b&gt;Location Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;Real-time GPS ingestion, geospatial indexing&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="670" y="460" width="190" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node-pricing" value="&lt;b&gt;Pricing / Fare Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;Dynamic / surge pricing calculation&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="880" y="460" width="190" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node-payment" value="&lt;b&gt;Payment Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;Charges &amp;amp; driver payouts&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="1090" y="460" width="190" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node-notification" value="&lt;b&gt;Notification Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;Push notifications &amp;amp; SMS&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="1300" y="460" width="190" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node-rating" value="&lt;b&gt;Rating &amp;amp; Review Service&lt;/b&gt;&lt;br&gt;&lt;small&gt;Post-trip ratings &amp;amp; reviews&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="1510" y="460" width="190" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- ================= DATA / INFRA ================= -->
+        <mxCell id="node-relational-db" value="&lt;b&gt;Relational DB&lt;/b&gt;&lt;br&gt;&lt;small&gt;e.g. PostgreSQL&lt;br&gt;User, Trip, Payment data&lt;/small&gt;"
+            style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;"
+            vertex="1" parent="1">
+          <mxGeometry x="110" y="690" width="280" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node-geo-store" value="&lt;b&gt;Geospatial Store&lt;/b&gt;&lt;br&gt;&lt;small&gt;e.g. Redis (geo-index)&lt;br&gt;Live driver locations&lt;/small&gt;"
+            style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;"
+            vertex="1" parent="1">
+          <mxGeometry x="430" y="690" width="280" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node-event-bus" value="&lt;b&gt;Event Bus / Message Queue&lt;/b&gt;&lt;br&gt;&lt;small&gt;e.g. Apache Kafka &amp;#45;&amp;#45; trip events, location updates, payment events&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;fontStyle=1;arcSize=6;"
+            vertex="1" parent="1">
+          <mxGeometry x="750" y="690" width="560" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node-analytics-dw" value="&lt;b&gt;Analytics / Data Warehouse&lt;/b&gt;&lt;br&gt;&lt;small&gt;Fed via event bus, for reporting &amp;amp; ML&lt;/small&gt;"
+            style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;"
+            vertex="1" parent="1">
+          <mxGeometry x="1350" y="690" width="280" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- ================= EXTERNAL INTEGRATIONS ================= -->
+        <mxCell id="node-maps-api" value="&lt;b&gt;Maps &amp;amp; Routing API&lt;/b&gt;&lt;br&gt;&lt;small&gt;e.g. Google Maps&lt;br&gt;Geocoding, routing, ETA&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="110" y="940" width="380" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node-payment-gateway" value="&lt;b&gt;Payment Gateway&lt;/b&gt;&lt;br&gt;&lt;small&gt;e.g. Stripe&lt;br&gt;Actual money movement&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="680" y="940" width="380" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="node-sms-push" value="&lt;b&gt;SMS / Push Provider&lt;/b&gt;&lt;br&gt;&lt;small&gt;e.g. Twilio / FCM&lt;/small&gt;"
+            style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;arcSize=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="1250" y="940" width="380" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- ================= LEGEND ================= -->
+        <mxCell id="legend-box" value="Legend"
+            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#999999;verticalAlign=top;align=left;fontSize=14;fontStyle=1;fontColor=#333333;spacingLeft=14;spacingTop=8;"
+            vertex="1" parent="1">
+          <mxGeometry x="20" y="1090" width="900" height="200" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-swatch-1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1118" width="18" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-text-1" value="Client / Frontend App" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="66" y="1114" width="350" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-swatch-2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1146" width="18" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-text-2" value="Edge / API Gateway" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="66" y="1142" width="350" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-swatch-3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1174" width="18" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-text-3" value="Core Microservice" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="66" y="1170" width="350" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-swatch-4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1202" width="18" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-text-4" value="Database / Cache (e.g. Postgres, Redis)" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="66" y="1198" width="350" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-swatch-5" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1230" width="18" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-text-5" value="Event Bus / Message Queue (e.g. Kafka)" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="66" y="1226" width="350" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-swatch-6" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1258" width="18" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-text-6" value="External Integration (3rd-party)" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="66" y="1254" width="350" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-line-solid" style="html=1;endArrow=block;strokeColor=#1F4E78;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="480" y="1127" as="sourcePoint" />
+            <mxPoint x="520" y="1127" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-line-solid-text" value="Main request flow (numbered steps)" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="530" y="1116" width="370" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend-line-dashed" style="html=1;endArrow=block;dashed=1;strokeColor=#808080;strokeWidth=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="480" y="1155" as="sourcePoint" />
+            <mxPoint x="520" y="1155" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-line-dashed-text" value="Async / data access / event pub-sub" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="530" y="1144" width="370" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- ================= MAIN FLOW EDGES (solid, numbered) ================= -->
+        <mxCell id="edge-1" value="1. Request Trip"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=11;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;"
+            edge="1" parent="1" source="node-rider-app" target="node-gateway">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-2" value="2. Find Driver"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=11;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;"
+            edge="1" parent="1" source="node-gateway" target="node-matching">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-3" value="3. Query Nearby Drivers"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=11;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;"
+            edge="1" parent="1" source="node-matching" target="node-location">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-4" value="4. Assign Driver / Create Trip"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=11;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;"
+            edge="1" parent="1" source="node-matching" target="node-trip">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-5" value="5. Notify Driver"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=11;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;"
+            edge="1" parent="1" source="node-trip" target="node-notification">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-6" value="6. Push: New Trip Request"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=11;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;"
+            edge="1" parent="1" source="node-notification" target="node-driver-app">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-7" value="7. Live GPS Updates"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=11;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;"
+            edge="1" parent="1" source="node-driver-app" target="node-location">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-8" value="8. Live Location (WebSocket / push)"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=11;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;"
+            edge="1" parent="1" source="node-location" target="node-rider-app">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-9" value="9. Trip Completed -&gt; Compute Fare"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=11;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;"
+            edge="1" parent="1" source="node-trip" target="node-pricing">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-10" value="10. Fare Amount"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=11;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;"
+            edge="1" parent="1" source="node-pricing" target="node-payment">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-11" value="11. Charge Rider"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=11;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;"
+            edge="1" parent="1" source="node-payment" target="node-payment-gateway">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-12" value="12. Prompt Rating"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=11;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;"
+            edge="1" parent="1" source="node-payment" target="node-rating">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-13" value="13. Rate Trip"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#1F4E78;strokeWidth=2;endArrow=block;fontSize=11;fontColor=#1F4E78;fontStyle=1;labelBackgroundColor=#FFFFFF;align=center;"
+            edge="1" parent="1" source="node-rating" target="node-rider-app">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ================= SUPPORTING CONNECTIVITY (solid, gray) ================= -->
+        <mxCell id="edge-14" value="Status / API calls"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#808080;strokeWidth=1;endArrow=block;fontSize=9;fontColor=#808080;labelBackgroundColor=#FFFFFF;"
+            edge="1" parent="1" source="node-driver-app" target="node-gateway">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-15" value="Admin Ops"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#808080;strokeWidth=1;endArrow=block;fontSize=9;fontColor=#808080;labelBackgroundColor=#FFFFFF;"
+            edge="1" parent="1" source="node-admin-web" target="node-gateway">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-16" value="Authenticate / Authorize"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#808080;strokeWidth=1;endArrow=block;fontSize=9;fontColor=#808080;labelBackgroundColor=#FFFFFF;"
+            edge="1" parent="1" source="node-gateway" target="node-auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-17" value="Geocode / Route / ETA"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#808080;strokeWidth=1;endArrow=block;fontSize=9;fontColor=#808080;labelBackgroundColor=#FFFFFF;"
+            edge="1" parent="1" source="node-trip" target="node-maps-api">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-18" value="Send SMS / Push"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#808080;strokeWidth=1;endArrow=block;fontSize=9;fontColor=#808080;labelBackgroundColor=#FFFFFF;"
+            edge="1" parent="1" source="node-notification" target="node-sms-push">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ================= DATA ACCESS (dashed, amber) ================= -->
+        <mxCell id="edge-19" value="read/write"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B08A4E;strokeWidth=1;dashed=1;endArrow=block;fontSize=9;fontColor=#B08A4E;labelBackgroundColor=#FFFFFF;"
+            edge="1" parent="1" source="node-auth" target="node-relational-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-20" value="read/write"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B08A4E;strokeWidth=1;dashed=1;endArrow=block;fontSize=9;fontColor=#B08A4E;labelBackgroundColor=#FFFFFF;"
+            edge="1" parent="1" source="node-trip" target="node-relational-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-21" value="read/write"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B08A4E;strokeWidth=1;dashed=1;endArrow=block;fontSize=9;fontColor=#B08A4E;labelBackgroundColor=#FFFFFF;"
+            edge="1" parent="1" source="node-payment" target="node-relational-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-22" value="read/write"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B08A4E;strokeWidth=1;dashed=1;endArrow=block;fontSize=9;fontColor=#B08A4E;labelBackgroundColor=#FFFFFF;"
+            edge="1" parent="1" source="node-rating" target="node-relational-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-23" value="Write geo-index"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B08A4E;strokeWidth=1;dashed=1;endArrow=block;fontSize=9;fontColor=#B08A4E;labelBackgroundColor=#FFFFFF;"
+            edge="1" parent="1" source="node-location" target="node-geo-store">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-24" value="Geo query"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#B08A4E;strokeWidth=1;dashed=1;endArrow=block;fontSize=9;fontColor=#B08A4E;labelBackgroundColor=#FFFFFF;"
+            edge="1" parent="1" source="node-matching" target="node-geo-store">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ================= EVENT BUS PUB/SUB (dashed, purple) ================= -->
+        <mxCell id="edge-25"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1;dashed=1;endArrow=block;"
+            edge="1" parent="1" source="node-auth" target="node-event-bus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-26"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1;dashed=1;endArrow=block;"
+            edge="1" parent="1" source="node-trip" target="node-event-bus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-27"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1;dashed=1;endArrow=block;"
+            edge="1" parent="1" source="node-matching" target="node-event-bus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-28" value="location updates"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;"
+            edge="1" parent="1" source="node-location" target="node-event-bus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-29"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1;dashed=1;endArrow=block;"
+            edge="1" parent="1" source="node-pricing" target="node-event-bus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-30" value="payment events"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;"
+            edge="1" parent="1" source="node-payment" target="node-event-bus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-31"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1;dashed=1;endArrow=block;"
+            edge="1" parent="1" source="node-notification" target="node-event-bus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-32"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1;dashed=1;endArrow=block;"
+            edge="1" parent="1" source="node-rating" target="node-event-bus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="edge-33" value="Stream events for analytics / ML"
+            style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#9673A6;strokeWidth=1;dashed=1;endArrow=block;fontSize=9;fontColor=#9673A6;labelBackgroundColor=#FFFFFF;"
+            edge="1" parent="1" source="node-event-bus" target="node-analytics-dw">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@react-native-community/netinfo": "^12.0.1",
     "bootstrap": "^5.3.8",
     "prop-types": "^15.8.1",
     "react-bootstrap": "^2.10.10",
